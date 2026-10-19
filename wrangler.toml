@@ -1,0 +1,26 @@
+# Configuration Cloudflare Workers : un seul déploiement sert l'application ET le serveur de notifications.
+name = "manges-bien"
+main = "worker/index.ts"
+compatibility_date = "2026-10-01"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*", "/__scheduled"]
+
+# Stockage des abonnements et des rappels. Remplace l'id par celui affiché par :
+#   npx wrangler kv namespace create KV
+[[kv_namespaces]]
+binding = "KV"
+id = "REMPLACE_MOI_PAR_L_ID_KV"
+
+# Tâche planifiée : chaque minute, envoi des rappels arrivés à échéance.
+[triggers]
+crons = ["* * * * *"]
+
+# Secrets à définir (jamais dans le code) :
+#   npx wrangler secret put VAPID_PUBLIC_KEY
+#   npx wrangler secret put VAPID_PRIVATE_KEY
+#   npx wrangler secret put VAPID_SUBJECT      (ex. mailto:ton.adresse@exemple.be)
+#   npx wrangler secret put ACCESS_CODE        (code que tu taperas une fois dans l'app)
