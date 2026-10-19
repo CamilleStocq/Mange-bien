@@ -6,7 +6,7 @@ import { formatQty, STATE_LABEL } from '../lib/units';
 import { capabilities, requestPermission } from '../lib/push';
 import { ACTIVITY_LABEL } from '../lib/reminders';
 import { go } from '../lib/router';
-import { Btn, Card, Icon, NumberField, Seg, Toggle, toast } from '../components/ui';
+import { Btn, Card, FruitArt, Icon, NumberField, Seg, Toggle, toast } from '../components/ui';
 import { ACTIVITIES } from '../components/sport';
 import { DayScheduleEditor } from './Settings';
 
@@ -50,12 +50,13 @@ export function Onboarding() {
 
   switch (step) {
     case 0:
-      return wrap('Bienvenue dans Mange bien !', (
+      return wrap('Bienvenue dans Mange bien !', (<>
+        <FruitArt className="welcome-art" />
         <Card tint="sage">
           <p>Ton application pour savoir chaque jour quoi manger, quoi préparer le dimanche, quoi acheter et où tu en es — à ton rythme, sans pression.</p>
           <p className="small">Quelques questions rapides pour vérifier tes informations. Tout reste modifiable ensuite, et tu peux passer n’importe quelle étape : les informations non confirmées seront simplement marquées « provisoires ».</p>
         </Card>
-      ), <Btn onClick={() => next()}>Commencer</Btn>);
+      </>), <Btn onClick={() => next()}>Commencer</Btn>);
     case 1:
       return wrap('Taille et poids actuel', (
         <Card>

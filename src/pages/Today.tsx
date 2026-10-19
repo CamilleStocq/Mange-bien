@@ -3,7 +3,7 @@ import { ensureWeek, mutate, useData } from '../store/store';
 import { addDays, formatLong, todayISO, weekStart, weekdayIndex } from '../lib/dates';
 import { ENCOURAGEMENTS, pickFor } from '../lib/messages';
 import { randomId } from '../data/defaults';
-import { Btn, Card, CardHead, Icon, NumberField, toast } from '../components/ui';
+import { Btn, Card, CardHead, FruitArt, Icon, NumberField, toast } from '../components/ui';
 import { DayMeals, DaySport, DayTasksCard, ScheduleStrip } from '../components/day';
 import { HydrationWidget } from '../components/hydration';
 
@@ -52,13 +52,14 @@ export function Today() {
   return (
     <div className="page">
       <div className="topbar">
-        <div className="grow" />
+        <span className="brand grow">mange bien<b> !</b></span>
         <a className="icon-btn" href="#/reglages" aria-label="Réglages">
           <Icon name="gear" />
         </a>
       </div>
       <section className="hero">
-        <span className="small muted strong">Aujourd’hui</span>
+        <FruitArt className="hero-art" />
+        <span className="kicker">Aujourd’hui</span>
         <span className="date">{formatLong(today)}</span>
         <p>{pickFor(today, ENCOURAGEMENTS)}</p>
         <div className="row wrap">

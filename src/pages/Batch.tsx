@@ -163,7 +163,7 @@ export function BatchPage({ route }: { route: Route }) {
               ))}
             </div>
             {done === plan.steps.length && !meta?.batchDone && <Btn onClick={finish}>Terminer le batch{plan.cookFull.some((c) => c.extra) ? ' et ajouter les portions au congélateur' : ''}</Btn>}
-            {meta?.batchDone && <p className="small strong" style={{ color: 'var(--sage-strong)' }}>Batch terminé 🌿</p>}
+            {meta?.batchDone && <p className="small strong" style={{ color: 'var(--leaf)' }}>Batch terminé 🌿</p>}
           </Card>
 
           <Card tint="peach">

@@ -36,12 +36,12 @@ function Shortcuts() {
   const plan = useMemo(() => buildBatchPlan(data, nextMonday), [data, nextMonday]);
   return (
     <div className="grid2">
-      <a className="card tint-sage" href={`#/batch?w=${nextMonday}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <a className="card tile tint-warn" href={`#/batch?w=${nextMonday}`} style={{ textDecoration: 'none', color: 'inherit' }}>
         <Icon name="pot" />
         <strong>Batch du dimanche</strong>
         <span className="small muted">{plan.empty ? 'Rien à préparer' : `${plan.cookFull.length} plat(s) · ≈ ${Math.round(plan.durationMin / 15) * 15} min`}</span>
       </a>
-      <a className="card tint-peach" href={`#/courses?w=${nextMonday}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <a className="card tile tint-rose" href={`#/courses?w=${nextMonday}`} style={{ textDecoration: 'none', color: 'inherit' }}>
         <Icon name="cart" />
         <strong>Mes courses</strong>
         <span className="small muted">≈ {formatEuro(list.estimated)} / {formatEuro(list.budget)}</span>
