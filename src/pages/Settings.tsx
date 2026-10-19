@@ -117,7 +117,7 @@ export function SettingsPage() {
           <Icon name="leaf" /><div className="grow">Refaire la configuration de départ</div><Icon name="chevron" size={18} />
         </button>
       </Card>
-      <p className="tiny muted" style={{ textAlign: 'center' }}>Manges bien ! · données stockées uniquement sur cet appareil</p>
+      <p className="tiny muted" style={{ textAlign: 'center' }}>Mange bien ! · données stockées uniquement sur cet appareil</p>
     </div>
   );
 }
@@ -217,11 +217,11 @@ export function DataPage() {
   const exportData = async () => {
     await flushSave();
     const json = JSON.stringify(getData(), null, 2);
-    const name = `manges-bien-${todayISO()}.json`;
+    const name = `mange-bien-${todayISO()}.json`;
     const file = new File([json], name, { type: 'application/json' });
     try {
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Export Manges bien !' });
+        await navigator.share({ files: [file], title: 'Export Mange bien !' });
         return;
       }
     } catch (e) {
@@ -265,7 +265,7 @@ export function DataPage() {
               replaceAll(d);
               toast('Sauvegarde importée');
             } catch {
-              toast('Fichier invalide : ce n’est pas une sauvegarde Manges bien !');
+              toast('Fichier invalide : ce n’est pas une sauvegarde Mange bien !');
             }
           }} />
         </label>

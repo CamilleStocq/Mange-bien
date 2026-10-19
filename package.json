@@ -1,9 +1,9 @@
 {
-  "name": "manges-bien",
+  "name": "mange-bien",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Manges bien ! — application personnelle de nutrition, batch cooking, sport et progression (PWA).",
+  "description": "Mange bien ! — application personnelle de nutrition, batch cooking, sport et progression (PWA).",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p worker/tsconfig.json && tsc -p tsconfig.sw.json && vite build",
@@ -11,7 +11,7 @@
     "test": "vitest run",
     "icons": "node scripts/gen-icons.mjs",
     "vapid": "node scripts/gen-vapid.mjs",
-    "worker:dev": "npm run build && wrangler dev --test-scheduled --persist-to ../.manges-bien-state",
+    "worker:dev": "npm run build && wrangler dev --test-scheduled --persist-to ../.mange-bien-state",
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {

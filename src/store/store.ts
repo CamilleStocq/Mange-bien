@@ -5,7 +5,7 @@ import { createDefaultData, migrate } from '../data/defaults';
 import { generateWeek, mealsOfWeek, refreshStorage } from '../lib/planning';
 import { todayISO } from '../lib/dates';
 
-const KEY = 'mangesbien:data';
+const KEY = 'mangebien:data';
 
 interface AppState {
   data: AppData;
@@ -79,7 +79,7 @@ export async function resetAll() {
 }
 
 // ---------- Photos de recettes (stockées à part pour garder les données légères) ----------
-export const photoKey = (recipeId: string) => `mangesbien:photo:${recipeId}`;
+export const photoKey = (recipeId: string) => `mangebien:photo:${recipeId}`;
 export async function savePhoto(recipeId: string, dataUrl: string | undefined) {
   if (dataUrl) await set(photoKey(recipeId), dataUrl);
   else await del(photoKey(recipeId));

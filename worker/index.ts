@@ -1,4 +1,4 @@
-// Serveur Manges bien ! (Cloudflare Worker) :
+// Serveur Mange bien ! (Cloudflare Worker) :
 // - sert l'application (fichiers statiques de dist/) ;
 // - API /api/* pour enregistrer l'abonnement push et la liste des rappels ;
 // - tâche planifiée chaque minute qui envoie les rappels arrivés à échéance.
@@ -134,7 +134,7 @@ async function handleApi(req: Request, env: Env, path: string): Promise<Response
     case '/api/test': {
       if (!device) return err('Appareil non abonné.', 404);
       const delay = Math.min(600, Math.max(0, Number(body.delaySec) || 0));
-      const msg = { title: 'Manges bien ! — test', body: delay ? `Notification programmée ${Math.round(delay / 60)} min plus tôt : le serveur fonctionne même app fermée.` : 'Les notifications fonctionnent 🎉', url: '#/reglages/notifications', tag: 'test' };
+      const msg = { title: 'Mange bien ! — test', body: delay ? `Notification programmée ${Math.round(delay / 60)} min plus tôt : le serveur fonctionne même app fermée.` : 'Les notifications fonctionnent 🎉', url: '#/reglages/notifications', tag: 'test' };
       if (!delay) {
         const r = await sendPush(device.subscription, msg, keysOf(env), env.VAPID_SUBJECT);
         if (r.gone) {

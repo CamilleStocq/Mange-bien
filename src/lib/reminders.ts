@@ -173,7 +173,7 @@ export function buildReminders(data: AppData, fromDate: string, days: number, no
     for (const t of rules.hydration.times ?? []) {
       add('hydration', t, 'Hydratation', `Petite pause hydratation 💧 Repère du jour : ${formatQty(data.hydration.goalMl, 'ml')}.`, '#/hydratation', `:${t}`);
     }
-    add('encouragement', rules.encouragement.time ?? '13:15', 'Manges bien !', pickFor(d + 'x', ENCOURAGEMENTS), '#/aujourdhui');
+    add('encouragement', rules.encouragement.time ?? '13:15', 'Mange bien !', pickFor(d + 'x', ENCOURAGEMENTS), '#/aujourdhui');
   }
 
   return out

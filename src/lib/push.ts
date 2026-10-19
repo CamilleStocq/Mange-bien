@@ -98,7 +98,7 @@ export async function serverAvailable(): Promise<boolean> {
 /** Abonnement Web Push. Le code d'accès est demandé une seule fois et n'est pas stocké. */
 export async function subscribePush(accessCode: string): Promise<void> {
   const perm = await requestPermission();
-  if (perm !== 'granted') throw new Error('Permission de notification refusée. Tu peux la réactiver dans Réglages iPhone → Notifications → Manges bien !.');
+  if (perm !== 'granted') throw new Error('Permission de notification refusée. Tu peux la réactiver dans Réglages iPhone → Notifications → Mange bien !.');
   const reg = await registration();
   if (!reg || !('pushManager' in reg)) throw new Error('Notifications push indisponibles ici. Sur iPhone : ajoute d’abord l’app à l’écran d’accueil (iOS 16.4 ou plus).');
   const keyRes = await fetch('/api/vapid-public-key');

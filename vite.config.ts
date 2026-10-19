@@ -15,8 +15,8 @@ export default defineConfig({
       injectManifest: { globPatterns: ['**/*.{js,css,html,png,svg,ico,webmanifest}'] },
       devOptions: { enabled: false },
       manifest: {
-        name: 'Manges bien ! — repas, sport & progression',
-        short_name: 'Manges bien !',
+        name: 'Mange bien ! — repas, sport & progression',
+        short_name: 'Mange bien !',
         description: 'Mon application personnelle : repas, batch cooking, courses, sport et progression.',
         lang: 'fr-BE',
         start_url: './#/aujourdhui',

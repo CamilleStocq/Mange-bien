@@ -50,7 +50,7 @@ export function Onboarding() {
 
   switch (step) {
     case 0:
-      return wrap('Bienvenue dans Manges bien !', (
+      return wrap('Bienvenue dans Mange bien !', (
         <Card tint="sage">
           <p>Ton application pour savoir chaque jour quoi manger, quoi préparer le dimanche, quoi acheter et où tu en es — à ton rythme, sans pression.</p>
           <p className="small">Quelques questions rapides pour vérifier tes informations. Tout reste modifiable ensuite, et tu peux passer n’importe quelle étape : les informations non confirmées seront simplement marquées « provisoires ».</p>

@@ -1,4 +1,4 @@
-// Modèle de données de l’application « Manges bien ! ». Toutes les dates « jour » sont au format ISO YYYY-MM-DD
+// Modèle de données de l’application « Mange bien ! ». Toutes les dates « jour » sont au format ISO YYYY-MM-DD
 // et s'entendent dans le fuseau Europe/Brussels. Les heures sont au format HH:MM.
 
 export type ISODate = string;

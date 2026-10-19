@@ -1,4 +1,4 @@
-# Manges bien ! — repas, batch cooking, sport & progression
+# Mange bien ! — repas, batch cooking, sport & progression
 
 Application web personnelle (PWA) installable sur iPhone, en français, pensée pour savoir chaque jour :
 quoi manger et en quelles quantités, quoi cuisiner le dimanche, quoi acheter, quoi sortir du congélateur,
@@ -111,7 +111,7 @@ npm test
    ```bash
    npm run deploy
    ```
-   L’adresse s’affiche, du type `https://manges-bien.<ton-sous-domaine>.workers.dev`.
+   L’adresse s’affiche, du type `https://mange-bien.<ton-sous-domaine>.workers.dev`.
 
 Pour publier une nouvelle version plus tard : `npm run deploy`. L’app installée se met à jour seule à
 l’ouverture suivante. Tes données restent sur l’iPhone.
@@ -122,13 +122,13 @@ l’ouverture suivante. Tes données restent sur l’iPhone.
 
 1. Ouvre l’adresse de l’app dans **Safari**.
 2. Bouton **Partager** → **Sur l’écran d’accueil** → **Ajouter**.
-3. Ouvre **Manges bien ! depuis l’icône** (pas depuis Safari) et fais la configuration de départ.
+3. Ouvre **Mange bien ! depuis l’icône** (pas depuis Safari) et fais la configuration de départ.
 4. Réglages (roue dentée) → **Notifications** → **Autoriser les notifications** → accepte la demande d’iOS.
 5. Saisis ton **code d’accès** → **Activer les rappels**.
 6. Touche **« Push dans ~2 minutes »**, ferme l’app, attends : si la notification arrive, tout fonctionne.
 
 Conditions : iOS **16.4 ou plus récent**. Les modes Concentration peuvent retarder / masquer les
-notifications ; ajustements dans Réglages iPhone → Notifications → Manges bien !.
+notifications ; ajustements dans Réglages iPhone → Notifications → Mange bien !.
 
 ---
 
@@ -174,7 +174,7 @@ iPhone via le service push d’Apple. Le test « Push dans ~2 minutes » sert ex
 ## 7. Structure du projet
 
 ```
-manges-bien/
+mange-bien/
 ├─ index.html                 page hôte (métadonnées iPhone)
 ├─ vite.config.ts             build + manifeste PWA
 ├─ wrangler.toml              déploiement Cloudflare (app + serveur + cron)

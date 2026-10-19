@@ -94,7 +94,7 @@ export function NotificationsPage() {
         {iosNeedsInstall && (
           <div className="alert-banner">Sur iPhone, les notifications ne fonctionnent qu’une fois l’app ajoutée à l’écran d’accueil et ouverte depuis son icône. <a href="#/reglages/iphone">Voir comment faire</a></div>
         )}
-        {caps.permission === 'denied' && <div className="alert-banner">Les notifications ont été refusées. Sur iPhone : Réglages → Notifications → Manges bien ! → Autoriser. L’application continue de fonctionner normalement sans elles.</div>}
+        {caps.permission === 'denied' && <div className="alert-banner">Les notifications ont été refusées. Sur iPhone : Réglages → Notifications → Mange bien ! → Autoriser. L’application continue de fonctionner normalement sans elles.</div>}
       </Card>
 
       <Card tint="sage">
@@ -129,7 +129,7 @@ export function NotificationsPage() {
       <Card>
         <CardHead icon="sparkle" title="Tester" />
         <div className="col">
-          <Btn small variant="secondary" disabled={busy || caps.permission !== 'granted'} onClick={() => run(() => showLocal('Manges bien ! — test', 'Une notification locale, affichée par l’app ouverte.'), 'Notification locale envoyée')}>Notification locale immédiate</Btn>
+          <Btn small variant="secondary" disabled={busy || caps.permission !== 'granted'} onClick={() => run(() => showLocal('Mange bien ! — test', 'Une notification locale, affichée par l’app ouverte.'), 'Notification locale envoyée')}>Notification locale immédiate</Btn>
           <Btn small variant="secondary" disabled={busy || !data.push.subscribed} onClick={() => run(() => sendServerTest(0), 'Demande envoyée au serveur')}>Push via le serveur, maintenant</Btn>
           <Btn small variant="secondary" disabled={busy || !data.push.subscribed} onClick={() => run(() => sendServerTest(90), 'Programmée dans ~2 min : ferme l’app pour vérifier')}>Push dans ~2 minutes (ferme l’app)</Btn>
         </div>
@@ -184,12 +184,12 @@ export function IphoneHelpPage() {
         <h1 className="grow">Installer sur iPhone</h1>
       </div>
       <Card>
-        <CardHead icon="phone" title="Ajouter Manges bien ! à l’écran d’accueil" />
+        <CardHead icon="phone" title="Ajouter Mange bien ! à l’écran d’accueil" />
         <ol className="steps-list small">
           <li>Ouvre l’adresse de l’application dans <strong>Safari</strong>.</li>
           <li>Touche le bouton <strong>Partager</strong> <Icon name="share" size={16} /> (en bas de l’écran, ou via le menu « ··· »).</li>
           <li>Choisis <strong>« Sur l’écran d’accueil »</strong>, puis vérifie que « Ouvrir en tant qu’app web » est activé si l’option apparaît, et touche <strong>Ajouter</strong>.</li>
-          <li>Ferme Safari et ouvre <strong>Manges bien ! depuis sa nouvelle icône</strong>.</li>
+          <li>Ferme Safari et ouvre <strong>Mange bien ! depuis sa nouvelle icône</strong>.</li>
         </ol>
       </Card>
       <Card>
@@ -199,7 +199,7 @@ export function IphoneHelpPage() {
           <li>Dans l’app installée : Réglages → Notifications → <strong>Autoriser les notifications</strong>, puis accepte la demande d’iOS.</li>
           <li>Saisis ton code d’accès et touche <strong>Activer les rappels</strong>.</li>
           <li>Fais le test « Push dans ~2 minutes », puis ferme l’app (balayage vers le haut) et attends la notification.</li>
-          <li>Pour ajuster : Réglages iPhone → Notifications → Manges bien ! (sons, écran verrouillé, résumé programmé).</li>
+          <li>Pour ajuster : Réglages iPhone → Notifications → Mange bien ! (sons, écran verrouillé, résumé programmé).</li>
         </ol>
       </Card>
       <Card tint="peach">

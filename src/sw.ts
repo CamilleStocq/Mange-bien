@@ -29,7 +29,7 @@ self.addEventListener('push', (event) => {
   }
   // iOS exige qu'une notification soit toujours affichée pour chaque push reçu.
   event.waitUntil(
-    self.registration.showNotification(p.title || 'Manges bien !', {
+    self.registration.showNotification(p.title || 'Mange bien !', {
       body: p.body || '',
       icon: 'icons/icon-192.png',
       badge: 'icons/badge-96.png',

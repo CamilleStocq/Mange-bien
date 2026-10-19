@@ -1,5 +1,5 @@
 # Configuration Cloudflare Workers : un seul déploiement sert l'application ET le serveur de notifications.
-name = "manges-bien"
+name = "mange-bien"
 main = "worker/index.ts"
 compatibility_date = "2026-10-01"
 

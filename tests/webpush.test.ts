@@ -63,7 +63,7 @@ async function makeEnv(): Promise<Env & { KV: MemKV }> {
 }
 const DEV = { 'X-Device': '0123456789abcdef', 'X-Token': '0123456789abcdef0123456789abcdef', 'Content-Type': 'application/json' };
 const call = (env: Env, path: string, body?: unknown, headers: Record<string, string> = DEV) =>
-  worker.fetch(new Request(`https://manges-bien.test${path}`, body === undefined ? { headers } : { method: 'POST', headers, body: JSON.stringify(body) }), env);
+  worker.fetch(new Request(`https://mange-bien.test${path}`, body === undefined ? { headers } : { method: 'POST', headers, body: JSON.stringify(body) }), env);
 
 describe('serveur de rappels', () => {
   afterEach(() => vi.unstubAllGlobals());
