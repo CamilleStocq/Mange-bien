@@ -17,12 +17,15 @@ import { DataPage, HydrationPage, IngredientsPage, SchedulePage, SettingsPage } 
 import { IphoneHelpPage, NotificationsPage } from './pages/Notifications';
 import { Onboarding } from './pages/Onboarding';
 
+// Sept onglets : libellés courts pour tenir sur un iPhone ; le nom complet reste en titre de page.
 const TABS = [
-  { href: '#/aujourdhui', match: ['aujourdhui', 'hydratation', 'reglages'], icon: 'home', label: 'Aujourd’hui' },
-  { href: '#/calendrier', match: ['calendrier', 'jour'], icon: 'calendar', label: 'Calendrier' },
-  { href: '#/alimentation', match: ['alimentation', 'recette', 'recette-nouvelle', 'batch', 'courses'], icon: 'food', label: 'Alimentation' },
-  { href: '#/sport', match: ['sport'], icon: 'sport', label: 'Sport' },
-  { href: '#/progression', match: ['progression'], icon: 'chart', label: 'Progression' }
+  { href: '#/aujourdhui', match: ['aujourdhui', 'hydratation', 'reglages'], icon: 'home', label: 'Accueil', name: 'Aujourd’hui' },
+  { href: '#/calendrier', match: ['calendrier', 'jour'], icon: 'calendar', label: 'Agenda', name: 'Calendrier' },
+  { href: '#/alimentation', match: ['alimentation', 'recette', 'recette-nouvelle'], icon: 'food', label: 'Repas', name: 'Alimentation' },
+  { href: '#/batch', match: ['batch'], icon: 'pot', label: 'Batch', name: 'Batch cooking' },
+  { href: '#/courses', match: ['courses'], icon: 'cart', label: 'Courses', name: 'Courses' },
+  { href: '#/sport', match: ['sport'], icon: 'sport', label: 'Sport', name: 'Sport' },
+  { href: '#/progression', match: ['progression'], icon: 'chart', label: 'Suivi', name: 'Progression' }
 ];
 
 function page(route: Route): ReactNode {
@@ -152,7 +155,7 @@ export function App() {
         <ul>
           {TABS.map((t) => (
             <li key={t.href}>
-              <a href={t.href} aria-current={t === current ? 'page' : undefined}>
+              <a href={t.href} aria-current={t === current ? 'page' : undefined} aria-label={t.name}>
                 <span className="nav-ico"><Icon name={t.icon} /></span>
                 {t.label}
               </a>

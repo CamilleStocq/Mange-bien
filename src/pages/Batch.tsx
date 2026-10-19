@@ -44,7 +44,6 @@ export function BatchPage({ route }: { route: Route }) {
   return (
     <div className="page">
       <div className="topbar">
-        <button className="icon-btn" onClick={() => history.back()} aria-label="Retour"><Icon name="back" /></button>
         <div className="grow">
           <h1 style={{ fontSize: '1.3rem' }}>Mon batch cooking du dimanche</h1>
           <div className="sub cap">{formatLong(plan.batchDay)} · pour la semaine du {formatShort(monday)}</div>

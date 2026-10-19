@@ -4,7 +4,6 @@ import { generateWeekIfEmpty, loadPhoto, mutate, regenerateWeek, useData } from 
 import { addDays, formatDayMonth, formatLong, todayISO, weekDays, weekStart } from '../lib/dates';
 import { beforeStart, mealsOfDay, mealsOfWeek } from '../lib/planning';
 import { buildShoppingList } from '../lib/shopping';
-import { buildBatchPlan } from '../lib/batch';
 import { formatEuro, ingredientKey, recipeCost } from '../lib/units';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
@@ -20,32 +19,10 @@ export function FoodPage({ route }: { route: Route }) {
       <div className="topbar">
         <h1 className="grow">Alimentation</h1>
       </div>
-      <Shortcuts />
       <Seg label="Section" value={tab} options={[{ value: 'planning', label: 'Planning' }, { value: 'recettes', label: 'Recettes' }, { value: 'stock', label: 'Stock & restes' }]} onChange={setTab} />
       {tab === 'planning' && <Planning initial={route.query.get('w') ?? undefined} />}
       {tab === 'recettes' && <RecipeList />}
       {tab === 'stock' && <Stock />}
-    </div>
-  );
-}
-
-function Shortcuts() {
-  const data = useData((d) => d);
-  const nextMonday = addDays(weekStart(todayISO()), 7);
-  const list = useMemo(() => buildShoppingList(data, nextMonday), [data, nextMonday]);
-  const plan = useMemo(() => buildBatchPlan(data, nextMonday), [data, nextMonday]);
-  return (
-    <div className="grid2">
-      <a className="card tile tint-warn" href={`#/batch?w=${nextMonday}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <Icon name="pot" />
-        <strong>Batch du dimanche</strong>
-        <span className="small muted">{plan.empty ? 'Rien à préparer' : `${plan.cookFull.length} plat(s) · ≈ ${Math.round(plan.durationMin / 15) * 15} min`}</span>
-      </a>
-      <a className="card tile tint-rose" href={`#/courses?w=${nextMonday}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <Icon name="cart" />
-        <strong>Mes courses</strong>
-        <span className="small muted">≈ {formatEuro(list.estimated)}{list.budget ? ` / ${formatEuro(list.budget)}` : ''}</span>
-      </a>
     </div>
   );
 }

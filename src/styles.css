@@ -213,11 +213,11 @@ textarea.input { min-height: 88px; resize: vertical; }
 
 /* Barre du bas : papier crème, trait d'encre ; l'onglet actif prend la couleur de sa page */
 .bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 2px solid var(--text); padding-bottom: env(safe-area-inset-bottom); }
-.bottom-nav ul { list-style: none; margin: 0 auto; padding: 0 4px; display: grid; grid-template-columns: repeat(5, 1fr); max-width: 640px; }
-.bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0 6px; min-height: var(--nav-h); text-decoration: none; color: var(--text-2); font-size: 0.72rem; font-weight: 600; }
+.bottom-nav ul { list-style: none; margin: 0 auto; padding: 0 2px; display: grid; grid-template-columns: repeat(7, 1fr); max-width: 640px; }
+.bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0 6px; min-height: var(--nav-h); text-decoration: none; color: var(--text-2); font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
 .bottom-nav a[aria-current='page'] { color: var(--text); }
 .bottom-nav a[aria-current='page'] .nav-ico { background: var(--page); color: var(--on-page); }
-.nav-ico { width: 52px; height: 30px; display: grid; place-items: center; border-radius: 999px; transition: background-color 0.2s, transform 0.15s var(--ease); }
+.nav-ico { width: 44px; height: 30px; display: grid; place-items: center; border-radius: 999px; transition: background-color 0.2s, transform 0.15s var(--ease); }
 .bottom-nav a:active .nav-ico { transform: scale(0.92); }
 
 .sheet-backdrop { position: fixed; inset: 0; background: rgba(19, 22, 42, 0.45); z-index: 50; display: flex; align-items: flex-end; justify-content: center; animation: fade 0.2s ease-out; }
@@ -301,6 +301,9 @@ table.simple th { color: var(--text-2); font-weight: 600; font-size: 0.8rem; }
 .app[data-section='sport'] { --page: #f4a6c0; --on-page: #1c1f33; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M12 58a58 58 0 0 0 116 0z' fill='%232b7449'/%3E%3Cpath d='M22 58a48 48 0 0 0 96 0z' fill='%23fffaf2'/%3E%3Cpath d='M28 58a42 42 0 0 0 84 0z' fill='%23e2412f'/%3E%3Cellipse cx='52' cy='72' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='70' cy='82' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='88' cy='72' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='62' cy='66' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='80' cy='66' rx='3' ry='5' fill='%231c1f33'/%3E%3C/svg%3E"); }
 .app[data-section='progression'] { --page: #3c9a5f; --on-page: #fffaf2; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M70 20c-6 14-26 22-26 40M70 20c6 14 26 22 26 40' stroke='%231d5a36' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M70 20c10-12 26-12 34-6-10 10-24 12-34 6z' fill='%23a6dc8a'/%3E%3Ccircle cx='44' cy='82' r='24' fill='%23f4a6c0'/%3E%3Ccircle cx='96' cy='82' r='24' fill='%23e2412f'/%3E%3Ccircle cx='70' cy='118' r='18' fill='%23f5c63c'/%3E%3C/svg%3E"); }
 
+.app[data-section='batch'] { --page: #f39a52; --on-page: #1c1f33; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M58 40c0-6 4-10 4-16M78 40c0-6 4-10 4-16' stroke='%23fffaf2' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M22 56h96v34a26 26 0 0 1-26 26H48a26 26 0 0 1-26-26z' fill='%232d4bd2'/%3E%3Cpath d='M12 56h116' stroke='%231c1f33' stroke-width='8' stroke-linecap='round'/%3E%3Ccircle cx='48' cy='86' r='9' fill='%23f5c63c'/%3E%3Ccircle cx='72' cy='94' r='9' fill='%23e2412f'/%3E%3Ccircle cx='94' cy='84' r='9' fill='%237cbf5a'/%3E%3C/svg%3E"); }
+.app[data-section='courses'] { --page: #b9a3ef; --on-page: #1c1f33; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M30 58h80l-8 58H38z' fill='%23e2412f'/%3E%3Cpath d='M48 58c0-18 10-28 22-28s22 10 22 28' stroke='%231c1f33' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='54' cy='52' r='14' fill='%23f5c63c'/%3E%3Cpath d='M80 30c10-6 22-4 28 2-8 8-20 10-28-2z' fill='%237cbf5a'/%3E%3Cpath d='M88 36l-6 22' stroke='%237cbf5a' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E"); }
+
 /* Bandeau de titre : une petite affiche par page, fruits à droite */
 .topbar:has(h1) { flex-wrap: wrap; align-content: space-between; align-items: flex-start; row-gap: 14px; min-height: 150px; padding: 16px 18px 18px; border-radius: 30px; background: var(--page) var(--page-art) no-repeat right -14px bottom -10px / 132px 132px; color: var(--on-page); }
 .topbar:has(h1) > h1, .topbar:has(h1) > .grow { flex: 1 1 100%; order: 2; padding-right: 104px; }
@@ -341,12 +344,16 @@ label.row:has(> input[type='checkbox']) { min-height: 44px; cursor: pointer; }
 .app[data-section='alimentation'] { --page-bg: #fff0b8; }
 .app[data-section='sport'] { --page-bg: #fcdbe7; }
 .app[data-section='progression'] { --page-bg: #dcf0dc; }
+.app[data-section='batch'] { --page-bg: #fde3cc; }
+.app[data-section='courses'] { --page-bg: #ece4fb; }
 .app[data-page='reglages'] { --page-bg: #dfe6fb; }
 .app { background: var(--page-bg, var(--bg)); }
 body:has(.app[data-section='calendrier']) { background: #fde3db; }
 body:has(.app[data-section='alimentation']) { background: #fff0b8; }
 body:has(.app[data-section='sport']) { background: #fcdbe7; }
 body:has(.app[data-section='progression']) { background: #dcf0dc; }
+body:has(.app[data-section='batch']) { background: #fde3cc; }
+body:has(.app[data-section='courses']) { background: #ece4fb; }
 body:has(.app[data-page='reglages']) { background: #dfe6fb; }
 /* Sur fond coloré : onglets et repas en blanc translucide plutôt qu'en beige */
 .app[data-page]:not([data-page='aujourdhui']) .seg { background: rgba(255, 250, 242, 0.6); }

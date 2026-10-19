@@ -39,7 +39,6 @@ export function ShoppingPage({ route }: { route: Route }) {
   return (
     <div className="page">
       <div className="topbar">
-        <button className="icon-btn" onClick={() => history.back()} aria-label="Retour"><Icon name="back" /></button>
         <div className="grow">
           <h1>Mes courses</h1>
           <div className="sub">Semaine du {formatDayMonth(monday)} au {formatDayMonth(addDays(monday, 6))}</div>
