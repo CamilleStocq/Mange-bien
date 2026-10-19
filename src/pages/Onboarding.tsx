@@ -35,7 +35,7 @@ export function Onboarding() {
       <Btn onClick={() => next(confirmKey)}>{label}</Btn>
     </div>
   );
-  const wrap = (title: string, body: ReactNode, footer: ReactNode) => (
+  const wrap = (title: ReactNode, body: ReactNode, footer: ReactNode) => (
     <div className="page">
       <div className="onb-dots" aria-label={`Étape ${step + 1} sur ${STEPS.length}`}>{STEPS.map((s, i) => <span key={s} className={i === step ? 'on' : ''} />)}</div>
       <div className="row">
@@ -50,7 +50,7 @@ export function Onboarding() {
 
   switch (step) {
     case 0:
-      return wrap('Bienvenue dans Mange bien !', (<>
+      return wrap(<span className="highlight-title" aria-label="Bienvenue dans Mange bien !"><span className="hl hl-1">Bienvenue</span> <span className="hl hl-2">dans</span> <span className="hl hl-3">Mange</span> <span className="hl hl-4">bien&nbsp;!</span></span>, (<>
         <FruitArt className="welcome-art" />
         <Card tint="sage">
           <p>Ton application pour savoir chaque jour quoi manger, quoi préparer le dimanche, quoi acheter et où tu en es — à ton rythme, sans pression.</p>

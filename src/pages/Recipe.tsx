@@ -55,11 +55,11 @@ export function RecipePage({ id }: { id: string }) {
           </div>
         </Card>
       )}
-      <div className="grid3">
-        <Card className="tint-sage"><span className="tiny muted">Préparation</span><strong>{r.prepMin} min</strong></Card>
-        <Card className="tint-sage"><span className="tiny muted">Cuisson</span><strong>{r.cookMin} min</strong></Card>
-        <Card className="tint-sage"><span className="tiny muted">Coût / portion</span><strong>≈ {formatEuro(cost.perPortion)}</strong></Card>
-      </div>
+      <dl className="stat-table">
+        <div><dt>Préparation</dt><dd>{r.prepMin} min</dd></div>
+        <div><dt>Cuisson</dt><dd>{r.cookMin} min</dd></div>
+        <div><dt>Coût / portion</dt><dd>≈ {formatEuro(cost.perPortion)}</dd></div>
+      </dl>
       <Card>
         <CardHead icon="list" title="Ingrédients" right={<Stepper label="Portions" value={portions} min={1} max={20} onChange={setPortions} />} />
         <p className="tiny muted">Pour {portions} portion{portions > 1 ? 's' : ''} (recette de base : {r.servings}).</p>
@@ -106,7 +106,7 @@ export function RecipePage({ id }: { id: string }) {
       </Card>
       <div className="grid2">
         <Btn variant="secondary" onClick={() => { const copy: Recipe = { ...structuredClone(r), id: randomId(), name: `${r.name} (copie)`, photo: undefined }; mutate((d) => { d.recipes.push(copy); }); go(`/recette/${copy.id}/modifier`); }}>Dupliquer</Btn>
-        <Btn variant="danger" icon="trash" onClick={() => deleteRecipe(r)}>Supprimer</Btn>
+        <Btn variant="danger" icon="trash" onClick={() => deleteRecipe(r)}>Supprimer la recette</Btn>
       </div>
       {planning && <PlanSheet recipe={r} onClose={() => setPlanning(false)} />}
     </div>

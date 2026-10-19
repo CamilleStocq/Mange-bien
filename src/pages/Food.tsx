@@ -8,7 +8,7 @@ import { buildBatchPlan } from '../lib/batch';
 import { formatEuro, ingredientKey, recipeCost } from '../lib/units';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
-import { Btn, Card, CardHead, Empty, Icon, NumberField, Provisional, Seg, Stepper, confirmAsk, toast, SubmitBtn } from '../components/ui';
+import { Btn, Card, CardHead, Empty, Icon, NumberField, Seg, Stepper, confirmAsk, toast, SubmitBtn } from '../components/ui';
 import { MealCard } from '../components/meals';
 
 type Tab = 'planning' | 'recettes' | 'stock';
@@ -133,19 +133,20 @@ function RecipeList() {
       <Card>
         {cat !== 'all' && <h2>{CAT_LABEL[cat]}</h2>}
         <div className="list">
-          {recipes.map((r) => {
+          {recipes.map((r, idx) => {
             const c = recipeCost(r, data.ingredients);
             return (
-              <a key={r.id} className="link-row" href={`#/recette/${r.id}`}>
+              <a key={r.id} className={`recipe-card tone-${idx % 4}`} href={`#/recette/${r.id}`}>
                 <RecipeThumb id={r.id} has={!!r.photo} />
-                <div className="grow">
-                  <div className="strong">{r.name}</div>
-                  <div className="tiny muted">
-                    {r.servings} portions · {r.prepMin + r.cookMin} min · ≈ {formatEuro(c.perPortion)}/portion · {r.batchMode === 'full' ? 'batch' : 'jour même'}
+                <div className="grow col" style={{ gap: 6 }}>
+                  <div className="recipe-card-title">{r.name}</div>
+                  <div className="tiny muted">{r.servings} portions{r.provisional ? ' · quantités provisoires' : ''}</div>
+                  <div className="row wrap" style={{ gap: 6 }}>
+                    <span className="chip lilac"><Icon name="clock" size={14} />{r.prepMin + r.cookMin} min</span>
+                    <span className="chip warn"><Icon name="euro" size={14} />≈ {formatEuro(c.perPortion)}</span>
+                    <span className={`chip ${r.batchMode === 'full' ? 'peach' : 'sage'}`}>{r.batchMode === 'full' ? 'batch' : 'jour même'}</span>
                   </div>
-                  <Provisional show={r.provisional} />
                 </div>
-                <Icon name="chevron" size={18} />
               </a>
             );
           })}

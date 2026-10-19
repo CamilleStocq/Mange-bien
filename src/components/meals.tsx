@@ -94,7 +94,7 @@ export function MealCard({ m, expanded: initial = false }: { m: MealEntry; expan
   const title = mealTitle(m, data);
   const done = m.status === 'mangé';
   return (
-    <div className={`meal status-${m.status}`}>
+    <div className={`meal slot-${m.slot} status-${m.status}`}>
       <div className="meal-body">
         <div className="meal-head">
           <span className="meal-time">{formatHHMM(mealTime(m, data))}</span>

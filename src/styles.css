@@ -351,3 +351,85 @@ body:has(.app[data-page='reglages']) { background: #dfe6fb; }
 /* Sur fond coloré : onglets et repas en blanc translucide plutôt qu'en beige */
 .app[data-page]:not([data-page='aujourdhui']) .seg { background: rgba(255, 250, 242, 0.6); }
 .app[data-page]:not([data-page='aujourdhui']) .meal { background: color-mix(in srgb, var(--page-bg, var(--bg)) 55%, #fffaf2); }
+
+/* ================= Style « imprimé » (références Earlybird + app de recettes) =================
+   Filets d'encre fins à la place des ombres, cartes papier cernées, pastels codés par type d'info. */
+:root { --ink: #1c1f33; --rule: 1.5px solid var(--ink); --lilac: #ddd2f7; --lime: #e6f2bf; --peach: #fbd2b8; }
+
+/* Cartes papier : cernées d'encre, sans ombre ; les aplats colorés restent sans contour */
+.card { border: var(--rule); box-shadow: none; border-radius: 22px; }
+.card[class*='tint-'] { border: 0; }
+.list-item, .link-row { border-bottom-color: color-mix(in srgb, var(--ink) 22%, transparent); }
+table.simple td, table.simple th { border-bottom: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); }
+.divider { background: var(--ink); opacity: 0.2; }
+
+/* Bouton principal : pilule encre avec flèche ; secondaire : cerné d'encre */
+.btn:not(.secondary):not(.ghost):not(.danger):not(.destructive) { background: var(--ink); color: #fffaf2; }
+.btn:not(.secondary):not(.ghost):not(.danger):not(.destructive):not(.small):not(:has(svg))::after { content: '→'; font-weight: 600; margin-left: 2px; }
+.btn.secondary { box-shadow: inset 0 0 0 1.5px var(--ink); background: #fffaf2; color: var(--ink); }
+.btn.ghost { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ink) 45%, transparent); }
+
+/* Champs et sélecteurs encadrés comme un bon de commande */
+.input, select.input, textarea.input { border: 1.5px solid var(--ink); border-radius: 12px; background: #fffaf2; }
+.input:focus { border-color: var(--ink); box-shadow: 0 0 0 4px var(--lemon); }
+.seg { border: var(--rule); background: #fffaf2; }
+.app[data-page]:not([data-page='aujourdhui']) .seg { background: #fffaf2; }
+.stepper { background: #fffaf2; border: var(--rule); border-radius: 12px; overflow: hidden; }
+.stepper button { border-radius: 0; }
+.stepper span { align-self: stretch; display: grid; place-items: center; border-inline: var(--rule); min-width: 44px; }
+.icon-btn { box-shadow: inset 0 0 0 1.5px var(--ink); background: #fffaf2; }
+.icon-btn.plain { box-shadow: none; background: transparent; }
+
+/* Pastilles colorées par type d'info (durée lilas, coût citron, batch orange) */
+.chip { gap: 5px; padding: 4px 10px; color: var(--ink); }
+.chip.lilac { background: var(--lilac); }
+.chip.warn { background: var(--lemon); color: var(--ink); }
+.chip.peach { background: #f9b787; }
+.chip.sage { background: #bfe3c6; }
+.chip.rose { background: #f7bfd3; }
+.chip.sky { background: #c9d4fa; }
+
+/* Repas : une couleur par moment de la journée */
+.meal { border-radius: 18px; }
+.meal.slot-breakfast { background: #fff0b0; }
+.meal.slot-lunch { background: var(--lilac); }
+.meal.slot-dinner { background: var(--peach); }
+.meal.slot-snack { background: var(--lime); }
+.app[data-page]:not([data-page='aujourdhui']) .meal.slot-breakfast { background: #fff0b0; }
+.app[data-page]:not([data-page='aujourdhui']) .meal.slot-lunch { background: var(--lilac); }
+.app[data-page]:not([data-page='aujourdhui']) .meal.slot-dinner { background: var(--peach); }
+.app[data-page]:not([data-page='aujourdhui']) .meal.slot-snack { background: var(--lime); }
+.meal-time { background: var(--ink); color: #fffaf2; }
+.meal-actions .btn.ghost, .meal-actions .btn.secondary { background: #fffaf2; box-shadow: none; }
+
+/* Cartes recettes pastel, vignette ronde qui déborde à gauche */
+.recipe-card { display: flex; gap: 14px; align-items: center; padding: 14px 14px 14px 0; border-radius: 22px; text-decoration: none; color: var(--ink); margin-left: 26px; position: relative; min-height: 104px; transition: transform 0.15s var(--ease); }
+.recipe-card + .recipe-card { margin-top: 12px; }
+.recipe-card:active { transform: scale(0.98); }
+.recipe-card .thumb { width: 84px; height: 84px; border-radius: 50%; margin-left: -26px; border: var(--rule); background: #fffaf2; }
+.recipe-card-title { font-family: var(--font-display); font-weight: 800; font-size: 1.12rem; line-height: 1.2; letter-spacing: -0.015em; }
+.recipe-card.tone-0 { background: #cfe0fb; }
+.recipe-card.tone-1 { background: var(--peach); }
+.recipe-card.tone-2 { background: var(--lime); }
+.recipe-card.tone-3 { background: #f9cfe0; }
+.card:has(> .list > .recipe-card) { background: transparent; border: 0; padding: 0; }
+
+/* Fiche recette : chiffres dans un tableau à filets d'encre */
+.stat-table { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border: var(--rule); border-radius: 14px; overflow: hidden; background: #fffaf2; }
+.stat-table > div { padding: 10px 12px; }
+.stat-table > div + div { border-left: var(--rule); }
+.stat-table dt { font-size: 0.8rem; color: var(--text-2); }
+.stat-table dd { margin: 4px 0 0; font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+
+/* Étapes numérotées dans des disques noirs */
+.steps-list { list-style: none; padding: 0; counter-reset: step; gap: 14px; }
+.steps-list li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; }
+.steps-list li::before { content: counter(step); width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: #fffaf2; display: grid; place-items: center; font-weight: 600; font-size: 0.9rem; }
+
+/* Titre d'accueil : chaque mot surligné d'une pastille de couleur */
+.highlight-title { display: inline-flex; flex-wrap: wrap; gap: 6px 4px; }
+.hl { padding: 0 12px 4px; border-radius: 999px; line-height: 1.15; }
+.hl-1 { background: #c9d4fa; }
+.hl-2 { background: var(--lilac); }
+.hl-3 { background: var(--lemon); }
+.hl-4 { background: #f7bfd3; }
