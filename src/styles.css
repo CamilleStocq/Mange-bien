@@ -447,6 +447,39 @@ table.simple td, table.simple th { border-bottom: 1px solid color-mix(in srgb, v
 .chip[aria-pressed] { min-height: 44px; padding: 0 16px; border: 0; cursor: pointer; font: inherit; font-weight: 600; font-size: 0.9rem; }
 .chip[aria-pressed='true'] { background: var(--ink); color: #fffaf0; }
 
+/* ================= Liste de courses, pensée pour le magasin ================= */
+.shop-budget { position: sticky; top: 0; z-index: 5; background: var(--surface); border: 1.5px solid var(--ink); border-radius: 18px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
+.shop-remaining { font-size: 1rem; }
+.shop-remaining strong { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.shop-remaining.over strong { color: var(--danger); }
+.shop-quick { display: flex; gap: 8px; align-items: center; }
+.shop-quick .input { flex: 1; font-size: 1.05rem; }
+.shop-quick .icon-btn { width: 48px; height: 48px; background: var(--ink); color: #fffaf0; box-shadow: none; }
+.aisle { padding: 0 0 6px; overflow: hidden; gap: 0; }
+.aisle-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--aisle, var(--surface-2)); color: var(--aisle-ink, var(--ink)); }
+.aisle-head h2 { font-size: 1.1rem; color: inherit; }
+.aisle-count { font-weight: 600; font-variant-numeric: tabular-nums; background: rgba(255, 250, 240, 0.85); color: #1d3a29; border-radius: 999px; padding: 2px 10px; font-size: 0.875rem; }
+.aisle .list { padding: 0 14px; }
+.aisle-fruits-legumes { --aisle: #1f5a34; --aisle-ink: #fffaf0; }
+.aisle-proteines { --aisle: #ef5a2f; --aisle-ink: #1d3a29; }
+.aisle-laitiers { --aisle: #f7b32b; --aisle-ink: #1d3a29; }
+.aisle-feculents { --aisle: #fde6b0; --aisle-ink: #1d3a29; }
+.aisle-conserves { --aisle: #e0569b; --aisle-ink: #1d3a29; }
+.aisle-surgeles { --aisle: #d6e6d9; --aisle-ink: #1d3a29; }
+.aisle-epicerie { --aisle: #fbd3c3; --aisle-ink: #1d3a29; }
+.aisle-autres { --aisle: #f7cde0; --aisle-ink: #1d3a29; }
+.shop-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); min-height: 64px; }
+.shop-item:last-child { border-bottom: 0; }
+.shop-item .check { width: 40px; height: 40px; border-width: 2.5px; border-color: var(--ink); }
+.shop-item .check svg { width: 22px; height: 22px; }
+.shop-item .check::before { inset: -6px; }
+.shop-text { flex: 1; min-width: 0; cursor: pointer; }
+.shop-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.shop-qty { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; font-variant-numeric: tabular-nums; min-width: 3.4em; }
+.shop-name { font-size: 1.05rem; }
+.shop-price { font-weight: 600; font-variant-numeric: tabular-nums; }
+.shop-item.done .shop-name, .shop-item.done .shop-qty { text-decoration: line-through; color: var(--text-2); }
+
 /* ================= Section Calendrier : affiche de Pâques (référence Baru) =================
    Fond moutarde plein, panneaux crème très arrondis, découpes en biais (bandes roses, rouge-orangé),
    store vert à longs pans, rayons de soleil, ombres décalées vert sapin, serif gras et rond centré. */

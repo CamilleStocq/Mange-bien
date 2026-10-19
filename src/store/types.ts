@@ -68,6 +68,8 @@ export interface IngredientInfo {
   aisle: Aisle;
   /** Prix estimé, par kg (g), par litre (ml) ou par pièce */
   price?: number;
+  /** Format vendu en magasin (ex. 500 g, 1 000 ml, 12 pièces) : on achète un nombre entier de formats */
+  pack?: { qty: number; unit: Unit };
   /** Repères nutritionnels approximatifs pour 100 g / 100 ml / 1 pièce */
   kcal?: number;
   protein?: number;

@@ -6,23 +6,29 @@ import { budgetSuggestions, buildShoppingList } from '../lib/shopping';
 import { AISLE_LABEL, AISLE_ORDER, formatEuro, formatQty, STATE_LABEL, ingredientKey } from '../lib/units';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
-import { Btn, Card, CardHead, Check, Empty, Icon, NumberField, Progress, Toggle, toast, SubmitBtn } from '../components/ui';
+import { Btn, Card, CardHead, Check, Empty, Icon, NumberField, Progress, Seg, Toggle, toast } from '../components/ui';
+
+/** Budget de référence quand aucun budget n'est saisi dans Réglages. */
+const DEFAULT_BUDGET = 120;
+
+/** Icône de chaque rayon, pour les repérer d'un coup d'œil en magasin. */
+const AISLE_ICON: Record<Aisle, string> = {
+  'fruits-legumes': 'leaf', proteines: 'food', laitiers: 'drop', feculents: 'pot',
+  conserves: 'book', surgeles: 'snow', epicerie: 'sparkle', autres: 'cart'
+};
 
 export function ShoppingPage({ route }: { route: Route }) {
   const data = useData((d) => d);
   const [monday, setMonday] = useState(route.query.get('w') || addDays(weekStart(todayISO()), 7));
   const [pricing, setPricing] = useState(false);
-  const [hideChecked, setHideChecked] = useState(false);
-  const [name, setName] = useState('');
-  const [qty, setQty] = useState('');
-  const [aisle, setAisle] = useState<Aisle>('autres');
+  const [view, setView] = useState<'todo' | 'done' | 'all'>('todo');
+  const [quick, setQuick] = useState('');
+  const [quickHint, setQuickHint] = useState('');
   const list = useMemo(() => buildShoppingList(data, monday), [data, monday]);
   const suggestions = useMemo(() => budgetSuggestions(data, list), [data, list]);
   const toBuy = list.items.filter((i) => i.needed > 0);
   const inStock = list.items.filter((i) => i.needed <= 0);
   const checkedCount = toBuy.filter((i) => i.checked).length + list.manual.filter((m) => data.weeks[monday]?.shoppingChecks[m.id]).length;
-  const over = !!list.budget && list.estimated > list.budget;
-  const real = list.realTotal ?? (list.realSum || undefined);
 
   const setCheck = (key: string, v: boolean) => mutate((d) => { ensureWeek(d, monday).shoppingChecks[key] = v; });
 
@@ -36,33 +42,62 @@ export function ShoppingPage({ route }: { route: Route }) {
     toast('Remplacement appliqué : liste et batch recalculés');
   };
 
+  const budget = list.budget ?? DEFAULT_BUDGET;
+  const checkedOf = (key: string) => !!data.weeks[monday]?.shoppingChecks[key];
+  /** Dépensé : articles cochés, au prix réel s'il a été saisi, sinon au prix estimé */
+  const inCart = toBuy.filter((i) => i.checked).reduce((sum, i) => sum + (i.realPrice ?? i.estCost ?? 0), 0);
+  const remaining = budget - list.estimated;
+  const total = toBuy.length + list.manual.length;
+  const toggle = (key: string, name: string, v: boolean) => {
+    setCheck(key, v);
+    if (v && view === 'todo') toast(`${name} : dans le panier`);
+  };
+  const quickAdd = () => {
+    const raw = quick.trim();
+    if (!raw) return setQuickHint('Écris un article, par exemple « 2 citrons ».');
+    const m = raw.match(/^(\d+(?:[.,]\d+)?\s*(?:kg|g|ml|cl|l|x|pc|pièces?)?)\s+(.+)$/i);
+    const itemName = (m ? m[2] : raw).trim();
+    const itemQty = m ? m[1].trim() : '';
+    const k = ingredientKey(itemName);
+    const known = data.ingredients[k] ?? data.ingredients[k.replace(/s$/, '')];
+    mutate((d) => { ensureWeek(d, monday).manualItems.push({ id: `manual:${randomId()}`, name: itemName, qty: itemQty, aisle: known?.aisle ?? 'autres' }); });
+    setQuick('');
+    setQuickHint('');
+    toast(`${itemName} ajouté${known ? ` (${AISLE_LABEL[known.aisle]})` : ''}`);
+  };
+
   return (
-    <div className="page">
+    <div className="page shop">
       <div className="topbar">
         <div className="grow">
           <h1>Mes courses</h1>
           <div className="sub">Semaine du {formatDayMonth(monday)} au {formatDayMonth(addDays(monday, 6))}</div>
         </div>
       </div>
+
+      <div className="shop-budget" role="status" aria-live="polite">
+        <div className="row between">
+          <span className={`shop-remaining ${inCart > budget ? 'over' : ''}`}>
+            Dépensé <strong>{formatEuro(inCart)}</strong>
+            <span className="muted"> sur {formatEuro(budget)}</span>
+          </span>
+          <span className="small muted nowrap">{checkedCount}/{total} au panier</span>
+        </div>
+        <Progress value={inCart} max={budget} tone={inCart > budget ? 'over' : undefined} />
+        <div className="tiny muted">Liste complète ≈ {formatEuro(list.estimated)}{remaining < 0 ? ` (${formatEuro(-remaining)} au-dessus du budget)` : ''}{list.budget == null ? ' · budget indicatif, modifiable dans Réglages' : ''}</div>
+      </div>
+
+      <form className="shop-quick" onSubmit={(e) => { e.preventDefault(); quickAdd(); }}>
+        <label className="sr-only" htmlFor="shop-quick">Ajouter un article</label>
+        <input id="shop-quick" className="input" placeholder="Ajouter : ex. 2 citrons" value={quick} onChange={(e) => { setQuick(e.target.value); setQuickHint(''); }} enterKeyHint="done" autoComplete="off" />
+        <button type="submit" className="icon-btn" aria-label="Ajouter l’article"><Icon name="plus" /></button>
+      </form>
+      {quickHint && <p className="field-hint" role="alert">{quickHint}</p>}
+
       <div className="row between">
         <Btn small variant="ghost" icon="left" onClick={() => setMonday(addDays(monday, -7))}>Précédente</Btn>
         <Btn small variant="ghost" onClick={() => setMonday(addDays(monday, 7))}>Suivante<Icon name="right" size={18} /></Btn>
       </div>
-
-      <Card tint={over ? 'warn' : 'sage'}>
-        <div className="row between">
-          <span>Estimation</span>
-          <strong>{formatEuro(list.estimated)}{list.budget ? ` / ${formatEuro(list.budget)}` : ''}</strong>
-        </div>
-        {!!list.budget && <Progress value={list.estimated} max={list.budget} tone={over ? 'over' : undefined} />}
-        <p className="tiny muted">
-          Prix indicatifs saisis dans l’application (pas des prix de marché vérifiés), proportionnels aux quantités utilisées.
-          {list.missingPrices > 0 && ` ${list.missingPrices} article(s) sans prix.`} <a href="#/reglages/ingredients">Modifier les prix</a>
-        </p>
-        {real != null && (
-          <div className="row between"><span>Dépense réelle</span><strong>{formatEuro(real)}</strong></div>
-        )}
-      </Card>
 
       {suggestions.length > 0 && (
         <Card tint="peach">
@@ -76,73 +111,78 @@ export function ShoppingPage({ route }: { route: Route }) {
         </Card>
       )}
 
-      {toBuy.length + list.manual.length === 0 ? (
+      {total === 0 ? (
         <Card><Empty icon="cart"><p>Rien à acheter pour cette semaine.</p><a className="btn secondary" href={`#/alimentation?w=${monday}`}>Voir le planning</a></Empty></Card>
       ) : (
         <>
-          <div className="row between">
-            <span className="small strong">{checkedCount} / {toBuy.length + list.manual.length} dans le panier</span>
-            <div className="row small">Masquer les cochés <Toggle label="Masquer les articles cochés" checked={hideChecked} onChange={setHideChecked} /></div>
-          </div>
-          <div className="row between">
-            <span className="small">Saisir les prix réels</span>
-            <Toggle label="Saisir les prix réels" checked={pricing} onChange={setPricing} />
-          </div>
+          <Seg label="Afficher" value={view} onChange={setView} options={[
+            { value: 'todo', label: `À acheter (${total - checkedCount})` },
+            { value: 'done', label: `Dans le panier (${checkedCount})` },
+            { value: 'all', label: 'Tout' }
+          ]} />
+          {view === 'todo' && checkedCount === total && (
+            <Card tint="sage"><p><strong>Tout est dans le panier.</strong> Bonnes courses !</p></Card>
+          )}
           {AISLE_ORDER.map((a) => {
-            const items = toBuy.filter((i) => i.aisle === a && !(hideChecked && i.checked));
-            const manual = list.manual.filter((m) => m.aisle === a && !(hideChecked && data.weeks[monday]?.shoppingChecks[m.id]));
+            const keep = (checked: boolean) => view === 'all' || (view === 'done' ? checked : !checked);
+            const items = toBuy.filter((i) => i.aisle === a && keep(i.checked));
+            const manual = list.manual.filter((m) => m.aisle === a && keep(checkedOf(m.id)));
             if (!items.length && !manual.length) return null;
+            const all = toBuy.filter((i) => i.aisle === a).length + list.manual.filter((m) => m.aisle === a).length;
+            const done = toBuy.filter((i) => i.aisle === a && i.checked).length + list.manual.filter((m) => m.aisle === a && checkedOf(m.id)).length;
             return (
-              <Card key={a}>
-                <h2>{AISLE_LABEL[a]}</h2>
+              <section key={a} className={`card aisle aisle-${a}`} aria-label={AISLE_LABEL[a]}>
+                <div className="aisle-head">
+                  <Icon name={AISLE_ICON[a]} />
+                  <h2 className="grow">{AISLE_LABEL[a]}</h2>
+                  <span className="aisle-count">{done}/{all}</span>
+                </div>
                 <div className="list">
                   {items.map((i) => (
-                    <div key={i.key} className={`list-item ${i.checked ? 'done' : ''}`} style={{ flexWrap: 'wrap' }}>
-                      <Check checked={i.checked} onChange={(v) => setCheck(i.key, v)} label={i.name} />
-                      <div className="grow li-text" style={{ minWidth: 120 }}>
-                        <div><strong>{formatQty(i.buy, i.unit, data.liquidDisplay)}</strong> {i.name}</div>
+                    <div key={i.key} className={`shop-item ${i.checked ? 'done' : ''}`}>
+                      <Check checked={i.checked} onChange={(v) => toggle(i.key, i.name, v)} label={`${i.name}, ${formatQty(i.buy, i.unit, data.liquidDisplay)}`} />
+                      <div className="shop-text" onClick={() => !pricing && toggle(i.key, i.name, !i.checked)}>
+                        <div className="shop-line"><span className="shop-qty">{i.packs && i.packs > 1 ? `${i.packs} × ${formatQty(i.packQty!, i.unit, data.liquidDisplay)}` : formatQty(i.buy, i.unit, data.liquidDisplay)}</span><span className="shop-name">{i.name}</span></div>
                         <div className="tiny muted">
-                          {i.states.length > 0 && `${i.states.map((s) => STATE_LABEL[s]).join(' / ')} · `}
+                          {i.packs != null && Math.abs(i.buy - i.needed) > 0.01 && `besoin : ${formatQty(i.needed, i.unit, data.liquidDisplay)} · `}
+                          {i.states.length > 0 && `${i.states.map((st) => STATE_LABEL[st]).join(' / ')} · `}
                           {typeof i.owned === 'number' && i.owned > 0 && `déjà ${formatQty(i.owned, i.unit)} en stock · `}
                           {i.usedIn.join(', ')}
                         </div>
                       </div>
                       {pricing ? (
                         <div style={{ width: 110 }}>
-                          <NumberField value={i.realPrice} min={0} suffix="€" placeholder={i.estCost != null ? i.estCost.toFixed(2) : ''} onChange={(v) => mutate((d) => { const w = ensureWeek(d, monday); if (v == null) delete w.realPrices[i.key]; else w.realPrices[i.key] = v; })} />
+                          <NumberField ariaLabel={`Prix réel : ${i.name}`} value={i.realPrice} min={0} suffix="€" placeholder={i.estCost != null ? i.estCost.toFixed(2) : ''} onChange={(v) => mutate((d) => { const w = ensureWeek(d, monday); if (v == null) delete w.realPrices[i.key]; else w.realPrices[i.key] = v; })} />
                         </div>
                       ) : (
-                        <span className="small muted nowrap">{i.estCost != null ? `≈ ${formatEuro(i.estCost)}` : '—'}</span>
+                        <span className="shop-price nowrap">{i.estCost != null ? formatEuro(i.estCost) : ''}</span>
                       )}
                     </div>
                   ))}
                   {manual.map((m) => (
-                    <div key={m.id} className={`list-item ${data.weeks[monday]?.shoppingChecks[m.id] ? 'done' : ''}`}>
-                      <Check checked={!!data.weeks[monday]?.shoppingChecks[m.id]} onChange={(v) => setCheck(m.id, v)} label={m.name} />
-                      <div className="grow li-text">{m.qty && <strong>{m.qty} </strong>}{m.name} <span className="chip">ajouté</span></div>
+                    <div key={m.id} className={`shop-item ${checkedOf(m.id) ? 'done' : ''}`}>
+                      <Check checked={checkedOf(m.id)} onChange={(v) => toggle(m.id, m.name, v)} label={m.qty ? `${m.name}, ${m.qty}` : m.name} />
+                      <div className="shop-text" onClick={() => toggle(m.id, m.name, !checkedOf(m.id))}>
+                        <div className="shop-line">{m.qty && <span className="shop-qty">{m.qty}</span>}<span className="shop-name">{m.name}</span></div>
+                        <div className="tiny muted">ajouté à la main</div>
+                      </div>
                       <button className="icon-btn plain" aria-label={`Retirer ${m.name}`} onClick={() => mutate((d) => { const w = ensureWeek(d, monday); w.manualItems = w.manualItems.filter((x) => x.id !== m.id); })}><Icon name="trash" size={18} /></button>
                     </div>
                   ))}
                 </div>
-              </Card>
+              </section>
             );
           })}
+          <div className="row between">
+            <span className="small">Saisir les prix réels au fil des courses</span>
+            <Toggle label="Saisir les prix réels" checked={pricing} onChange={setPricing} />
+          </div>
+          <p className="tiny muted">
+            Prix Colruyt des formats achetés (ce que tu paies en caisse, hors promotions).
+            {list.missingPrices > 0 && ` ${list.missingPrices} article(s) sans prix.`} <a href="#/reglages/ingredients">Modifier les prix</a>
+          </p>
         </>
       )}
-
-      <Card>
-        <CardHead icon="plus" title="Ajouter un article" />
-        <div className="row" style={{ alignItems: 'flex-end' }}>
-          <label className="field grow">Article<input className="input" placeholder="ex. liquide vaisselle" value={name} onChange={(e) => setName(e.target.value)} /></label>
-          <label className="field" style={{ width: 96 }}>Quantité<input className="input" placeholder="ex. 2" value={qty} onChange={(e) => setQty(e.target.value)} /></label>
-        </div>
-        <label className="field">Rayon
-          <select className="input" value={aisle} onChange={(e) => setAisle(e.target.value as Aisle)}>
-            {AISLE_ORDER.map((a) => <option key={a} value={a}>{AISLE_LABEL[a]}</option>)}
-          </select>
-        </label>
-        <SubmitBtn variant="secondary" missing={!name.trim() && 'Écris le nom de l’article à ajouter.'} onClick={() => { mutate((d) => { ensureWeek(d, monday).manualItems.push({ id: `manual:${randomId()}`, name: name.trim(), qty: qty.trim(), aisle }); }); setName(''); setQty(''); }}>Ajouter l’article</SubmitBtn>
-      </Card>
 
       {inStock.length > 0 && (
         <Card>

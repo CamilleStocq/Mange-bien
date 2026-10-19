@@ -197,6 +197,10 @@ export function IngredientsPage() {
                 <select className="input sm grow" value={i.aisle} onChange={(e) => setInfo(k, { aisle: e.target.value as Aisle })} aria-label={`Rayon de ${i.name}`}>{AISLE_ORDER.map((a) => <option key={a} value={a}>{AISLE_LABEL[a]}</option>)}</select>
                 <div style={{ width: 130 }}><NumberField value={i.price} min={0} suffix={priceUnitLabel(u)} onChange={(v) => setInfo(k, { price: v })} /></div>
               </div>
+              <div className="row">
+                <span className="small grow">Format en magasin</span>
+                <div style={{ width: 130 }}><NumberField ariaLabel={`Format en magasin de ${i.name}`} value={i.pack?.qty} min={0} suffix={u === 'pièce' ? 'pc' : u} onChange={(v) => setInfo(k, { pack: v ? { qty: v, unit: u } : undefined })} /></div>
+              </div>
               <div className="row tiny muted">
                 <div style={{ width: 120 }}><NumberField value={i.kcal} min={0} suffix={u === 'pièce' ? 'kcal/pc' : 'kcal/100'} onChange={(v) => setInfo(k, { kcal: v })} /></div>
                 <div style={{ width: 120 }}><NumberField value={i.protein} min={0} suffix={u === 'pièce' ? 'g prot/pc' : 'g prot/100'} onChange={(v) => setInfo(k, { protein: v })} /></div>

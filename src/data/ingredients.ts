@@ -1,4 +1,4 @@
-import type { Aisle, IngredientInfo } from '../store/types';
+import type { Aisle, IngredientInfo, Unit } from '../store/types';
 import { ingredientKey } from '../lib/units';
 
 // Catalogue de départ. Prix relevés chez Colruyt le 19/10/2026 (prix en rayon, hors promotions) :
@@ -17,7 +17,7 @@ const ROWS: Row[] = [
   ['crevettes décortiquées', 'surgeles', 19.74, 80, 18],
   ['œuf', 'proteines', 0.17, 75, 6.5],
   ['germes de soja', 'fruits-legumes', 3.9, 30, 3],
-  ['carotte', 'fruits-legumes', 0.72, 40, 1],
+  ['carotte', 'fruits-legumes', 1.09, 40, 1],
   ['oignon nouveau', 'fruits-legumes', 6.6, 30, 2],
   ['cacahuètes', 'epicerie', 3.3, 600, 25],
   ['sauce soja', 'epicerie', 5.94, 60, 8],
@@ -182,10 +182,100 @@ export function refreshDefaultPrices(catalog: Record<string, IngredientInfo>): v
   }
 }
 
+/** Formats vendus chez Colruyt (ceux dont le prix a été relevé) ; légumes en vrac : poids d'une pièce. */
+const PACKS: [name: string, qty: number, unit: Unit][] = [
+  ['yaourt grec', 1000, 'g'],
+  ['fruits (framboises, kiwi, ananas)', 250, 'g'],
+  ['muesli ou granola', 750, 'g'],
+  ['nouilles de riz', 400, 'g'],
+  ['crevettes décortiquées', 500, 'g'],
+  ['œuf', 12, 'pièce'],
+  ['germes de soja', 300, 'g'],
+  ['carotte', 100, 'g'],
+  ['oignon nouveau', 150, 'g'],
+  ['cacahuètes', 500, 'g'],
+  ['sauce soja', 145, 'ml'],
+  ['sauce poisson (nuoc-mâm)', 190, 'ml'],
+  ['citron vert', 1, 'pièce'],
+  ['citron', 1, 'pièce'],
+  ["huile d'olive", 1000, 'ml'],
+  ['haché porc et bœuf', 500, 'g'],
+  ['haché de bœuf', 500, 'g'],
+  ['tomates concassées', 400, 'g'],
+  ['oignon', 2000, 'g'],
+  ['ail', 50, 'g'],
+  ['chapelure', 400, 'g'],
+  ['pommes de terre', 200, 'g'],
+  ['lait demi-écrémé', 1000, 'ml'],
+  ['beurre', 250, 'g'],
+  ['haricots rouges', 250, 'g'],
+  ['poivron', 200, 'g'],
+  ['riz long', 2000, 'g'],
+  ['riz basmati', 2000, 'g'],
+  ['riz rond (paella)', 1000, 'g'],
+  ['épices', 50, 'g'],
+  ['semoule de couscous', 1000, 'g'],
+  ['cuisse de poulet', 650, 'g'],
+  ['blanc de poulet', 1000, 'g'],
+  ['pois chiches', 200, 'g'],
+  ['courgette', 300, 'g'],
+  ['emmental râpé', 200, 'g'],
+  ['salade verte', 300, 'g'],
+  ['feuilles de lasagne', 500, 'g'],
+  ['farine', 1000, 'g'],
+  ['aubergine', 300, 'g'],
+  ['parmesan', 300, 'g'],
+  ['saucisse de Toulouse', 400, 'g'],
+  ['haricots blancs', 400, 'g'],
+  ['lardons', 200, 'g'],
+  ['choucroute crue', 600, 'g'],
+  ['saucisse fumée', 225, 'g'],
+  ['petits pois surgelés', 1500, 'g'],
+  ['bouillon de légumes', 12, 'pièce'],
+  ['jambon', 500, 'g'],
+  ['haddock fumé', 400, 'g'],
+  ['persil', 50, 'g'],
+  ['pavé de saumon', 200, 'g'],
+  ['épinards', 1500, 'g'],
+  ['filet de colin', 1000, 'g'],
+  ['crème légère', 250, 'ml'],
+  ['conchiglioni', 500, 'g'],
+  ['pesto basilic', 190, 'g'],
+  ['mozzarella', 125, 'g'],
+  ['pâtes', 500, 'g'],
+  ['tomates cerises', 500, 'g'],
+  ['roquette', 100, 'g'],
+  ['courge butternut', 1000, 'g'],
+  ['champignons', 500, 'g'],
+  ['lentilles vertes', 1000, 'g'],
+  ['lentilles corail', 500, 'g'],
+  ['fèves surgelées', 750, 'g'],
+  ['pain complet', 600, 'g'],
+  ['pomme', 180, 'g'],
+  ['lait de coco', 400, 'ml'],
+  ['feta', 200, 'g'],
+  ['petites pâtes', 500, 'g'],
+  ['céleri branche', 500, 'g'],
+  ['concombre', 400, 'g'],
+  ['tomates', 120, 'g'],
+  ['olives noires', 400, 'g'],
+  ['oignon rouge', 1000, 'g'],
+  ['laitue romaine', 300, 'g']
+];
+
+/** Ajoute les formats manquants au catalogue (un format modifié à la main est conservé). */
+export function addDefaultPacks(catalog: Record<string, IngredientInfo>): void {
+  for (const [name, qty, unit] of PACKS) {
+    const info = catalog[ingredientKey(name)];
+    if (info && !info.pack) info.pack = { qty, unit };
+  }
+}
+
 export function defaultCatalog(): Record<string, IngredientInfo> {
   const out: Record<string, IngredientInfo> = {};
   for (const [name, aisle, price, kcal, protein] of ROWS) {
     out[ingredientKey(name)] = { name, aisle, price, kcal, protein };
   }
+  addDefaultPacks(out);
   return out;
 }

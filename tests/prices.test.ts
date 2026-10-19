@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createDefaultData, migrate } from '../src/data/defaults';
+import { createDefaultData, DATA_VERSION, migrate } from '../src/data/defaults';
 import { ingredientKey } from '../src/lib/units';
 
 describe('prix Colruyt (données version 2)', () => {
@@ -13,7 +13,17 @@ describe('prix Colruyt (données version 2)', () => {
     const d = migrate(structuredClone(old));
     expect(d.ingredients[pates].price).toBe(0.9);
     expect(d.ingredients[oeuf].price).toBe(0.42);
-    expect(d.version).toBe(2);
+    expect(d.version).toBe(DATA_VERSION);
+  });
+
+  it('ajoute les formats en magasin sans écraser un format modifié', () => {
+    const old = createDefaultData();
+    old.version = 2;
+    for (const info of Object.values(old.ingredients)) delete info.pack;
+    old.ingredients[ingredientKey('beurre')].pack = { qty: 500, unit: 'g' };
+    const d = migrate(structuredClone(old));
+    expect(d.ingredients[ingredientKey('pâtes')].pack).toEqual({ qty: 500, unit: 'g' });
+    expect(d.ingredients[ingredientKey('beurre')].pack).toEqual({ qty: 500, unit: 'g' });
   });
 
   it('ne retouche pas des données déjà en version 2', () => {

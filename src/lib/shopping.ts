@@ -60,8 +60,11 @@ export function aggregateRecipes(portions: Map<string, number>, recipes: Recipe[
 export interface ShoppingItem extends AggLine {
   needed: number; // après déduction du stock
   owned: number | 'all';
-  buy: number; // arrondi pour les pièces
-  estCost?: number;
+  buy: number; // quantité achetée : formats entiers (ou pièces arrondies)
+  /** Nombre de formats à acheter et taille d'un format, si l'ingrédient a un format en magasin */
+  packs?: number;
+  packQty?: number;
+  estCost?: number; // prix payé en magasin pour la quantité achetée
   checked: boolean;
   realPrice?: number;
 }
@@ -99,13 +102,16 @@ export function buildShoppingList(data: AppData, monday: string): ShoppingList {
     const pantry = data.pantry[ingredientKey(line.name)];
     const owned: number | 'all' = pantry?.all ? 'all' : pantry?.qty ?? 0;
     const needed = owned === 'all' ? 0 : Math.max(0, line.qty - owned);
-    const buy = needed > 0 ? purchaseQty(needed, line.unit) : 0;
-    const estCost = needed > 0 ? lineCost(data.ingredients[ingredientKey(line.name)], needed, line.unit) : 0;
+    const info = data.ingredients[ingredientKey(line.name)];
+    const pack = info?.pack && info.pack.unit === line.unit && info.pack.qty > 0 ? info.pack.qty : undefined;
+    const packs = needed > 0 && pack ? Math.ceil(needed / pack - 1e-9) : undefined;
+    const buy = needed > 0 ? (packs ? packs * pack! : purchaseQty(needed, line.unit)) : 0;
+    const estCost = needed > 0 ? lineCost(info, buy, line.unit) : 0;
     if (needed > 0) {
       if (estCost == null) missingPrices++;
       else estimated += estCost;
     }
-    items.push({ ...line, needed, owned, buy, estCost, checked: !!meta.shoppingChecks[line.key], realPrice: meta.realPrices[line.key] });
+    items.push({ ...line, needed, owned, buy, packs, packQty: pack, estCost, checked: !!meta.shoppingChecks[line.key], realPrice: meta.realPrices[line.key] });
   }
   for (const m of meta.manualItems) if (m.price) estimated += m.price;
   items.sort((a, b) => a.name.localeCompare(b.name, 'fr'));

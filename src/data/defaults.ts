@@ -1,9 +1,9 @@
 import type { ActivityKey, AppData, Authorization, DaySchedule, NotifCategory, NotifRule } from '../store/types';
-import { defaultCatalog, refreshDefaultPrices } from './ingredients';
+import { addDefaultPacks, defaultCatalog, refreshDefaultPrices } from './ingredients';
 import { defaultRecipes } from './recipes';
 import { todayISO } from '../lib/dates';
 
-export const DATA_VERSION = 2;
+export const DATA_VERSION = 3;
 
 export function randomId(): string {
   const a = new Uint8Array(8);
@@ -122,6 +122,14 @@ export function migrate(raw: unknown): AppData {
   if ((d.version ?? 1) < 2 && merged.ingredients) {
     merged.ingredients = structuredClone(merged.ingredients);
     refreshDefaultPrices(merged.ingredients);
+  }
+  // Version 3 : formats vendus en magasin (la liste de courses achète des formats entiers).
+  if ((d.version ?? 1) < 3 && merged.ingredients) {
+    if ((d.version ?? 1) >= 2) merged.ingredients = structuredClone(merged.ingredients);
+    addDefaultPacks(merged.ingredients);
+    // Carottes achetées en vrac (format choisi) : prix du vrac plutôt que du sac de 2 kg, sauf prix saisi à la main.
+    const carrot = merged.ingredients['carotte'];
+    if (carrot?.price === 0.72) carrot.price = 1.09;
   }
   return merged;
 }

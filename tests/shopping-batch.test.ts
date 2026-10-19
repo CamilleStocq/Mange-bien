@@ -34,11 +34,27 @@ describe('liste de courses', () => {
     expect(lines[0].usedIn).toEqual(['Recette test', 'Autre']);
   });
 
-  it('les pièces sont arrondies à l’unité supérieure à l’achat', () => {
+  it('les pièces sont arrondies à l’unité supérieure à l’achat (sans format en magasin)', () => {
+    delete d.ingredients['oeuf'].pack;
     d.meals.push(meal(d, { date: MONDAY, recipeId: 'test-recette' })); // 0,5 œuf
     const eggs = item(lineKey('œuf', 'pièce'))!;
     expect(eggs.qty).toBeCloseTo(0.5);
     expect(eggs.buy).toBe(1);
+  });
+
+  it('on achète des formats entiers et on affiche le prix payé', () => {
+    d.meals.push(meal(d, { date: MONDAY, recipeId: 'test-recette' })); // 0,5 œuf, 120 g de bœuf, 80 g de pâtes
+    const eggs = item(lineKey('œuf', 'pièce'))!;
+    expect(eggs.packs).toBe(1);
+    expect(eggs.buy).toBe(12); // boîte de 12
+    const pasta = item(lineKey('pâtes', 'g'))!;
+    expect(pasta.needed).toBeCloseTo(80);
+    expect(pasta.buy).toBe(500); // paquet de 500 g
+    expect(pasta.estCost).toBeCloseTo(0.45); // 0,90 €/kg × 500 g
+    for (let i = 1; i < 9; i++) d.meals.push(meal(d, { date: addDays(MONDAY, i % 7), slot: 'lunch', recipeId: 'test-recette' }));
+    const beef = item(BEEF)!; // 9 × 120 g = 1 080 g → 3 barquettes de 500 g
+    expect(beef.packs).toBe(3);
+    expect(beef.buy).toBe(1500);
   });
 
   it('supprimer un repas retire ses ingrédients sauf ceux encore utilisés ailleurs', () => {
