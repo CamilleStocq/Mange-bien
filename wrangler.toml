@@ -9,11 +9,11 @@ binding = "ASSETS"
 not_found_handling = "single-page-application"
 run_worker_first = ["/api/*", "/__scheduled"]
 
-# Stockage des abonnements et des rappels. Remplace l'id par celui affiché par :
+# Stockage des abonnements et des rappels (créé avec la commande ci-dessous) :
 #   npx wrangler kv namespace create KV
 [[kv_namespaces]]
 binding = "KV"
-id = "REMPLACE_MOI_PAR_L_ID_KV"
+id = "f9a53ea7730846e8bdf90a4c415f748f"
 
 # Tâche planifiée : chaque minute, envoi des rappels arrivés à échéance.
 [triggers]
