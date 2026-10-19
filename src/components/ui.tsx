@@ -58,18 +58,18 @@ export function FruitArt({ className }: { className?: string }) {
   const rays = Array.from({ length: 8 }, (_, i) => (i * Math.PI) / 4);
   return (
     <svg className={className} viewBox="0 0 200 200" aria-hidden>
-      <path d="M150 128c22-30 44-34 46-34-2 20-14 44-46 34z" fill="#2b7449" />
-      <path d="M151 127 190 98" stroke="#1d5a36" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="112" cy="66" r="54" fill="#f5c63c" />
+      <path d="M150 128c22-30 44-34 46-34-2 20-14 44-46 34z" fill="#1f5a34" />
+      <path d="M151 127 190 98" stroke="#163f25" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="112" cy="66" r="54" fill="#f7b32b" />
       <circle cx="112" cy="66" r="45" fill="#fbe39a" />
       {rays.map((a) => (
-        <path key={a} d={`M112 66 L${112 + 42 * Math.cos(a)} ${66 + 42 * Math.sin(a)}`} stroke="#f5c63c" strokeWidth="4" strokeLinecap="round" />
+        <path key={a} d={`M112 66 L${112 + 42 * Math.cos(a)} ${66 + 42 * Math.sin(a)}`} stroke="#f7b32b" strokeWidth="4" strokeLinecap="round" />
       ))}
-      <circle cx="112" cy="66" r="6" fill="#f5c63c" />
-      <circle cx="66" cy="146" r="40" fill="#e2412f" />
-      <path d="M66 112l6 9 11-3-6 9 9 7-11 1-2 10-7-8-8 6 1-10-10-5 10-3-2-11z" fill="#2b7449" />
-      <circle cx="150" cy="170" r="17" fill="#f2a7c3" />
-      <path d="M150 153c0-8 4-13 9-15" stroke="#2b7449" strokeWidth="3" fill="none" strokeLinecap="round" />
+      <circle cx="112" cy="66" r="6" fill="#f7b32b" />
+      <circle cx="66" cy="146" r="40" fill="#ef5a2f" />
+      <path d="M66 112l6 9 11-3-6 9 9 7-11 1-2 10-7-8-8 6 1-10-10-5 10-3-2-11z" fill="#1f5a34" />
+      <circle cx="150" cy="170" r="17" fill="#e0569b" />
+      <path d="M150 153c0-8 4-13 9-15" stroke="#1f5a34" strokeWidth="3" fill="none" strokeLinecap="round" />
     </svg>
   );
 }

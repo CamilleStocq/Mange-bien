@@ -1,33 +1,33 @@
-/* Mange bien ! — esprit « affiche de marché » : fond crème, encre bleu nuit, bleu cobalt pour agir,
-   aplats de fruits (tomate, citron, rose, feuille, orange brûlé). Titres en Outfit très gras, en minuscules,
+/* Mange bien ! — palette « affiche de Pâques » : moutarde, fuchsia, rouge-orangé, vert sapin sur crème ;
+   texte et filets en vert sapin foncé, aplats sans ombres. Titres en Outfit très gras, en minuscules,
    auto-hébergée (disponible hors ligne) ; texte courant en police système (SF Pro sur iPhone). */
 :root {
   --font-display: 'Outfit Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   /* Surfaces */
-  --bg: #f6efe2;
-  --surface: #fffaf2;
-  --surface-2: #f1e8d8;
-  --text: #1c1f33;
-  --text-2: #585b6b;
-  --line: #e6dccb;
-  --card-border: rgba(28, 31, 51, 0.07);
+  --bg: #f6ecda;
+  --surface: #fffaf0;
+  --surface-2: #efe2c8;
+  --text: #1d3a29;
+  --text-2: #4f6656;
+  --line: #e3d4b6;
+  --card-border: rgba(29, 58, 41, 0.07);
 
   /* Couleurs de marché */
-  --cobalt: #2d4bd2;
-  --cobalt-soft: #dbe2fb;
-  --on-cobalt: #fffaf2;
-  --tomato: #d33a29;
-  --tomato-soft: #fbd6cf;
-  --lemon: #f5c63c;
-  --lemon-soft: #fcebb2;
-  --pink: #c2447a;
-  --pink-soft: #f9d9e5;
-  --leaf: #2b7449;
-  --leaf-soft: #d5ebd9;
-  --terra: #a8491b;
-  --terra-soft: #f9dbc6;
+  --cobalt: #1f5a34;
+  --cobalt-soft: #d6e6d9;
+  --on-cobalt: #fffaf0;
+  --tomato: #ef5a2f;
+  --tomato-soft: #fbd3c3;
+  --lemon: #f7b32b;
+  --lemon-soft: #fde6b0;
+  --pink: #c23c7e;
+  --pink-soft: #f7cde0;
+  --leaf: #1f5a34;
+  --leaf-soft: #d6e6d9;
+  --terra: #c94a1f;
+  --terra-soft: #fbd3c3;
 
   /* Rôles (les noms historiques restent utilisés par les composants) */
   --accent: var(--cobalt);
@@ -42,12 +42,12 @@
   --danger: #b3261b;
   --danger-soft: var(--tomato-soft);
 
-  --hero-bg: #2d4bd2;
-  --on-hero: #fffaf2;
-  --nav-bg: #1c1f33;
-  --on-nav: #f6efe2;
-  --shadow: 0 1px 2px rgba(28, 31, 51, 0.04), 0 6px 20px rgba(28, 31, 51, 0.05);
-  --shadow-sm: 0 1px 2px rgba(28, 31, 51, 0.06);
+  --hero-bg: #1f5a34;
+  --on-hero: #fffaf0;
+  --nav-bg: #1d3a29;
+  --on-nav: #f6ecda;
+  --shadow: 0 1px 2px rgba(29, 58, 41, 0.04), 0 6px 20px rgba(29, 58, 41, 0.05);
+  --shadow-sm: 0 1px 2px rgba(29, 58, 41, 0.06);
   --edge: none;
   --c1: #3a73b0;
   --c2: #c0603a;
@@ -93,19 +93,19 @@ p { margin: 0; }
 
 .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow), var(--edge); padding: 18px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--card-border); }
 /* Aplats vifs par catégorie, comme des affiches : le texte s'adapte à la couleur du fond */
-.card[class*='tint-'] { --fg: #1c1f33; color: var(--fg); border-color: transparent; box-shadow: none; }
-.card.tint-sage { background: #3c9a5f; --fg: #fffaf2; }
-.card.tint-rose { background: #f4a6c0; }
-.card.tint-peach { background: #f39a52; }
-.card.tint-sky { background: #2d4bd2; --fg: #fffaf2; --sky: #f5c63c; }
-.card.tint-warn { background: #f5c63c; }
-.card.tint-danger { background: #e2412f; --fg: #fffaf2; }
+.card[class*='tint-'] { --fg: #1d3a29; color: var(--fg); border-color: transparent; box-shadow: none; }
+.card.tint-sage { background: #1f5a34; --fg: #fffaf0; }
+.card.tint-rose { background: #e0569b; --fg: #fffaf0; }
+.card.tint-peach { background: #ef5a2f; --fg: #fffaf0; }
+.card.tint-sky { background: #1f5a34; --fg: #fffaf0; --sky: #f7b32b; }
+.card.tint-warn { background: #f7b32b; }
+.card.tint-danger { background: #ef5a2f; --fg: #fffaf0; }
 .card[class*='tint-'] .muted, .card[class*='tint-'] .sub { color: color-mix(in srgb, var(--fg) 80%, transparent); }
 .card[class*='tint-'] a:not(.btn) { color: var(--fg); }
 .card[class*='tint-'] .progress { background: color-mix(in srgb, var(--fg) 22%, transparent); }
 .card[class*='tint-'] .progress > div { background: var(--fg); }
 .card[class*='tint-'] .ring circle:first-child { stroke: color-mix(in srgb, var(--fg) 22%, transparent); }
-.card[class*='tint-'] .chip { background: rgba(255, 250, 242, 0.9); color: #1c1f33; }
+.card[class*='tint-'] .chip { background: rgba(255, 250, 242, 0.9); color: #1d3a29; }
 .card[class*='tint-'] .list-item, .card[class*='tint-'] .link-row { border-color: color-mix(in srgb, var(--fg) 25%, transparent); }
 .card[class*='tint-'] .btn.ghost { color: var(--fg); box-shadow: inset 0 0 0 1.5px var(--fg); }
 .card[class*='tint-'] .alert-banner { background: rgba(255, 250, 242, 0.9); }
@@ -116,7 +116,7 @@ a.card { transition: transform 0.15s var(--ease); }
 /* Pastille d'icône : la couleur de la catégorie passe par elle sur les cartes claires */
 .pastille { width: 38px; height: 38px; border-radius: 13px; display: grid; place-items: center; flex: none; background: var(--leaf-soft); color: var(--leaf); }
 .pastille.lg { width: 60px; height: 60px; border-radius: 20px; }
-[class*='tint-'] .pastille { background: #fffaf2; color: #1c1f33; }
+[class*='tint-'] .pastille { background: #fffaf0; color: #1d3a29; }
 
 .muted { color: var(--text-2); }
 .small { font-size: 0.875rem; }
@@ -187,7 +187,7 @@ textarea.input { min-height: 88px; resize: vertical; }
 .meal { display: flex; gap: 12px; padding: 14px 12px; border-radius: 18px; background: var(--bg); align-items: flex-start; }
 .meal .meal-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .meal-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.meal-time { font-size: 0.8rem; font-weight: 600; color: #1c1f33; background: var(--lemon); padding: 2px 10px; border-radius: 999px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.meal-time { font-size: 0.8rem; font-weight: 600; color: #1d3a29; background: var(--lemon); padding: 2px 10px; border-radius: 999px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .meal .meal-name { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; line-height: 1.25; letter-spacing: -0.015em; }
 .meal .meal-name a { color: var(--text); text-decoration: none; }
 .meal.status-mangé { opacity: 0.7; }
@@ -231,7 +231,7 @@ textarea.input { min-height: 88px; resize: vertical; }
 @keyframes toast-in { from { transform: translate(-50%, 12px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
-.toast { position: fixed; left: 50%; bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 16px); transform: translateX(-50%); background: var(--lemon); color: #1c1f33; padding: 11px 20px; border-radius: 999px; font-size: 0.9rem; font-weight: 600; z-index: 60; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); max-width: calc(100vw - 32px); text-align: center; animation: toast-in 0.3s var(--ease); }
+.toast { position: fixed; left: 50%; bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 16px); transform: translateX(-50%); background: var(--lemon); color: #1d3a29; padding: 11px 20px; border-radius: 999px; font-size: 0.9rem; font-weight: 600; z-index: 60; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); max-width: calc(100vw - 32px); text-align: center; animation: toast-in 0.3s var(--ease); }
 
 .week-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
 .week-strip button { border: 0; background: var(--surface); border-radius: 18px; padding: 8px 0; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; min-height: 64px; box-shadow: inset 0 0 0 1px var(--card-border); transition: background-color 0.2s, transform 0.15s var(--ease); }
@@ -266,7 +266,7 @@ textarea.input { min-height: 88px; resize: vertical; }
 .hero .date { font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; line-height: 0.98; letter-spacing: -0.045em; max-width: 64%; }
 .hero .date::after { content: '.'; color: var(--lemon); }
 .hero p { font-size: 1rem; max-width: 62%; }
-.hero .chip { background: var(--on-hero); color: #1c1f33; }
+.hero .chip { background: var(--on-hero); color: #1d3a29; }
 .hero-art { position: absolute; right: -34px; top: 14px; width: 190px; height: auto; pointer-events: none; }
 .cap { display: inline-block; }
 .cap::first-letter { text-transform: uppercase; }
@@ -295,14 +295,14 @@ table.simple th { color: var(--text-2); font-weight: 600; font-size: 0.8rem; }
 .tile > svg { width: 28px; height: 28px; }
 
 /* Couleur et illustration de chaque section (bandeau de titre, onglet actif) */
-.app { --page: #2d4bd2; --on-page: #fffaf2; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Ccircle cx='86' cy='58' r='40' fill='%23f5c63c'/%3E%3Ccircle cx='86' cy='58' r='33' fill='%23fbe39a'/%3E%3Cpath d='M86 58v-31M86 58v31M86 58h-31M86 58h31M86 58l22-22M86 58l-22 22M86 58l22 22M86 58l-22-22' stroke='%23f5c63c' stroke-width='3.5' stroke-linecap='round'/%3E%3Ccircle cx='46' cy='104' r='28' fill='%23e2412f'/%3E%3Cpath d='M46 80l4 7 8-2-4 7 7 5-8 1-1 7-6-6-6 5 1-8-7-3 7-2-2-8z' fill='%232b7449'/%3E%3C/svg%3E"); }
-.app[data-section='calendrier'] { --page: #e2412f; --on-page: #fffaf2; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M92 112c20-26 40-30 42-30-2 18-13 40-42 30z' fill='%232b7449'/%3E%3Ccircle cx='70' cy='66' r='46' fill='%23f39a52'/%3E%3Ccircle cx='70' cy='66' r='38' fill='%23fcc58f'/%3E%3Cpath d='M70 66v-35M70 66v35M70 66h-35M70 66h35M70 66l25-25M70 66l-25 25M70 66l25 25M70 66l-25-25' stroke='%23f39a52' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"); }
-.app[data-section='alimentation'] { --page: #f5c63c; --on-page: #1c1f33; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M104 30c-3-8 0-14 6-18' stroke='%235b3a1e' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M106 30c-13 0-16 16-17 26-1 10-14 18-14 36 0 18 14 30 31 30s31-12 31-30c0-18-13-26-14-36-1-10-4-26-17-26z' fill='%237cbf5a'/%3E%3Ccircle cx='54' cy='86' r='36' fill='%23e2412f'/%3E%3Cpath d='M54 56l5 8 10-3-5 8 8 6-10 1-1 9-7-7-7 6 1-9-9-4 9-3-2-10z' fill='%232b7449'/%3E%3C/svg%3E"); }
-.app[data-section='sport'] { --page: #f4a6c0; --on-page: #1c1f33; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M12 58a58 58 0 0 0 116 0z' fill='%232b7449'/%3E%3Cpath d='M22 58a48 48 0 0 0 96 0z' fill='%23fffaf2'/%3E%3Cpath d='M28 58a42 42 0 0 0 84 0z' fill='%23e2412f'/%3E%3Cellipse cx='52' cy='72' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='70' cy='82' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='88' cy='72' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='62' cy='66' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='80' cy='66' rx='3' ry='5' fill='%231c1f33'/%3E%3C/svg%3E"); }
-.app[data-section='progression'] { --page: #3c9a5f; --on-page: #fffaf2; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M70 20c-6 14-26 22-26 40M70 20c6 14 26 22 26 40' stroke='%231d5a36' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M70 20c10-12 26-12 34-6-10 10-24 12-34 6z' fill='%23a6dc8a'/%3E%3Ccircle cx='44' cy='82' r='24' fill='%23f4a6c0'/%3E%3Ccircle cx='96' cy='82' r='24' fill='%23e2412f'/%3E%3Ccircle cx='70' cy='118' r='18' fill='%23f5c63c'/%3E%3C/svg%3E"); }
+.app { --page: #1f5a34; --on-page: #fffaf0; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Ccircle cx='86' cy='58' r='40' fill='%23f7b32b'/%3E%3Ccircle cx='86' cy='58' r='33' fill='%23fbe39a'/%3E%3Cpath d='M86 58v-31M86 58v31M86 58h-31M86 58h31M86 58l22-22M86 58l-22 22M86 58l22 22M86 58l-22-22' stroke='%23f7b32b' stroke-width='3.5' stroke-linecap='round'/%3E%3Ccircle cx='46' cy='104' r='28' fill='%23ef5a2f'/%3E%3Cpath d='M46 80l4 7 8-2-4 7 7 5-8 1-1 7-6-6-6 5 1-8-7-3 7-2-2-8z' fill='%231f5a34'/%3E%3C/svg%3E"); }
+.app[data-section='calendrier'] { --page: #ef5a2f; --on-page: #fffaf0; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M92 112c20-26 40-30 42-30-2 18-13 40-42 30z' fill='%231f5a34'/%3E%3Ccircle cx='70' cy='66' r='46' fill='%23f39a52'/%3E%3Ccircle cx='70' cy='66' r='38' fill='%23fcc58f'/%3E%3Cpath d='M70 66v-35M70 66v35M70 66h-35M70 66h35M70 66l25-25M70 66l-25 25M70 66l25 25M70 66l-25-25' stroke='%23f39a52' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.app[data-section='alimentation'] { --page: #f7b32b; --on-page: #1d3a29; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M104 30c-3-8 0-14 6-18' stroke='%235b3a1e' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M106 30c-13 0-16 16-17 26-1 10-14 18-14 36 0 18 14 30 31 30s31-12 31-30c0-18-13-26-14-36-1-10-4-26-17-26z' fill='%237cbf5a'/%3E%3Ccircle cx='54' cy='86' r='36' fill='%23ef5a2f'/%3E%3Cpath d='M54 56l5 8 10-3-5 8 8 6-10 1-1 9-7-7-7 6 1-9-9-4 9-3-2-10z' fill='%231f5a34'/%3E%3C/svg%3E"); }
+.app[data-section='sport'] { --page: #e0569b; --on-page: #fffaf0; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M12 58a58 58 0 0 0 116 0z' fill='%231f5a34'/%3E%3Cpath d='M22 58a48 48 0 0 0 96 0z' fill='%23fffaf2'/%3E%3Cpath d='M28 58a42 42 0 0 0 84 0z' fill='%23ef5a2f'/%3E%3Cellipse cx='52' cy='72' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='70' cy='82' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='88' cy='72' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='62' cy='66' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='80' cy='66' rx='3' ry='5' fill='%231c1f33'/%3E%3C/svg%3E"); }
+.app[data-section='progression'] { --page: #1f5a34; --on-page: #fffaf0; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M70 20c-6 14-26 22-26 40M70 20c6 14 26 22 26 40' stroke='%231d5a36' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M70 20c10-12 26-12 34-6-10 10-24 12-34 6z' fill='%23a6dc8a'/%3E%3Ccircle cx='44' cy='82' r='24' fill='%23e0569b'/%3E%3Ccircle cx='96' cy='82' r='24' fill='%23ef5a2f'/%3E%3Ccircle cx='70' cy='118' r='18' fill='%23f7b32b'/%3E%3C/svg%3E"); }
 
-.app[data-section='batch'] { --page: #f39a52; --on-page: #1c1f33; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M58 40c0-6 4-10 4-16M78 40c0-6 4-10 4-16' stroke='%23fffaf2' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M22 56h96v34a26 26 0 0 1-26 26H48a26 26 0 0 1-26-26z' fill='%232d4bd2'/%3E%3Cpath d='M12 56h116' stroke='%231c1f33' stroke-width='8' stroke-linecap='round'/%3E%3Ccircle cx='48' cy='86' r='9' fill='%23f5c63c'/%3E%3Ccircle cx='72' cy='94' r='9' fill='%23e2412f'/%3E%3Ccircle cx='94' cy='84' r='9' fill='%237cbf5a'/%3E%3C/svg%3E"); }
-.app[data-section='courses'] { --page: #b9a3ef; --on-page: #1c1f33; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M30 58h80l-8 58H38z' fill='%23e2412f'/%3E%3Cpath d='M48 58c0-18 10-28 22-28s22 10 22 28' stroke='%231c1f33' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='54' cy='52' r='14' fill='%23f5c63c'/%3E%3Cpath d='M80 30c10-6 22-4 28 2-8 8-20 10-28-2z' fill='%237cbf5a'/%3E%3Cpath d='M88 36l-6 22' stroke='%237cbf5a' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.app[data-section='batch'] { --page: #e0569b; --on-page: #fffaf0; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M58 40c0-6 4-10 4-16M78 40c0-6 4-10 4-16' stroke='%23fffaf2' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M22 56h96v34a26 26 0 0 1-26 26H48a26 26 0 0 1-26-26z' fill='%231f5a34'/%3E%3Cpath d='M12 56h116' stroke='%231c1f33' stroke-width='8' stroke-linecap='round'/%3E%3Ccircle cx='48' cy='86' r='9' fill='%23f7b32b'/%3E%3Ccircle cx='72' cy='94' r='9' fill='%23ef5a2f'/%3E%3Ccircle cx='94' cy='84' r='9' fill='%237cbf5a'/%3E%3C/svg%3E"); }
+.app[data-section='courses'] { --page: #ef5a2f; --on-page: #fffaf0; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M30 58h80l-8 58H38z' fill='%231f5a34'/%3E%3Cpath d='M48 58c0-18 10-28 22-28s22 10 22 28' stroke='%231c1f33' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='54' cy='52' r='14' fill='%23f7b32b'/%3E%3Cpath d='M80 30c10-6 22-4 28 2-8 8-20 10-28-2z' fill='%237cbf5a'/%3E%3Cpath d='M88 36l-6 22' stroke='%237cbf5a' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E"); }
 
 /* Bandeau de titre : une petite affiche par page, fruits à droite */
 .topbar:has(h1) { flex-wrap: wrap; align-content: space-between; align-items: flex-start; row-gap: 14px; min-height: 150px; padding: 16px 18px 18px; border-radius: 30px; background: var(--page) var(--page-art) no-repeat right -14px bottom -10px / 132px 132px; color: var(--on-page); }
@@ -311,8 +311,8 @@ table.simple th { color: var(--text-2); font-weight: 600; font-size: 0.8rem; }
 .topbar:has(h1) h1 { font-size: 2.3rem; line-height: 1; }
 .topbar:has(h1) h1::after { color: var(--on-page); }
 .topbar:has(h1) .sub { color: color-mix(in srgb, var(--on-page) 80%, transparent); }
-.topbar:has(h1) .icon-btn { background: #fffaf2; color: #1c1f33; box-shadow: none; }
-.topbar:has(h1) .btn.ghost { background: #fffaf2; color: #1c1f33; box-shadow: none; }
+.topbar:has(h1) .icon-btn { background: #fffaf0; color: #1d3a29; box-shadow: none; }
+.topbar:has(h1) .btn.ghost { background: #fffaf0; color: #1d3a29; box-shadow: none; }
 
 .empty-art { width: 96px; height: 96px; }
 
@@ -337,31 +337,31 @@ label.row:has(> input[type='checkbox']) { min-height: 44px; cursor: pointer; }
 .confirm-backdrop { position: fixed; inset: 0; z-index: 70; background: rgba(19, 22, 42, 0.45); display: grid; place-items: center; padding: 16px; animation: fade 0.2s ease-out; }
 .confirm { width: 100%; max-width: 400px; background: var(--surface); border-radius: 26px; padding: 22px 18px 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 40px rgba(19, 22, 42, 0.2); animation: fade 0.2s ease-out; }
 .confirm h2 { font-size: 1.25rem; line-height: 1.2; }
-.btn.destructive { background: var(--danger); color: #fffaf2; }
+.btn.destructive { background: var(--danger); color: #fffaf0; }
 
 /* Fond de page coloré par section, comme une affiche ; l'accueil garde le papier crème */
 .app[data-section='calendrier'] { --page-bg: #fde3db; }
-.app[data-section='alimentation'] { --page-bg: #fff0b8; }
-.app[data-section='sport'] { --page-bg: #fcdbe7; }
-.app[data-section='progression'] { --page-bg: #dcf0dc; }
-.app[data-section='batch'] { --page-bg: #fde3cc; }
-.app[data-section='courses'] { --page-bg: #ece4fb; }
-.app[data-page='reglages'] { --page-bg: #dfe6fb; }
+.app[data-section='alimentation'] { --page-bg: #fdecc4; }
+.app[data-section='sport'] { --page-bg: #fbe0ec; }
+.app[data-section='progression'] { --page-bg: #e3eedf; }
+.app[data-section='batch'] { --page-bg: #fbe0ec; }
+.app[data-section='courses'] { --page-bg: #fde0d3; }
+.app[data-page='reglages'] { --page-bg: #e3eedf; }
 .app { background: var(--page-bg, var(--bg)); }
 body:has(.app[data-section='calendrier']) { background: #fde3db; }
-body:has(.app[data-section='alimentation']) { background: #fff0b8; }
-body:has(.app[data-section='sport']) { background: #fcdbe7; }
-body:has(.app[data-section='progression']) { background: #dcf0dc; }
-body:has(.app[data-section='batch']) { background: #fde3cc; }
-body:has(.app[data-section='courses']) { background: #ece4fb; }
-body:has(.app[data-page='reglages']) { background: #dfe6fb; }
+body:has(.app[data-section='alimentation']) { background: #fdecc4; }
+body:has(.app[data-section='sport']) { background: #fbe0ec; }
+body:has(.app[data-section='progression']) { background: #e3eedf; }
+body:has(.app[data-section='batch']) { background: #fbe0ec; }
+body:has(.app[data-section='courses']) { background: #fde0d3; }
+body:has(.app[data-page='reglages']) { background: #e3eedf; }
 /* Sur fond coloré : onglets et repas en blanc translucide plutôt qu'en beige */
 .app[data-page]:not([data-page='aujourdhui']) .seg { background: rgba(255, 250, 242, 0.6); }
-.app[data-page]:not([data-page='aujourdhui']) .meal { background: color-mix(in srgb, var(--page-bg, var(--bg)) 55%, #fffaf2); }
+.app[data-page]:not([data-page='aujourdhui']) .meal { background: color-mix(in srgb, var(--page-bg, var(--bg)) 55%, #fffaf0); }
 
 /* ================= Style « imprimé » (références Earlybird + app de recettes) =================
    Filets d'encre fins à la place des ombres, cartes papier cernées, pastels codés par type d'info. */
-:root { --ink: #1c1f33; --rule: 1.5px solid var(--ink); --lilac: #ddd2f7; --lime: #e6f2bf; --peach: #fbd2b8; }
+:root { --ink: #1d3a29; --rule: 1.5px solid var(--ink); --lilac: #f7cde0; --lime: #e3eedf; --peach: #fbd3c3; }
 
 /* Cartes papier : cernées d'encre, sans ombre ; les aplats colorés restent sans contour */
 .card { border: var(--rule); box-shadow: none; border-radius: 22px; }
@@ -371,58 +371,58 @@ table.simple td, table.simple th { border-bottom: 1px solid color-mix(in srgb, v
 .divider { background: var(--ink); opacity: 0.2; }
 
 /* Bouton principal : pilule encre avec flèche ; secondaire : cerné d'encre */
-.btn:not(.secondary):not(.ghost):not(.danger):not(.destructive) { background: var(--ink); color: #fffaf2; }
+.btn:not(.secondary):not(.ghost):not(.danger):not(.destructive) { background: var(--ink); color: #fffaf0; }
 .btn:not(.secondary):not(.ghost):not(.danger):not(.destructive):not(.small):not(:has(svg))::after { content: '→'; font-weight: 600; margin-left: 2px; }
-.btn.secondary { box-shadow: inset 0 0 0 1.5px var(--ink); background: #fffaf2; color: var(--ink); }
+.btn.secondary { box-shadow: inset 0 0 0 1.5px var(--ink); background: #fffaf0; color: var(--ink); }
 .btn.ghost { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ink) 45%, transparent); }
 
 /* Champs et sélecteurs encadrés comme un bon de commande */
-.input, select.input, textarea.input { border: 1.5px solid var(--ink); border-radius: 12px; background: #fffaf2; }
+.input, select.input, textarea.input { border: 1.5px solid var(--ink); border-radius: 12px; background: #fffaf0; }
 .input:focus { border-color: var(--ink); box-shadow: 0 0 0 4px var(--lemon); }
-.seg { border: var(--rule); background: #fffaf2; }
-.app[data-page]:not([data-page='aujourdhui']) .seg { background: #fffaf2; }
-.stepper { background: #fffaf2; border: var(--rule); border-radius: 12px; overflow: hidden; }
+.seg { border: var(--rule); background: #fffaf0; }
+.app[data-page]:not([data-page='aujourdhui']) .seg { background: #fffaf0; }
+.stepper { background: #fffaf0; border: var(--rule); border-radius: 12px; overflow: hidden; }
 .stepper button { border-radius: 0; }
 .stepper span { align-self: stretch; display: grid; place-items: center; border-inline: var(--rule); min-width: 44px; }
-.icon-btn { box-shadow: inset 0 0 0 1.5px var(--ink); background: #fffaf2; }
+.icon-btn { box-shadow: inset 0 0 0 1.5px var(--ink); background: #fffaf0; }
 .icon-btn.plain { box-shadow: none; background: transparent; }
 
 /* Pastilles colorées par type d'info (durée lilas, coût citron, batch orange) */
 .chip { gap: 5px; padding: 4px 10px; color: var(--ink); }
 .chip.lilac { background: var(--lilac); }
 .chip.warn { background: var(--lemon); color: var(--ink); }
-.chip.peach { background: #f9b787; }
-.chip.sage { background: #bfe3c6; }
-.chip.rose { background: #f7bfd3; }
-.chip.sky { background: #c9d4fa; }
+.chip.peach { background: #fbc0a8; }
+.chip.sage { background: #c9e0cd; }
+.chip.rose { background: #f7cde0; }
+.chip.sky { background: #fde6b0; }
 
 /* Repas : une couleur par moment de la journée */
 .meal { border-radius: 18px; }
-.meal.slot-breakfast { background: #fff0b0; }
+.meal.slot-breakfast { background: #fde6b0; }
 .meal.slot-lunch { background: var(--lilac); }
 .meal.slot-dinner { background: var(--peach); }
 .meal.slot-snack { background: var(--lime); }
-.app[data-page]:not([data-page='aujourdhui']) .meal.slot-breakfast { background: #fff0b0; }
+.app[data-page]:not([data-page='aujourdhui']) .meal.slot-breakfast { background: #fde6b0; }
 .app[data-page]:not([data-page='aujourdhui']) .meal.slot-lunch { background: var(--lilac); }
 .app[data-page]:not([data-page='aujourdhui']) .meal.slot-dinner { background: var(--peach); }
 .app[data-page]:not([data-page='aujourdhui']) .meal.slot-snack { background: var(--lime); }
-.meal-time { background: var(--ink); color: #fffaf2; }
-.meal-actions .btn.ghost, .meal-actions .btn.secondary { background: #fffaf2; box-shadow: none; }
+.meal-time { background: var(--ink); color: #fffaf0; }
+.meal-actions .btn.ghost, .meal-actions .btn.secondary { background: #fffaf0; box-shadow: none; }
 
 /* Cartes recettes pastel, vignette ronde qui déborde à gauche */
 .recipe-card { display: flex; gap: 14px; align-items: center; padding: 14px 14px 14px 0; border-radius: 22px; text-decoration: none; color: var(--ink); margin-left: 26px; position: relative; min-height: 104px; transition: transform 0.15s var(--ease); }
 .recipe-card + .recipe-card { margin-top: 12px; }
 .recipe-card:active { transform: scale(0.98); }
-.recipe-card .thumb { width: 84px; height: 84px; border-radius: 50%; margin-left: -26px; border: var(--rule); background: #fffaf2; }
+.recipe-card .thumb { width: 84px; height: 84px; border-radius: 50%; margin-left: -26px; border: var(--rule); background: #fffaf0; }
 .recipe-card-title { font-family: var(--font-display); font-weight: 800; font-size: 1.12rem; line-height: 1.2; letter-spacing: -0.015em; }
-.recipe-card.tone-0 { background: #cfe0fb; }
+.recipe-card.tone-0 { background: #fde6b0; }
 .recipe-card.tone-1 { background: var(--peach); }
 .recipe-card.tone-2 { background: var(--lime); }
-.recipe-card.tone-3 { background: #f9cfe0; }
+.recipe-card.tone-3 { background: #f7cde0; }
 .card:has(> .list > .recipe-card) { background: transparent; border: 0; padding: 0; }
 
 /* Fiche recette : chiffres dans un tableau à filets d'encre */
-.stat-table { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border: var(--rule); border-radius: 14px; overflow: hidden; background: #fffaf2; }
+.stat-table { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border: var(--rule); border-radius: 14px; overflow: hidden; background: #fffaf0; }
 .stat-table > div { padding: 10px 12px; }
 .stat-table > div + div { border-left: var(--rule); }
 .stat-table dt { font-size: 0.8rem; color: var(--text-2); }
@@ -431,21 +431,21 @@ table.simple td, table.simple th { border-bottom: 1px solid color-mix(in srgb, v
 /* Étapes numérotées dans des disques noirs */
 .steps-list { list-style: none; padding: 0; counter-reset: step; gap: 14px; }
 .steps-list li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; }
-.steps-list li::before { content: counter(step); width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: #fffaf2; display: grid; place-items: center; font-weight: 600; font-size: 0.9rem; }
+.steps-list li::before { content: counter(step); width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: #fffaf0; display: grid; place-items: center; font-weight: 600; font-size: 0.9rem; }
 
 /* Titre d'accueil : chaque mot surligné d'une pastille de couleur */
 .highlight-title { display: inline-flex; flex-wrap: wrap; gap: 6px 4px; }
 .hl { padding: 0 12px 4px; border-radius: 999px; line-height: 1.15; }
-.hl-1 { background: #c9d4fa; }
+.hl-1 { background: #d6e6d9; }
 .hl-2 { background: var(--lilac); }
 .hl-3 { background: var(--lemon); }
-.hl-4 { background: #f7bfd3; }
+.hl-4 { background: #fbd3c3; }
 
 /* Choix de la date de début (accueil) */
 .start-picker button { aspect-ratio: 1; }
 .start-picker button[aria-disabled='true'] { opacity: 0.3; cursor: not-allowed; }
 .chip[aria-pressed] { min-height: 44px; padding: 0 16px; border: 0; cursor: pointer; font: inherit; font-weight: 600; font-size: 0.9rem; }
-.chip[aria-pressed='true'] { background: var(--ink); color: #fffaf2; }
+.chip[aria-pressed='true'] { background: var(--ink); color: #fffaf0; }
 
 /* ================= Section Calendrier : affiche de Pâques (référence Baru) =================
    Fond moutarde plein, panneaux crème très arrondis, découpes en biais (bandes roses, rouge-orangé),
@@ -555,3 +555,30 @@ body:has(.app[data-section='calendrier']) { background: #f7b32b; }
 .app[data-section='calendrier'] .meal-actions .btn.ghost,
 .app[data-section='calendrier'] .meal-actions .btn.secondary { background: var(--cal-cream); }
 .app[data-section='calendrier'] .muted { color: color-mix(in srgb, var(--cal-green) 78%, transparent); }
+
+/* ================= Page d'accueil : palette douce =================
+   Corail #FD9089, beige rosé #E5B699, sable #E9D1A9, gris-bleu #9AACB5, bleu acier #427CA2,
+   texte bleu marine. Les autres pages gardent la palette « affiche de Pâques ». */
+.app[data-page='aujourdhui'] {
+  --bg: #f8f1e6; --page-bg: #f8f1e6; --surface: #fffaf3; --surface-2: #efe5d3; --line: #e6dac4;
+  --text: #1e3a4c; --text-2: #5a6b76; --ink: #1e3a4c; --card-border: rgba(30, 58, 76, 0.07);
+  --accent: #2f6488; --cobalt: #427ca2; --hero-bg: #427ca2; --on-hero: #fffaf3;
+  --lemon: #e9d1a9; --lemon-soft: #f2e4c8; --tomato: #e5b699; --pink: #b5524c; --pink-soft: #fdd5d2;
+  --leaf: #427ca2; --leaf-soft: #dbe5ec; --sage: #427ca2; --sky: #427ca2;
+  --page: #427ca2; --on-page: #fffaf3;
+}
+body:has(.app[data-page='aujourdhui']) { background: #f8f1e6; }
+.app[data-page='aujourdhui'] .card.tint-warn { background: #e9d1a9; --fg: #1e3a4c; }
+.app[data-page='aujourdhui'] .card.tint-sky { background: #427ca2; --fg: #fffaf3; --sky: #e9d1a9; }
+.app[data-page='aujourdhui'] .card.tint-rose { background: #fd9089; --fg: #1e3a4c; }
+.app[data-page='aujourdhui'] .card.tint-sage { background: #9aacb5; --fg: #1e3a4c; }
+.app[data-page='aujourdhui'] .card.tint-peach { background: #e5b699; --fg: #1e3a4c; }
+.app[data-page='aujourdhui'] .card.tint-danger { background: #e5b699; --fg: #1e3a4c; }
+.app[data-page='aujourdhui'] .meal.slot-breakfast { background: #f2e4c8; }
+.app[data-page='aujourdhui'] .meal.slot-lunch { background: #fdd5d2; }
+.app[data-page='aujourdhui'] .meal.slot-dinner { background: #f1dccd; }
+.app[data-page='aujourdhui'] .meal.slot-snack { background: #e1ebf2; }
+.app[data-page='aujourdhui'] .chip.rose { background: #fdd5d2; }
+.app[data-page='aujourdhui'] .chip.sage { background: #dbe5ec; }
+.app[data-page='aujourdhui'] .chip.warn { background: #e9d1a9; }
+/* Les fruits du bloc d'accueil gardent les mêmes couleurs que ceux de la carte Repas */
