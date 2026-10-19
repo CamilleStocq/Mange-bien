@@ -95,6 +95,26 @@ export function App() {
   const onboardingDone = useData((d) => d.onboardingDone);
   const online = useOnline();
 
+  // Retire l'écran d'accueil une fois les données et la police des titres prêtes, après 1,5 s minimum.
+  useEffect(() => {
+    if (!hydrated) return;
+    let gone = false;
+    const hide = () => {
+      if (gone) return;
+      gone = true;
+      const el = document.getElementById('splash');
+      if (!el) return;
+      el.classList.add('hide');
+      setTimeout(() => el.remove(), 320);
+    };
+    // Affiché au moins 1,5 s depuis l'ouverture, puis dès que la police est prête.
+    let timer: number | undefined;
+    const ready = document.fonts?.ready ?? Promise.resolve();
+    void ready.then(() => { timer = window.setTimeout(hide, Math.max(0, 1500 - performance.now())); });
+    const fallback = setTimeout(hide, Math.max(0, 3000 - performance.now()));
+    return () => { clearTimeout(fallback); if (timer) clearTimeout(timer); };
+  }, [hydrated]);
+
   // Le planning se prolonge tout seul : semaine en cours et suivante générées si elles sont vides.
   useEffect(() => {
     if (!hydrated || !onboardingDone) return;
@@ -103,7 +123,8 @@ export function App() {
     generateWeekIfEmpty(addDays(monday, 7));
   }, [hydrated, onboardingDone, route.path]);
 
-  if (!hydrated) return <div className="page"><p className="muted">Chargement…</p></div>;
+  // Tant que les données ne sont pas chargées, l'écran d'accueil (index.html) reste affiché.
+  if (!hydrated) return null;
   const onOnboarding = route.parts[0] === 'bienvenue' || !onboardingDone;
   if (onOnboarding && !onboardingDone) {
     return (
