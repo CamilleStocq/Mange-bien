@@ -6,7 +6,7 @@ import { addDays, formatDayMonth, formatShort, todayISO } from '../lib/dates';
 import { habitWeeks, trendMessage, weightTrend } from '../lib/stats';
 import { formatNumber } from '../lib/units';
 import { randomId } from '../data/defaults';
-import { Btn, Card, CardHead, Empty, Icon, NumberField, Seg, Sheet, TextField, confirmAsk, toast } from '../components/ui';
+import { Btn, Card, CardHead, Empty, Icon, NumberField, Seg, Sheet, TextField, confirmAsk, toast, SubmitBtn } from '../components/ui';
 
 const axis = { fontSize: 11, fill: 'var(--text-2)' };
 const tooltipStyle = { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 12, fontSize: 13, color: 'var(--text)' };
@@ -44,7 +44,7 @@ function Weight() {
           <label className="field">Date<input className="input" type="date" value={date} max={todayISO()} onChange={(e) => e.target.value && setDate(e.target.value)} /></label>
           <NumberField label="Poids" suffix="kg" value={kg} min={30} max={250} onChange={setKg} />
         </div>
-        <Btn disabled={!kg} onClick={() => { mutate((d) => { d.weights.push({ id: randomId(), date, kg: kg! }); }); setKg(undefined); toast('Pesée enregistrée'); }}>Enregistrer</Btn>
+        <SubmitBtn missing={!kg && 'Indique ton poids pour enregistrer la pesée.'} onClick={() => { mutate((d) => { d.weights.push({ id: randomId(), date, kg: kg! }); }); setKg(undefined); toast('Pesée enregistrée'); }}>Enregistrer la pesée</SubmitBtn>
         <p className="tiny muted">Idéalement une fois par semaine, le même jour, le matin, dans des conditions comparables. Tu peux aussi ne pas te peser : rien n’est bloqué.</p>
       </Card>
 
@@ -106,8 +106,8 @@ function WeightEditor({ w, onClose }: { w: WeightEntry; onClose: () => void }) {
       <label className="field">Date<input className="input" type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} /></label>
       <NumberField label="Poids" suffix="kg" value={kg} min={30} max={250} onChange={setKg} />
       <TextField label="Note" value={note} onChange={setNote} />
-      <Btn disabled={!kg} onClick={() => { mutate((d) => { const x = d.weights.find((y) => y.id === w.id); if (x) Object.assign(x, { kg, date, note: note || undefined }); }); onClose(); }}>Enregistrer</Btn>
-      <Btn variant="danger" icon="trash" onClick={() => { if (confirmAsk('Supprimer cette pesée ?')) { mutate((d) => { d.weights = d.weights.filter((x) => x.id !== w.id); }); onClose(); } }}>Supprimer</Btn>
+      <SubmitBtn missing={!kg && 'Indique un poids pour enregistrer la modification.'} onClick={() => { mutate((d) => { const x = d.weights.find((y) => y.id === w.id); if (x) Object.assign(x, { kg, date, note: note || undefined }); }); onClose(); }}>Enregistrer la modification</SubmitBtn>
+      <Btn variant="danger" icon="trash" onClick={async () => { if (await confirmAsk({ title: `Supprimer la pesée du ${formatShort(w.date)} (${formatNumber(w.kg)} kg) ?`, confirm: 'Supprimer la pesée', danger: true })) { mutate((d) => { d.weights = d.weights.filter((x) => x.id !== w.id); }); onClose(); } }}>Supprimer la pesée</Btn>
     </Sheet>
   );
 }
@@ -194,7 +194,7 @@ function Measures() {
           <NumberField label="Cuisse" suffix="cm" value={draft.thigh} min={20} max={120} onChange={(v) => setDraft({ ...draft, thigh: v })} />
           <NumberField label="Bras" suffix="cm" value={draft.arm} min={10} max={80} onChange={(v) => setDraft({ ...draft, arm: v })} />
         </div>
-        <Btn disabled={!Object.values(draft).some(Boolean)} onClick={() => { mutate((d) => { d.measurements.push({ id: randomId(), date: todayISO(), ...draft }); }); setDraft({}); toast('Mensurations enregistrées'); }}>Enregistrer</Btn>
+        <SubmitBtn missing={!Object.values(draft).some(Boolean) && 'Indique au moins une mesure pour l’enregistrer.'} onClick={() => { mutate((d) => { d.measurements.push({ id: randomId(), date: todayISO(), ...draft }); }); setDraft({}); toast('Mensurations enregistrées'); }}>Enregistrer les mensurations</SubmitBtn>
       </Card>
       {ms.length > 0 && (
         <Card>
@@ -204,7 +204,7 @@ function Measures() {
               {[...ms].sort((a, b) => b.date.localeCompare(a.date)).map((m) => (
                 <tr key={m.id}>
                   <td>{formatShort(m.date)}</td><td>{m.waist ?? '—'}</td><td>{m.hips ?? '—'}</td><td>{m.thigh ?? '—'}</td><td>{m.arm ?? '—'}</td>
-                  <td><button className="icon-btn plain" aria-label="Supprimer" onClick={() => confirmAsk('Supprimer ?') && mutate((d) => { d.measurements = d.measurements.filter((x) => x.id !== m.id); })}><Icon name="trash" size={16} /></button></td>
+                  <td><button className="icon-btn plain" aria-label={`Supprimer les mensurations du ${formatShort(m.date)}`} onClick={async () => (await confirmAsk({ title: `Supprimer les mensurations du ${formatShort(m.date)} ?`, confirm: 'Supprimer les mensurations', danger: true })) && mutate((d) => { d.measurements = d.measurements.filter((x) => x.id !== m.id); })}><Icon name="trash" size={16} /></button></td>
                 </tr>
               ))}
             </tbody>

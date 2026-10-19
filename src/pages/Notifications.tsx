@@ -4,7 +4,7 @@ import { mutate, useData } from '../store/store';
 import { capabilities, requestPermission, sendServerTest, serverAvailable, showLocal, subscribePush, syncReminders, unsubscribePush, upcomingReminders } from '../lib/push';
 import { CATEGORY_INFO } from '../lib/reminders';
 import { DAY_NAMES, formatHHMM, formatShort, todayISO } from '../lib/dates';
-import { Btn, Card, CardHead, Icon, NumberField, Toggle, toast } from '../components/ui';
+import { Btn, Card, CardHead, Icon, NumberField, Toggle, toast, SubmitBtn } from '../components/ui';
 
 const GROUPS = ['Repas', 'Préparation', 'Sport et récupération', 'Suivi'] as const;
 
@@ -65,7 +65,7 @@ export function NotificationsPage() {
       await fn();
       toast(ok);
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Erreur');
+      toast(e instanceof Error ? e.message : 'Ça n’a pas fonctionné. Réessaie dans un moment.');
     } finally {
       setBusy(false);
       setCaps(capabilities());
@@ -99,7 +99,7 @@ export function NotificationsPage() {
 
       <Card tint="sage">
         <CardHead icon="bell" title="1. Autoriser" />
-        <Btn disabled={busy || !caps.notifications || caps.permission === 'granted'} onClick={() => run(async () => { const p = await requestPermission(); if (p !== 'granted') throw new Error('Permission non accordée'); }, 'Notifications autorisées')}>
+        <Btn disabled={busy || !caps.notifications || caps.permission === 'granted'} onClick={() => run(async () => { const p = await requestPermission(); if (p !== 'granted') throw new Error('Les notifications ne sont pas autorisées pour l’instant. Tu pourras les autoriser plus tard dans les réglages de l’iPhone.'); }, 'Notifications autorisées')}>
           {caps.permission === 'granted' ? 'Autorisées ✓' : 'Autoriser les notifications'}
         </Btn>
         <p className="tiny muted">Sans l’étape 2, les rappels ne s’affichent que lorsque l’application est ouverte.</p>
@@ -119,8 +119,8 @@ export function NotificationsPage() {
         ) : (
           <>
             <p className="small">Saisis une fois le code d’accès que tu as choisi lors du déploiement du serveur (il n’est pas enregistré dans l’app).</p>
-            <input className="input" type="password" autoComplete="off" placeholder="Code d’accès du serveur" value={code} onChange={(e) => setCode(e.target.value)} />
-            <Btn disabled={busy || !code || !caps.push} onClick={() => run(() => subscribePush(code), 'Rappels activés 🎉')}>Activer les rappels</Btn>
+            <label className="field">Code d’accès du serveur<input className="input" type="password" autoComplete="off" value={code} onChange={(e) => setCode(e.target.value)} /></label>
+            <SubmitBtn disabled={busy || !caps.push} missing={!code && 'Saisis le code d’accès pour activer les rappels.'} onClick={() => run(() => subscribePush(code), 'Rappels activés 🎉')}>Activer les rappels</SubmitBtn>
             {!caps.push && <p className="tiny muted">Push indisponible dans ce navigateur{caps.ios ? ' : ajoute l’app à l’écran d’accueil (iOS 16.4 ou plus récent).' : '.'}</p>}
           </>
         )}

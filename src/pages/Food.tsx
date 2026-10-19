@@ -8,7 +8,7 @@ import { buildBatchPlan } from '../lib/batch';
 import { formatEuro, ingredientKey, recipeCost } from '../lib/units';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
-import { Btn, Card, CardHead, Empty, Icon, NumberField, Provisional, Seg, Stepper, confirmAsk, toast } from '../components/ui';
+import { Btn, Card, CardHead, Empty, Icon, NumberField, Provisional, Seg, Stepper, confirmAsk, toast, SubmitBtn } from '../components/ui';
 import { MealCard } from '../components/meals';
 
 type Tab = 'planning' | 'recettes' | 'stock';
@@ -80,7 +80,7 @@ function Planning({ initial }: { initial?: string }) {
             <div className="row wrap">
               <a className="btn secondary small" href={`#/courses?w=${monday}`}>Liste de courses</a>
               <a className="btn secondary small" href={`#/batch?w=${monday}`}>Batch de la veille</a>
-              <Btn small variant="ghost" icon="swap" onClick={() => { if (confirmAsk('Régénérer cette semaine ? Les repas déjà préparés, mangés ou ajoutés à la main sont conservés.')) { regenerateWeek(monday); toast('Nouvelle proposition générée'); } }}>Régénérer</Btn>
+              <Btn small variant="ghost" icon="swap" onClick={async () => { if (await confirmAsk({ title: `Régénérer la semaine du ${formatDayMonth(monday)} ?`, body: 'Les repas déjà préparés, mangés ou ajoutés à la main sont conservés.', confirm: 'Régénérer la semaine' })) { regenerateWeek(monday); toast('Nouvelle proposition générée'); } }}>Régénérer</Btn>
             </div>
           </Card>
           {weekDays(monday).map((d) => {
@@ -128,7 +128,7 @@ function RecipeList() {
     <>
       <a className="btn" href="#/recette-nouvelle"><Icon name="plus" />Nouvelle recette</a>
       {provisional > 0 && <p className="small muted">{provisional} recette(s) ont encore des quantités provisoires : ouvre-les pour saisir tes proportions habituelles.</p>}
-      <input className="input" type="search" placeholder="Rechercher une recette ou un ingrédient" value={q} onChange={(e) => setQ(e.target.value)} />
+      <input className="input" type="search" aria-label="Rechercher une recette ou un ingrédient" placeholder="ex. poulet, chili…" value={q} onChange={(e) => setQ(e.target.value)} />
       <Seg label="Catégorie" value={cat} options={[{ value: 'all', label: 'Toutes' }, { value: 'plat', label: 'Plats' }, { value: 'vegetarien', label: 'Végé' }, { value: 'salade', label: 'Salades' }, { value: 'autre', label: 'Autres' }]} onChange={setCat} />
       <Card>
         {cat !== 'all' && <h2>{CAT_LABEL[cat]}</h2>}
@@ -149,7 +149,13 @@ function RecipeList() {
               </a>
             );
           })}
-          {!recipes.length && <Empty>Aucune recette ne correspond.</Empty>}
+          {!recipes.length && (
+            <Empty>
+              <h3>Aucune recette trouvée</h3>
+              <p className="small">Rien ne correspond à cette recherche ou à cette catégorie pour l’instant.</p>
+              <Btn variant="secondary" onClick={() => { setQ(''); setCat('all'); }}>Effacer la recherche</Btn>
+            </Empty>
+          )}
         </div>
       </Card>
     </>
@@ -196,9 +202,9 @@ function Stock() {
           </select>
           <Stepper label="Portions" value={portions} min={1} onChange={setPortions} />
         </div>
-        <Btn variant="secondary" disabled={!recipeId} onClick={() => { const r = data.recipes.find((x) => x.id === recipeId)!; mutate((d) => { d.freezer.push({ id: randomId(), recipeId, name: r.name, portions, frozenOn: todayISO() }); }); setRecipeId(''); toast('Ajouté au congélateur'); }}>
+        <SubmitBtn variant="secondary" missing={!recipeId && 'Choisis d’abord la recette à mettre au congélateur.'} onClick={() => { const r = data.recipes.find((x) => x.id === recipeId)!; mutate((d) => { d.freezer.push({ id: randomId(), recipeId, name: r.name, portions, frozenOn: todayISO() }); }); setRecipeId(''); toast('Ajouté au congélateur'); }}>
           Ajouter au congélateur
-        </Btn>
+        </SubmitBtn>
       </Card>
       <Card>
         <CardHead icon="fridge" title="Restes à consommer" />
@@ -207,7 +213,7 @@ function Stock() {
       <Card>
         <CardHead icon="list" title="Ce que j’ai déjà" />
         <p className="small muted">Les quantités en stock sont déduites de la liste de courses. Par défaut : ingrédients des deux semaines à venir.</p>
-        <input className="input" type="search" placeholder="Chercher un ingrédient" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input className="input" type="search" aria-label="Chercher un ingrédient" placeholder="ex. carotte" value={q} onChange={(e) => setQ(e.target.value)} />
         <div className="list">
           {shown.map((k) => {
             const info = data.ingredients[k];
@@ -221,7 +227,7 @@ function Stock() {
                 </label>
                 {!p?.all && (
                   <div style={{ width: 130 }}>
-                    <NumberField value={p?.qty} onChange={(v) => mutate((d) => { d.pantry[k] = { qty: v }; })} placeholder="quantité" min={0} suffix={unitHint(data, k)} />
+                    <NumberField value={p?.qty} onChange={(v) => mutate((d) => { d.pantry[k] = { qty: v }; })} ariaLabel={`Quantité en stock : ${info?.name ?? k}`} placeholder="0" min={0} suffix={unitHint(data, k)} />
                   </div>
                 )}
               </div>

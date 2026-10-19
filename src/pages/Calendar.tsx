@@ -148,7 +148,7 @@ function MonthView({ anchor, selected, onSelect, data, today }: { anchor: string
 export function DayPage({ date }: { date: string }) {
   const data = useData((d) => d);
   const valid = /^\d{4}-\d{2}-\d{2}$/.test(date);
-  if (!valid) return <div className="page"><Empty>Date invalide.</Empty></div>;
+  if (!valid) return <div className="page"><Empty><p>Cette date n’existe pas dans le calendrier.</p><a className="btn secondary" href="#/calendrier">Revenir au calendrier</a></Empty></div>;
   const reminders = buildReminders(data, date, 1, 0);
   return (
     <div className="page">
@@ -162,7 +162,7 @@ export function DayPage({ date }: { date: string }) {
         <a className="btn ghost small" href={`#/jour/${addDays(date, 1)}`}>Lendemain<Icon name="right" size={18} /></a>
       </div>
       <DayTasksCard date={date} />
-      <DayMeals date={date} expanded />
+      <DayMeals date={date} />
       <DaySport date={date} />
       <Card>
         <CardHead icon="clock" title="Horaires" />

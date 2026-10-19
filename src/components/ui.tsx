@@ -122,6 +122,20 @@ export function Btn({ variant = 'primary', small, block, icon, children, classNa
   );
 }
 
+/** Bouton d'envoi jamais grisé : s'il manque quelque chose, il le dit juste en dessous au lieu de ne rien faire. */
+export function SubmitBtn({ missing, onClick, ...rest }: BtnProps & { missing?: string | false }) {
+  const [hint, setHint] = useState('');
+  useEffect(() => {
+    if (!missing) setHint('');
+  }, [missing]);
+  return (
+    <div className="submit-wrap">
+      <Btn {...rest} aria-describedby={hint ? undefined : rest['aria-describedby']} onClick={(e) => (missing ? setHint(missing) : onClick?.(e))} />
+      {hint && <p className="field-hint" role="alert">{hint}</p>}
+    </div>
+  );
+}
+
 export function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
   return (
     <label className="switch">
@@ -152,8 +166,21 @@ export function Check({ checked, onChange, label }: { checked: boolean; onChange
 }
 
 export function Seg<T extends string>({ value, options, onChange, label }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; label: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      el.dataset.overflow = String(el.scrollWidth > el.clientWidth + 1);
+      el.dataset.end = String(el.scrollLeft + el.clientWidth >= el.scrollWidth - 2);
+    };
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => { el.removeEventListener('scroll', update); window.removeEventListener('resize', update); };
+  }, [value]);
   return (
-    <div className="seg" role="group" aria-label={label}>
+    <div className="seg" role="group" aria-label={label} ref={ref}>
       {options.map((o) => (
         <button key={o.value} type="button" aria-pressed={o.value === value} onClick={() => onChange(o.value)}>
           {o.label}
@@ -164,7 +191,7 @@ export function Seg<T extends string>({ value, options, onChange, label }: { val
 }
 
 /** Champ numérique tolérant (virgule ou point), validé à la sortie du champ. */
-export function NumberField({ label, value, onChange, suffix, step = 'any', min, max, placeholder }: { label?: string; value: number | undefined; onChange: (v: number | undefined) => void; suffix?: string; step?: string; min?: number; max?: number; placeholder?: string }) {
+export function NumberField({ label, ariaLabel, value, onChange, suffix, step = 'any', min, max, placeholder }: { label?: string; ariaLabel?: string; value: number | undefined; onChange: (v: number | undefined) => void; suffix?: string; step?: string; min?: number; max?: number; placeholder?: string }) {
   const [text, setText] = useState(value == null ? '' : String(value).replace('.', ','));
   const [error, setError] = useState('');
   useEffect(() => {
@@ -178,15 +205,15 @@ export function NumberField({ label, value, onChange, suffix, step = 'any', min,
       return;
     }
     const n = Number(t);
-    if (!Number.isFinite(n)) return setError('Nombre invalide');
-    if (min != null && n < min) return setError(`Minimum ${min}`);
-    if (max != null && n > max) return setError(`Maximum ${max}`);
+    if (!Number.isFinite(n)) return setError('Écris un nombre, par exemple 68,5.');
+    if (min != null && n < min) return setError(`Indique au moins ${String(min).replace('.', ',')}.`);
+    if (max != null && n > max) return setError(`Indique au plus ${String(max).replace('.', ',')}.`);
     setError('');
     onChange(n);
   };
   const input = (
     <div className="input-suffix">
-      <input className="input" inputMode="decimal" value={text} step={step} placeholder={placeholder} aria-label={label} aria-invalid={!!error} onChange={(e) => setText(e.target.value)} onBlur={commit} onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()} />
+      <input className="input" inputMode="decimal" value={text} step={step} placeholder={placeholder} aria-label={label ? undefined : ariaLabel} aria-invalid={!!error} onFocus={() => setError('')} onChange={(e) => { setError(''); setText(e.target.value); }} onBlur={commit} onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()} />
       {suffix && <span>{suffix}</span>}
     </div>
   );
@@ -194,12 +221,12 @@ export function NumberField({ label, value, onChange, suffix, step = 'any', min,
     <label className="field">
       {label}
       {input}
-      {error && <span className="tiny" style={{ color: 'var(--danger)' }}>{error}</span>}
+      {error && <span className="field-hint" role="alert">{error}</span>}
     </label>
   ) : (
     <>
       {input}
-      {error && <span className="tiny" style={{ color: 'var(--danger)' }}>{error}</span>}
+      {error && <span className="field-hint" role="alert">{error}</span>}
     </>
   );
 }
@@ -279,7 +306,11 @@ export function Sheet({ title, onClose, children }: { title: string; onClose: ()
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null;
     ref.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      if (useConfirmStore.getState().req) return;
+      if (e.key === 'Escape') onClose();
+      else trapTab(e, ref.current);
+    };
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     return () => {
@@ -322,6 +353,55 @@ export function ToastHost() {
   ) : null;
 }
 
-export function confirmAsk(message: string): boolean {
-  return window.confirm(message);
+// ---------- Confirmation : nomme ce qui est concerné, bouton à verbe, « Annuler » par défaut ----------
+interface ConfirmRequest { title: string; body?: string; confirm: string; danger?: boolean; resolve: (ok: boolean) => void }
+const useConfirmStore = create<{ req?: ConfirmRequest }>(() => ({}));
+
+export function confirmAsk(opts: { title: string; body?: string; confirm: string; danger?: boolean }): Promise<boolean> {
+  return new Promise((resolve) => useConfirmStore.setState({ req: { ...opts, resolve } }));
+}
+
+/** Garde le focus dans un panneau modal (Tab et Maj+Tab bouclent). */
+function trapTab(e: KeyboardEvent, root: HTMLElement | null) {
+  if (e.key !== 'Tab' || !root) return;
+  const items = [...root.querySelectorAll<HTMLElement>('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])')].filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null);
+  if (!items.length) return;
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (e.shiftKey && (document.activeElement === first || document.activeElement === root)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+
+export function ConfirmHost() {
+  const req = useConfirmStore((s) => s.req);
+  const ref = useRef<HTMLDivElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!req) return;
+    const prev = document.activeElement as HTMLElement | null;
+    cancelRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); close(false); }
+      else trapTab(e, ref.current);
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => { document.removeEventListener('keydown', onKey, true); prev?.focus?.(); };
+  }, [req]);
+  if (!req) return null;
+  function close(ok: boolean) {
+    useConfirmStore.setState({ req: undefined });
+    req!.resolve(ok);
+  }
+  return (
+    <div className="confirm-backdrop" onClick={(e) => e.target === e.currentTarget && close(false)}>
+      <div className="confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby={req.body ? 'confirm-body' : undefined} ref={ref}>
+        <h2 id="confirm-title">{req.title}</h2>
+        {req.body && <p id="confirm-body" className="small muted">{req.body}</p>}
+        <div className="grid2">
+          <button ref={cancelRef} type="button" className="btn ghost" onClick={() => close(false)}>Annuler</button>
+          <button type="button" className={`btn ${req.danger ? 'destructive' : ''}`} onClick={() => close(true)}>{req.confirm}</button>
+        </div>
+      </div>
+    </div>
+  );
 }

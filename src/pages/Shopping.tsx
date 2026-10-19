@@ -6,7 +6,7 @@ import { budgetSuggestions, buildShoppingList } from '../lib/shopping';
 import { AISLE_LABEL, AISLE_ORDER, formatEuro, formatQty, STATE_LABEL, ingredientKey } from '../lib/units';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
-import { Btn, Card, CardHead, Check, Empty, Icon, NumberField, Progress, Toggle, toast } from '../components/ui';
+import { Btn, Card, CardHead, Check, Empty, Icon, NumberField, Progress, Toggle, toast, SubmitBtn } from '../components/ui';
 
 export function ShoppingPage({ route }: { route: Route }) {
   const data = useData((d) => d);
@@ -133,14 +133,16 @@ export function ShoppingPage({ route }: { route: Route }) {
 
       <Card>
         <CardHead icon="plus" title="Ajouter un article" />
-        <div className="row">
-          <input className="input grow" placeholder="Article (ex. liquide vaisselle)" value={name} onChange={(e) => setName(e.target.value)} />
-          <input className="input" style={{ width: 90 }} placeholder="Qté" value={qty} onChange={(e) => setQty(e.target.value)} />
+        <div className="row" style={{ alignItems: 'flex-end' }}>
+          <label className="field grow">Article<input className="input" placeholder="ex. liquide vaisselle" value={name} onChange={(e) => setName(e.target.value)} /></label>
+          <label className="field" style={{ width: 96 }}>Quantité<input className="input" placeholder="ex. 2" value={qty} onChange={(e) => setQty(e.target.value)} /></label>
         </div>
-        <select className="input" value={aisle} onChange={(e) => setAisle(e.target.value as Aisle)} aria-label="Rayon">
-          {AISLE_ORDER.map((a) => <option key={a} value={a}>{AISLE_LABEL[a]}</option>)}
-        </select>
-        <Btn variant="secondary" disabled={!name.trim()} onClick={() => { mutate((d) => { ensureWeek(d, monday).manualItems.push({ id: `manual:${randomId()}`, name: name.trim(), qty: qty.trim(), aisle }); }); setName(''); setQty(''); }}>Ajouter</Btn>
+        <label className="field">Rayon
+          <select className="input" value={aisle} onChange={(e) => setAisle(e.target.value as Aisle)}>
+            {AISLE_ORDER.map((a) => <option key={a} value={a}>{AISLE_LABEL[a]}</option>)}
+          </select>
+        </label>
+        <SubmitBtn variant="secondary" missing={!name.trim() && 'Écris le nom de l’article à ajouter.'} onClick={() => { mutate((d) => { ensureWeek(d, monday).manualItems.push({ id: `manual:${randomId()}`, name: name.trim(), qty: qty.trim(), aisle }); }); setName(''); setQty(''); }}>Ajouter l’article</SubmitBtn>
       </Card>
 
       {inStock.length > 0 && (

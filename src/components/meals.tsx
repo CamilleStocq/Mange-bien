@@ -187,7 +187,7 @@ export function MealEditor({ meal, date, slot, onClose }: { meal?: MealEntry; da
   if (mode === 'replace') {
     return (
       <Sheet title="Remplacer par…" onClose={onClose}>
-        <input className="input" placeholder="Rechercher une recette ou un ingrédient" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <input className="input" type="search" aria-label="Rechercher une recette ou un ingrédient" placeholder="ex. poulet, chili…" value={search} onChange={(e) => setSearch(e.target.value)} />
         <p className="small muted">Classement : recettes du même type, ingrédients déjà en stock, puis coût par portion.</p>
         <div className="list">
           {suggestions.map((r) => {
@@ -354,14 +354,14 @@ export function MealEditor({ meal, date, slot, onClose }: { meal?: MealEntry; da
         <Btn
           variant="danger"
           icon="trash"
-          onClick={() => {
-            if (confirmAsk('Supprimer ce repas du planning ?')) {
+          onClick={async () => {
+            if (await confirmAsk({ title: `Supprimer « ${mealTitle(draft, getData())} » du ${formatShort(draft.date)} ?`, body: 'Le repas sera retiré du planning et des courses.', confirm: 'Supprimer le repas', danger: true })) {
               deleteMeal(draft.id);
               onClose();
             }
           }}
         >
-          Supprimer
+          Supprimer le repas
         </Btn>
       )}
     </Sheet>

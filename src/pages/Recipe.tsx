@@ -113,12 +113,12 @@ export function RecipePage({ id }: { id: string }) {
   );
 }
 
-function deleteRecipe(r: Recipe) {
+async function deleteRecipe(r: Recipe) {
   const future = getData().meals.filter((m) => m.recipeId === r.id && m.date >= todayISO());
-  const msg = future.length
-    ? `Cette recette est prévue ${future.length} fois. Ces repas resteront dans ton planning sous forme de repas « ${r.name} » sans ingrédients (retirés des courses). Supprimer ?`
-    : `Supprimer « ${r.name} » ?`;
-  if (!confirmAsk(msg)) return;
+  const body = future.length
+    ? `Cette recette est prévue ${future.length} fois. Ces repas resteront dans ton planning sous forme de repas « ${r.name} » sans ingrédients (retirés des courses).`
+    : undefined;
+  if (!(await confirmAsk({ title: `Supprimer la recette « ${r.name} » ?`, body, confirm: 'Supprimer la recette', danger: true }))) return;
   mutate((d) => {
     d.recipes = d.recipes.filter((x) => x.id !== r.id);
     for (const m of d.meals) if (m.recipeId === r.id) Object.assign(m, { kind: 'custom', customName: r.name, recipeId: undefined, storage: undefined });
@@ -251,11 +251,11 @@ export function RecipeEditor({ id }: { id?: string }) {
         {r.ingredients.map((i, k) => (
           <div key={k} className="col" style={{ borderBottom: '1px solid var(--line)', paddingBottom: 10 }}>
             <div className="row">
-              <input className="input grow" list="ing-list" placeholder="Ingrédient" value={i.name} onChange={(e) => setIng(k, { name: e.target.value })} aria-label="Nom de l’ingrédient" />
+              <input className="input grow" list="ing-list" placeholder="ex. carotte" value={i.name} onChange={(e) => setIng(k, { name: e.target.value })} aria-label="Nom de l’ingrédient" />
               <button className="icon-btn plain" aria-label="Retirer l’ingrédient" onClick={() => setR((x) => ({ ...x, ingredients: x.ingredients.filter((_, j) => j !== k) }))}><Icon name="trash" size={20} /></button>
             </div>
             <div className="row">
-              <div style={{ width: 96 }}><NumberField value={i.qty || undefined} min={0} onChange={(v) => setIng(k, { qty: v ?? 0 })} placeholder="qté" /></div>
+              <div style={{ width: 96 }}><NumberField value={i.qty || undefined} min={0} onChange={(v) => setIng(k, { qty: v ?? 0 })} ariaLabel={`Quantité de ${i.name || 'l’ingrédient'}`} placeholder="0" /></div>
               <select className="input sm" style={{ width: 84 }} value={i.unit} onChange={(e) => setIng(k, { unit: e.target.value as Unit })} aria-label="Unité">
                 {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
               </select>

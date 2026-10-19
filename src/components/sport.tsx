@@ -4,7 +4,7 @@ import { mutate, useData } from '../store/store';
 import { formatHHMM, formatShort, todayISO } from '../lib/dates';
 import { ACTIVITY_LABEL } from '../lib/reminders';
 import { randomId } from '../data/defaults';
-import { Btn, Card, Icon, NumberField, Seg, Sheet, TextField, toast, confirmAsk } from './ui';
+import { Btn, Card, Icon, NumberField, Seg, Sheet, TextField, toast, confirmAsk, SubmitBtn } from './ui';
 
 export const ACTIVITIES: ActivityKey[] = ['natation', 'velo', 'course', 'renforcement', 'mobilite', 'marche'];
 
@@ -138,9 +138,9 @@ export function SessionEditor({ session, date, onClose }: { session?: SportSessi
               <span className="small strong">Reporter : déplacer ou supprimer, c’est toi qui choisis</span>
               <div className="row">
                 <input className="input grow" type="date" value={moveTo} onChange={(e) => setMoveTo(e.target.value)} aria-label="Nouvelle date" />
-                <Btn small variant="secondary" disabled={!moveTo} onClick={() => { mutate((d) => { const x = d.sport.sessions.find((y) => y.id === draft.id); if (x) { x.date = moveTo; x.status = 'prévue'; } }); toast(`Séance déplacée au ${formatShort(moveTo)}`); onClose(); }}>Déplacer</Btn>
+                <SubmitBtn small variant="secondary" missing={!moveTo && 'Choisis la nouvelle date.'} onClick={() => { mutate((d) => { const x = d.sport.sessions.find((y) => y.id === draft.id); if (x) { x.date = moveTo; x.status = 'prévue'; } }); toast(`Séance déplacée au ${formatShort(moveTo)}`); onClose(); }}>Déplacer la séance</SubmitBtn>
               </div>
-              <Btn small variant="danger" icon="trash" onClick={() => { if (confirmAsk('Supprimer cette séance ?')) { mutate((d) => { d.sport.sessions = d.sport.sessions.filter((x) => x.id !== draft.id); }); onClose(); } }}>Supprimer la séance</Btn>
+              <Btn small variant="danger" icon="trash" onClick={async () => { if (await confirmAsk({ title: `Supprimer la séance « ${ACTIVITY_LABEL[draft.activity]} » du ${formatShort(draft.date)} ?`, confirm: 'Supprimer la séance', danger: true })) { mutate((d) => { d.sport.sessions = d.sport.sessions.filter((x) => x.id !== draft.id); }); onClose(); } }}>Supprimer la séance</Btn>
             </Card>
           )}
         </>

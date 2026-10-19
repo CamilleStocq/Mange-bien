@@ -2,7 +2,7 @@ import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from '
 import { generateWeekIfEmpty, useApp, useData } from './store/store';
 import { useRoute, type Route } from './lib/router';
 import { addDays, todayISO, weekStart } from './lib/dates';
-import { Icon, ToastHost } from './components/ui';
+import { ConfirmHost, Icon, ToastHost } from './components/ui';
 import { Today } from './pages/Today';
 import { CalendarPage, DayPage } from './pages/Calendar';
 import { FoodPage } from './pages/Food';
@@ -110,6 +110,7 @@ export function App() {
       <div className="app" style={{ paddingBottom: 24 }}>
         <Onboarding />
         <ToastHost />
+        <ConfirmHost />
       </div>
     );
   }
@@ -138,6 +139,7 @@ export function App() {
         </ul>
       </nav>
       <ToastHost />
+      <ConfirmHost />
     </div>
   );
 }

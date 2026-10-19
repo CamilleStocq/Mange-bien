@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { addWater, undoWater, useData } from '../store/store';
 import { todayISO } from '../lib/dates';
 import { formatQty } from '../lib/units';
-import { Btn, Card, CardHead, NumberField, Ring } from './ui';
+import { Btn, Card, CardHead, NumberField, Ring, SubmitBtn } from './ui';
 
 export function useWaterToday(date = todayISO()) {
   return useData((d) => (d.hydration.log[date] ?? []).reduce((s, x) => s + x.ml, 0));
@@ -42,16 +42,16 @@ export function HydrationWidget({ compact }: { compact?: boolean }) {
           <div className="grow">
             <NumberField label="Quantité personnalisée" value={custom} onChange={setCustom} suffix="ml" min={1} max={3000} />
           </div>
-          <Btn
+          <SubmitBtn
             style={{ alignSelf: 'flex-end' }}
-            disabled={!custom}
+            missing={!custom && 'Indique une quantité en ml.'}
             onClick={() => {
               if (custom) addWater(custom);
               setCustom(undefined);
             }}
           >
             Ajouter
-          </Btn>
+          </SubmitBtn>
         </div>
       )}
     </Card>

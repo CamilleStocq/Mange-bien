@@ -74,7 +74,7 @@ async function api(path: string, body: unknown): Promise<Response> {
     body: JSON.stringify(body)
   });
   if (!res.ok) {
-    let msg = `Erreur serveur (${res.status})`;
+    let msg = 'Le serveur de rappels n’a pas répondu. Réessaie dans un moment.';
     try {
       const j = await res.json();
       if (j.error) msg = j.error;

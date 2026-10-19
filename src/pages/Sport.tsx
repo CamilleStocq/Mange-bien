@@ -6,7 +6,7 @@ import { addDays, formatDayMonth, formatHHMM, formatLong, formatShort, todayISO,
 import { ACTIVITY_LABEL } from '../lib/reminders';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
-import { Btn, Card, CardHead, Empty, Icon, NumberField, Seg, TextField, confirmAsk, toast } from '../components/ui';
+import { Btn, Card, CardHead, Empty, Icon, NumberField, Seg, TextField, confirmAsk, toast, SubmitBtn } from '../components/ui';
 import { ACTIVITIES, isAllowed, RED_FLAGS, SessionCard, SessionEditor, UrgentAlert } from '../components/sport';
 
 type Tab = 'planning' | 'autorisations' | 'douleurs' | 'notes' | 'reprise';
@@ -108,8 +108,8 @@ const AUTH_OPTIONS: { value: AuthStatus; label: string }[] = [
 
 function Authorizations() {
   const sport = useData((d) => d.sport);
-  const setAuth = (a: ActivityKey, status: AuthStatus) => {
-    if ((status === 'autorisé' || status === 'restreint') && !confirmAsk(`Confirmes-tu que « ${ACTIVITY_LABEL[a]} » a été autorisé(e) par ton médecin ou ton kiné ?`)) return;
+  const setAuth = async (a: ActivityKey, status: AuthStatus) => {
+    if ((status === 'autorisé' || status === 'restreint') && !(await confirmAsk({ title: `« ${ACTIVITY_LABEL[a]} » a été autorisé par ton médecin ou ton kiné ?`, confirm: 'Oui, c’est autorisé' }))) return;
     mutate((d) => { d.sport.authorizations[a] = { ...d.sport.authorizations[a], status, updatedOn: todayISO() }; });
   };
   return (
@@ -126,7 +126,7 @@ function Authorizations() {
                   {AUTH_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
               </div>
-              <input className="input sm" placeholder="Consigne (ex. 15 min, sans battement de jambes)" value={au.note} onChange={(e) => mutate((d) => { d.sport.authorizations[a].note = e.target.value; })} />
+              <label className="field">Consigne<input className="input sm" placeholder="ex. 15 min, sans battement de jambes" value={au.note} onChange={(e) => mutate((d) => { d.sport.authorizations[a].note = e.target.value; })} /></label>
               {au.updatedOn && <span className="tiny muted">Mis à jour le {formatShort(au.updatedOn)}</span>}
             </div>
           );
@@ -206,11 +206,11 @@ function Pain() {
                   {p.notes && <div className="small muted">{p.notes}</div>}
                   {p.redFlags.length > 0 && <div className="tiny" style={{ color: 'var(--danger)' }}>Alerte : {p.redFlags.join(' ; ')}</div>}
                 </div>
-                <button className="icon-btn plain" aria-label="Supprimer" onClick={() => confirmAsk('Supprimer cette entrée ?') && mutate((d) => { d.sport.pain = d.sport.pain.filter((x) => x.id !== p.id); })}><Icon name="trash" size={18} /></button>
+                <button className="icon-btn plain" aria-label={`Supprimer l’entrée du ${formatShort(p.date)}`} onClick={async () => (await confirmAsk({ title: `Supprimer la douleur du ${formatShort(p.date)} (${p.zone}) ?`, confirm: 'Supprimer l’entrée', danger: true })) && mutate((d) => { d.sport.pain = d.sport.pain.filter((x) => x.id !== p.id); })}><Icon name="trash" size={18} /></button>
               </div>
             ))}
           </div>
-        ) : <Empty icon="heart">Aucune entrée pour l’instant.</Empty>}
+        ) : <Empty><h3>Aucune douleur notée</h3><p className="small">Si quelque chose te gêne après une séance, note-le ci-dessus : ça aide ton kiné à adapter la reprise.</p></Empty>}
       </Card>
     </>
   );
@@ -226,13 +226,13 @@ function Notes() {
         <CardHead icon="book" title="Ajouter une consigne" />
         <Seg label="Auteur" value={author} options={[{ value: 'Kiné', label: 'Kiné' }, { value: 'Médecin', label: 'Médecin' }, { value: 'Moi', label: 'Moi' }]} onChange={setAuthor} />
         <TextField label="Consigne ou remarque" value={text} onChange={setText} multiline />
-        <Btn disabled={!text.trim()} onClick={() => { mutate((d) => { d.sport.notes.unshift({ id: randomId(), date: todayISO(), author, text: text.trim() }); }); setText(''); }}>Enregistrer</Btn>
+        <SubmitBtn missing={!text.trim() && 'Écris la consigne avant de l’enregistrer.'} onClick={() => { mutate((d) => { d.sport.notes.unshift({ id: randomId(), date: todayISO(), author, text: text.trim() }); }); setText(''); }}>Enregistrer la consigne</SubmitBtn>
       </Card>
       {notes.map((n) => (
         <Card key={n.id}>
           <div className="row between"><span className="chip rose">{n.author}</span><span className="tiny muted">{formatShort(n.date)}</span></div>
           <p className="small" style={{ whiteSpace: 'pre-wrap' }}>{n.text}</p>
-          <Btn small variant="ghost" icon="trash" onClick={() => confirmAsk('Supprimer cette note ?') && mutate((d) => { d.sport.notes = d.sport.notes.filter((x) => x.id !== n.id); })}>Supprimer</Btn>
+          <Btn small variant="ghost" icon="trash" onClick={async () => (await confirmAsk({ title: `Supprimer la consigne du ${formatShort(n.date)} (${n.author}) ?`, confirm: 'Supprimer la consigne', danger: true })) && mutate((d) => { d.sport.notes = d.sport.notes.filter((x) => x.id !== n.id); })}>Supprimer la consigne</Btn>
         </Card>
       ))}
     </>
@@ -252,7 +252,7 @@ function Resume() {
           <p className="small">À faire uniquement quand ton médecin ou ton kiné a validé la reprise. Une simple diminution de la douleur ne suffit pas.</p>
           <label className="row small"><input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />Ma reprise a été validée par mon professionnel de santé.</label>
           <TextField label="Validée par" value={by} onChange={setBy} placeholder="ex. mon kiné" />
-          <Btn disabled={!confirmed} onClick={() => { mutate((d) => { d.sport.phase = 'reprise'; d.sport.resumeValidatedOn = todayISO(); d.sport.resumeValidatedBy = by.trim() || undefined; d.sport.currentStage = 0; }); toast('Reprise enregistrée : étape 1'); }}>Confirmer la reprise</Btn>
+          <SubmitBtn missing={!confirmed && 'Coche la case une fois ta reprise validée par ton professionnel de santé.'} onClick={() => { mutate((d) => { d.sport.phase = 'reprise'; d.sport.resumeValidatedOn = todayISO(); d.sport.resumeValidatedBy = by.trim() || undefined; d.sport.currentStage = 0; }); toast('Reprise enregistrée : étape 1'); }}>Confirmer la reprise</SubmitBtn>
         </Card>
       ) : (
         <Card>
@@ -260,10 +260,10 @@ function Resume() {
           <p><strong>{sport.stages[sport.currentStage]?.title}</strong></p>
           <div className="row wrap">
             {sport.currentStage < sport.stages.length - 1 && (
-              <Btn small onClick={() => confirmAsk('Passer à l’étape suivante ? À faire seulement après validation avec ton kiné, jamais uniquement parce que des séances ont été cochées.') && mutate((d) => { d.sport.currentStage++; })}>Étape suivante (validée)</Btn>
+              <Btn small onClick={async () => (await confirmAsk({ title: 'Passer à l’étape suivante ?', body: 'À faire seulement après validation avec ton kiné, jamais uniquement parce que des séances ont été cochées.', confirm: 'Passer à l’étape suivante' })) && mutate((d) => { d.sport.currentStage++; })}>Étape suivante (validée)</Btn>
             )}
             {sport.currentStage > 0 && <Btn small variant="secondary" onClick={() => mutate((d) => { d.sport.currentStage--; })}>Revenir à l’étape précédente</Btn>}
-            <Btn small variant="ghost" onClick={() => confirmAsk('Revenir en phase de récupération ? C’est une décision tout à fait normale.') && mutate((d) => { d.sport.phase = 'recuperation'; })}>Revenir en récupération</Btn>
+            <Btn small variant="ghost" onClick={async () => (await confirmAsk({ title: 'Revenir en phase de récupération ?', body: 'C’est une décision tout à fait normale.', confirm: 'Revenir en récupération' })) && mutate((d) => { d.sport.phase = 'recuperation'; })}>Revenir en récupération</Btn>
           </div>
         </Card>
       )}

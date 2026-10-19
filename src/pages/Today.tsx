@@ -3,7 +3,7 @@ import { ensureWeek, mutate, useData } from '../store/store';
 import { addDays, formatLong, todayISO, weekStart, weekdayIndex } from '../lib/dates';
 import { ENCOURAGEMENTS, pickFor } from '../lib/messages';
 import { randomId } from '../data/defaults';
-import { Btn, Card, CardHead, FruitArt, Icon, NumberField, toast } from '../components/ui';
+import { Btn, Card, CardHead, FruitArt, Icon, NumberField, toast, SubmitBtn } from '../components/ui';
 import { DayMeals, DaySport, DayTasksCard, ScheduleStrip } from '../components/day';
 import { HydrationWidget } from '../components/hydration';
 
@@ -21,8 +21,8 @@ function WeighPrompt({ today }: { today: string }) {
       <p className="small">Si tu te sens à l’aise avec la pesée aujourd’hui : idéalement le matin, dans les mêmes conditions que d’habitude. Sinon, tu peux la reporter ou l’ignorer, sans souci.</p>
       <NumberField label="Poids" suffix="kg" value={kg} min={30} max={250} onChange={setKg} />
       <div className="grid3">
-        <Btn
-          disabled={!kg}
+        <SubmitBtn
+          missing={!kg && 'Indique ton poids pour l’enregistrer.'}
           onClick={() => {
             if (!kg) return;
             mutate((d) => {
@@ -32,7 +32,7 @@ function WeighPrompt({ today }: { today: string }) {
           }}
         >
           Enregistrer
-        </Btn>
+        </SubmitBtn>
         <Btn variant="secondary" onClick={() => mutate((d) => { ensureWeek(d, monday).weighPostponedTo = addDays(today, 1); })}>
           Demain
         </Btn>
@@ -68,11 +68,11 @@ export function Today() {
       </section>
       <WeighPrompt today={today} />
       <DayTasksCard date={today} />
-      <DayMeals date={today} expanded />
+      <DayMeals date={today} />
       <HydrationWidget compact />
       <DaySport date={today} />
       <Card>
-        <button className="link-row" onClick={() => setShowHours(!showHours)} aria-expanded={showHours} style={{ padding: 0, minHeight: 32, border: 0 }}>
+        <button className="link-row" onClick={() => setShowHours(!showHours)} aria-expanded={showHours} style={{ padding: 0, minHeight: 44, border: 0 }}>
           <Icon name="clock" />
           <h2 className="grow">Horaires du jour</h2>
           <Icon name={showHours ? 'minus' : 'plus'} size={18} />

@@ -5,7 +5,7 @@ import { DAY_NAMES, todayISO } from '../lib/dates';
 import { AISLE_LABEL, AISLE_ORDER, formatEuro, ingredientKey, priceUnitLabel, STATE_LABEL } from '../lib/units';
 import { migrate, randomId } from '../data/defaults';
 import { go } from '../lib/router';
-import { Btn, Card, CardHead, Icon, NumberField, Seg, TextField, Toggle, ToggleRow, confirmAsk, toast } from '../components/ui';
+import { Btn, Card, CardHead, Icon, NumberField, Seg, TextField, Toggle, ToggleRow, confirmAsk, toast, SubmitBtn } from '../components/ui';
 import { HydrationWidget } from '../components/hydration';
 
 function LinkRow({ href, icon, label, hint }: { href: string; icon: string; label: string; hint?: string }) {
@@ -62,11 +62,11 @@ export function SettingsPage() {
               <button className="icon-btn plain" aria-label="Retirer" onClick={() => set((x) => { x.breakfast.splice(k, 1); })}><Icon name="trash" size={18} /></button>
             </div>
             <div className="row">
-              <div style={{ width: 100 }}><NumberField value={b.qty} min={0} onChange={(v) => set((x) => { x.breakfast[k].qty = v ?? 0; })} /></div>
+              <div style={{ width: 100 }}><NumberField ariaLabel="Quantité" value={b.qty} min={0} onChange={(v) => set((x) => { x.breakfast[k].qty = v ?? 0; })} /></div>
               <select className="input sm" style={{ width: 84 }} value={b.unit} onChange={(e) => set((x) => { x.breakfast[k].unit = e.target.value as Unit; })} aria-label="Unité">{(['g', 'ml', 'pièce'] as Unit[]).map((u) => <option key={u}>{u}</option>)}</select>
               <select className="input sm grow" value={b.state} onChange={(e) => set((x) => { x.breakfast[k].state = e.target.value as WeighState; })} aria-label="État">{(['', 'sec', 'comestible', 'cru', 'cuit', 'égoutté'] as WeighState[]).map((s) => <option key={s} value={s}>{s ? STATE_LABEL[s] : '—'}</option>)}</select>
             </div>
-            <input className="input sm" placeholder="Précision (ex. pesé sec)" value={b.hint} onChange={(e) => set((x) => { x.breakfast[k].hint = e.target.value; })} />
+            <label className="field">Précision<input className="input sm" placeholder="ex. pesé sec" value={b.hint} onChange={(e) => set((x) => { x.breakfast[k].hint = e.target.value; })} /></label>
           </div>
         ))}
         <Btn small variant="secondary" icon="plus" onClick={() => set((x) => { x.breakfast.push({ id: randomId(), name: '', qty: 0, unit: 'g', state: '', hint: '' }); })}>Ajouter un aliment</Btn>
@@ -183,7 +183,7 @@ export function IngredientsPage() {
         <h1 className="grow">Ingrédients & prix</h1>
       </div>
       <Card tint="warn"><p className="small">Les prix de départ sont des <strong>estimations indicatives</strong>, pas des prix de marché vérifiés. Remplace-les par tes prix réels (ou utilise « Mettre à jour mes prix » après tes courses).</p></Card>
-      <input className="input" type="search" placeholder="Chercher un ingrédient" value={q} onChange={(e) => setQ(e.target.value)} />
+      <input className="input" type="search" aria-label="Chercher un ingrédient" placeholder="ex. carotte" value={q} onChange={(e) => setQ(e.target.value)} />
       <Card>
         {keys.map((k) => {
           const i = catalog[k];
@@ -205,7 +205,7 @@ export function IngredientsPage() {
       </Card>
       <Card>
         <TextField label="Nouvel ingrédient" value={newName} onChange={setNewName} />
-        <Btn variant="secondary" disabled={!newName.trim()} onClick={() => { const k = ingredientKey(newName); if (catalog[k]) return toast('Cet ingrédient existe déjà'); mutate((d) => { d.ingredients[k] = { name: newName.trim(), aisle: 'autres' }; }); setNewName(''); setQ(newName); }}>Ajouter</Btn>
+        <SubmitBtn variant="secondary" missing={!newName.trim() && 'Écris le nom de l’ingrédient à ajouter.'} onClick={() => { const k = ingredientKey(newName); if (catalog[k]) return toast('Cet ingrédient existe déjà'); mutate((d) => { d.ingredients[k] = { name: newName.trim(), aisle: 'autres' }; }); setNewName(''); setQ(newName); }}>Ajouter l’ingrédient</SubmitBtn>
       </Card>
     </div>
   );
@@ -258,7 +258,7 @@ export function DataPage() {
             try {
               const raw = JSON.parse(await f.text());
               if (!raw || typeof raw !== 'object' || !Array.isArray(raw.recipes)) throw new Error();
-              if (!confirmAsk('Remplacer toutes les données actuelles par cette sauvegarde ?')) return;
+              if (!(await confirmAsk({ title: `Remplacer toutes tes données par « ${f.name} » ?`, body: 'Les données actuelles de cet appareil seront remplacées par celles de la sauvegarde.', confirm: 'Remplacer mes données', danger: true }))) return;
               const d = migrate(raw);
               d.push = { ...getData().push };
               replaceAll(d);
@@ -272,7 +272,7 @@ export function DataPage() {
       <Card tint="danger">
         <CardHead icon="trash" title="Réinitialiser" />
         <p className="small">Efface toutes les données de test ou personnelles de cet appareil et recharge les recettes de départ. Exporte d’abord si tu veux garder quelque chose.</p>
-        <Btn variant="danger" onClick={async () => { if (confirmAsk('Tout effacer et repartir de zéro ?')) { await resetAll(); go('/bienvenue'); toast('Données réinitialisées'); } }}>Réinitialiser l’application</Btn>
+        <Btn variant="danger" onClick={async () => { if (await confirmAsk({ title: 'Effacer toutes les données de Mange bien ! ?', body: 'Recettes, planning, pesées et réglages seront supprimés de cet appareil. Pense à exporter une sauvegarde avant.', confirm: 'Tout effacer', danger: true })) { await resetAll(); go('/bienvenue'); toast('Données réinitialisées'); } }}>Réinitialiser l’application</Btn>
       </Card>
     </div>
   );
