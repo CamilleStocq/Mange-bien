@@ -335,3 +335,19 @@ label.row:has(> input[type='checkbox']) { min-height: 44px; cursor: pointer; }
 .confirm { width: 100%; max-width: 400px; background: var(--surface); border-radius: 26px; padding: 22px 18px 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 40px rgba(19, 22, 42, 0.2); animation: fade 0.2s ease-out; }
 .confirm h2 { font-size: 1.25rem; line-height: 1.2; }
 .btn.destructive { background: var(--danger); color: #fffaf2; }
+
+/* Fond de page coloré par section, comme une affiche ; l'accueil garde le papier crème */
+.app[data-section='calendrier'] { --page-bg: #fde3db; }
+.app[data-section='alimentation'] { --page-bg: #fff0b8; }
+.app[data-section='sport'] { --page-bg: #fcdbe7; }
+.app[data-section='progression'] { --page-bg: #dcf0dc; }
+.app[data-page='reglages'] { --page-bg: #dfe6fb; }
+.app { background: var(--page-bg, var(--bg)); }
+body:has(.app[data-section='calendrier']) { background: #fde3db; }
+body:has(.app[data-section='alimentation']) { background: #fff0b8; }
+body:has(.app[data-section='sport']) { background: #fcdbe7; }
+body:has(.app[data-section='progression']) { background: #dcf0dc; }
+body:has(.app[data-page='reglages']) { background: #dfe6fb; }
+/* Sur fond coloré : onglets et repas en blanc translucide plutôt qu'en beige */
+.app[data-page]:not([data-page='aujourdhui']) .seg { background: rgba(255, 250, 242, 0.6); }
+.app[data-page]:not([data-page='aujourdhui']) .meal { background: color-mix(in srgb, var(--page-bg, var(--bg)) 55%, #fffaf2); }

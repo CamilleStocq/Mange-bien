@@ -116,7 +116,7 @@ export function App() {
   }
   const current = TABS.find((t) => t.match.includes(route.parts[0] ?? 'aujourdhui')) ?? TABS[0];
   return (
-    <div className="app" data-section={current.href.slice(2)}>
+    <div className="app" data-section={current.href.slice(2)} data-page={route.parts[0] ?? 'aujourdhui'}>
       {(storageError || !online) && (
         <div className="page" style={{ paddingBottom: 0 }}>
           {storageError && <div className="alert-banner" role="alert">{storageError}</div>}
