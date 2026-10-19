@@ -92,14 +92,8 @@ export function App() {
   const route = useRoute();
   const hydrated = useApp((s) => s.hydrated);
   const storageError = useApp((s) => s.storageError);
-  const theme = useData((d) => d.theme);
   const onboardingDone = useData((d) => d.onboardingDone);
   const online = useOnline();
-
-  useEffect(() => {
-    if (theme === 'auto') document.documentElement.removeAttribute('data-theme');
-    else document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
 
   // Le planning se prolonge tout seul : semaine en cours et suivante générées si elles sont vides.
   useEffect(() => {
@@ -121,7 +115,7 @@ export function App() {
   }
   const current = TABS.find((t) => t.match.includes(route.parts[0] ?? 'aujourdhui')) ?? TABS[0];
   return (
-    <div className="app">
+    <div className="app" data-section={current.href.slice(2)}>
       {(storageError || !online) && (
         <div className="page" style={{ paddingBottom: 0 }}>
           {storageError && <div className="alert-banner" role="alert">{storageError}</div>}

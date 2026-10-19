@@ -264,10 +264,10 @@ export function Provisional({ show = true }: { show?: boolean }) {
   return show ? <span className="badge-provisoire">provisoire</span> : null;
 }
 
-export function Empty({ icon = 'leaf', children }: { icon?: string; children: ReactNode }) {
+export function Empty({ children }: { icon?: string; children: ReactNode }) {
   return (
     <div className="empty">
-      <span className="pastille lg"><Icon name={icon} size={26} /></span>
+      <FruitArt className="empty-art" />
       {children}
     </div>
   );

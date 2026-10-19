@@ -101,7 +101,6 @@ export function SettingsPage() {
 
       <Card>
         <CardHead icon="sparkle" title="Affichage" />
-        <Seg label="Thème" value={d.theme} options={[{ value: 'auto', label: 'Automatique' }, { value: 'light', label: 'Clair' }, { value: 'dark', label: 'Sombre' }]} onChange={(v) => set((x) => { x.theme = v; })} />
         <label className="field">Liquides
           <select className="input" value={d.liquidDisplay} onChange={(e) => set((x) => { x.liquidDisplay = e.target.value as 'ml' | 'auto'; })}>
             <option value="auto">ml, puis L au-delà de 1 000 ml</option>
