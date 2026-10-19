@@ -57,14 +57,17 @@ export async function loadData(): Promise<void> {
   }
   useApp.subscribe((s, prev) => {
     if (s.data !== prev.data && s.hydrated) {
+      // Enregistrement immédiat (regroupé par tâche) : rien n'est perdu si l'app est fermée juste après un geste.
       if (saveTimer) clearTimeout(saveTimer);
-      saveTimer = setTimeout(save, 250);
+      saveTimer = setTimeout(save, 0);
     }
   });
   if (typeof document !== 'undefined') {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') void flushSave();
     });
+    // iPhone : fermer l'app en la balayant déclenche parfois seulement « pagehide ».
+    window.addEventListener('pagehide', () => void flushSave());
   }
   try {
     await navigator.storage?.persist?.();

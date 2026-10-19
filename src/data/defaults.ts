@@ -1,9 +1,9 @@
 import type { ActivityKey, AppData, Authorization, DaySchedule, NotifCategory, NotifRule } from '../store/types';
-import { defaultCatalog } from './ingredients';
+import { defaultCatalog, refreshDefaultPrices } from './ingredients';
 import { defaultRecipes } from './recipes';
 import { todayISO } from '../lib/dates';
 
-export const DATA_VERSION = 1;
+export const DATA_VERSION = 2;
 
 export function randomId(): string {
   const a = new Uint8Array(8);
@@ -135,5 +135,10 @@ export function migrate(raw: unknown): AppData {
     version: DATA_VERSION
   };
   if (!Array.isArray(merged.schedule) || merged.schedule.length !== 7) merged.schedule = base.schedule;
+  // Version 2 : prix Colruyt relevés (octobre 2026), sans toucher aux prix saisis à la main.
+  if ((d.version ?? 1) < 2 && merged.ingredients) {
+    merged.ingredients = structuredClone(merged.ingredients);
+    refreshDefaultPrices(merged.ingredients);
+  }
   return merged;
 }
