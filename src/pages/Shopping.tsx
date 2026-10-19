@@ -21,7 +21,7 @@ export function ShoppingPage({ route }: { route: Route }) {
   const toBuy = list.items.filter((i) => i.needed > 0);
   const inStock = list.items.filter((i) => i.needed <= 0);
   const checkedCount = toBuy.filter((i) => i.checked).length + list.manual.filter((m) => data.weeks[monday]?.shoppingChecks[m.id]).length;
-  const over = list.estimated > list.budget;
+  const over = !!list.budget && list.estimated > list.budget;
   const real = list.realTotal ?? (list.realSum || undefined);
 
   const setCheck = (key: string, v: boolean) => mutate((d) => { ensureWeek(d, monday).shoppingChecks[key] = v; });
@@ -53,9 +53,9 @@ export function ShoppingPage({ route }: { route: Route }) {
       <Card tint={over ? 'warn' : 'sage'}>
         <div className="row between">
           <span>Estimation</span>
-          <strong>{formatEuro(list.estimated)} / {formatEuro(list.budget)}</strong>
+          <strong>{formatEuro(list.estimated)}{list.budget ? ` / ${formatEuro(list.budget)}` : ''}</strong>
         </div>
-        <Progress value={list.estimated} max={list.budget} tone={over ? 'over' : undefined} />
+        {!!list.budget && <Progress value={list.estimated} max={list.budget} tone={over ? 'over' : undefined} />}
         <p className="tiny muted">
           Prix indicatifs saisis dans l’application (pas des prix de marché vérifiés), proportionnels aux quantités utilisées.
           {list.missingPrices > 0 && ` ${list.missingPrices} article(s) sans prix.`} <a href="#/reglages/ingredients">Modifier les prix</a>
@@ -182,7 +182,7 @@ function SpendingHistory({ current }: { current: string }) {
       {rows.length ? (
         <table className="simple">
           <thead><tr><th>Semaine</th><th className="right">Dépensé</th><th className="right">Budget</th></tr></thead>
-          <tbody>{rows.map((r) => <tr key={r.w}><td>{formatShort(r.w)}</td><td className="right">{formatEuro(r.real)}</td><td className="right muted">{formatEuro(data.weeklyBudget)}</td></tr>)}</tbody>
+          <tbody>{rows.map((r) => <tr key={r.w}><td>{formatShort(r.w)}</td><td className="right">{formatEuro(r.real)}</td><td className="right muted">{data.weeklyBudget ? formatEuro(data.weeklyBudget) : "—"}</td></tr>)}</tbody>
         </table>
       ) : (
         <p className="small muted">Saisis le total de ton ticket après les courses pour suivre tes dépenses semaine après semaine.</p>

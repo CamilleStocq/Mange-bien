@@ -24,16 +24,16 @@ describe('rappels', () => {
     const d = planned();
     const list = buildReminders(d, MONDAY, 14, 0);
     const morningMon = list.find((r) => r.id === `morning:${MONDAY}`)!;
-    expect(morningMon.time).toBe('05:55'); // réveil 5 h 45 + 10 min
-    expect(new Date(morningMon.at).toISOString()).toBe('2026-10-19T03:55:00.000Z'); // été UTC+2
+    expect(morningMon.time).toBe('06:40'); // réveil 6 h 30 + 10 min
+    expect(new Date(morningMon.at).toISOString()).toBe('2026-10-19T04:40:00.000Z'); // été UTC+2
     const morningNext = list.find((r) => r.id === `morning:${addDays(MONDAY, 7)}`)!;
-    expect(new Date(morningNext.at).toISOString()).toBe('2026-10-26T04:55:00.000Z'); // hiver UTC+1
+    expect(new Date(morningNext.at).toISOString()).toBe('2026-10-26T05:40:00.000Z'); // hiver UTC+1
   });
 
   it('dîner après le coaching à la fin du coaching ; sinon 1 h avant le dîner', () => {
     const list = buildReminders(planned(), MONDAY, 7, 0);
-    expect(list.find((r) => r.id === `dinner:${addDays(MONDAY, 1)}`)!.time).toBe('20:30');
-    expect(list.find((r) => r.id === `dinner:${MONDAY}`)!.time).toBe('18:00');
+    expect(list.find((r) => r.id === `dinner:${addDays(MONDAY, 1)}`)!.time).toBe('20:00');
+    expect(list.find((r) => r.id === `dinner:${MONDAY}`)!.time).toBe('18:30');
   });
 
   it('rappel de décongélation la veille au soir des portions congelées', () => {
@@ -98,7 +98,7 @@ describe('rappels', () => {
     d.weights = [];
     const w = buildReminders(d, MONDAY, 7, 0).filter((r) => r.category === 'weigh');
     expect(w.map((r) => r.date)).toEqual([addDays(MONDAY, 6)]); // dimanche
-    expect(w[0].time).toBe('09:15');
+    expect(w[0].time).toBe('09:45');
     d.weights.push({ id: 'w', date: MONDAY, kg: 68 });
     expect(buildReminders(d, MONDAY, 7, 0).some((r) => r.category === 'weigh')).toBe(false);
   });
@@ -115,13 +115,13 @@ describe('rappels', () => {
 describe('tendance du poids', () => {
   it('lisse les variations ponctuelles', () => {
     const pts = weightTrend([
-      { id: 'a', date: '2026-10-19', kg: 68.3 },
-      { id: 'b', date: '2026-10-26', kg: 69.4 },
-      { id: 'c', date: '2026-11-02', kg: 67.8 }
+      { id: 'a', date: '2026-10-19', kg: 69 },
+      { id: 'b', date: '2026-10-26', kg: 70.2 },
+      { id: 'c', date: '2026-11-02', kg: 68.6 }
     ]);
-    expect(pts[1].trend).toBeLessThan(69.4);
-    expect(pts[1].trend).toBeGreaterThan(68.3);
-    expect(pts[2].trend).toBeGreaterThan(67.8);
+    expect(pts[1].trend).toBeLessThan(70.2);
+    expect(pts[1].trend).toBeGreaterThan(69);
+    expect(pts[2].trend).toBeGreaterThan(68.6);
   });
 
   it('stagnation : message sans réduction de portions', () => {

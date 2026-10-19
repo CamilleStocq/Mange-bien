@@ -75,7 +75,7 @@ export interface ShoppingList {
   missingPrices: number;
   realSum: number;
   realTotal?: number;
-  budget: number;
+  budget?: number;
 }
 
 export function weekMeta(data: AppData, monday: string): WeekMeta {
@@ -127,6 +127,7 @@ export interface BudgetSuggestion {
  * on propose des recettes équivalentes moins chères, le stock du congélateur et les ingrédients communs.
  */
 export function budgetSuggestions(data: AppData, list: ShoppingList): BudgetSuggestion[] {
+  if (!list.budget) return [];
   const over = list.estimated - list.budget;
   if (over <= 0) return [];
   const out: BudgetSuggestion[] = [];

@@ -279,12 +279,13 @@ export interface FreezerItem {
 }
 
 export interface Profile {
-  heightCm: number;
-  startWeightKg: number;
+  heightCm?: number;
+  startWeightKg?: number;
+  /** Début du programme : aucun repas ni suivi n'est proposé avant cette date */
   startDate: ISODate;
-  targetWeightKg: number;
-  targetDate: ISODate;
-  planEnd: ISODate;
+  targetWeightKg?: number;
+  targetDate?: ISODate;
+  planEnd?: ISODate;
   hideWeightOnHome: boolean;
 }
 
@@ -296,7 +297,8 @@ export interface AppData {
   profile: Profile;
   schedule: DaySchedule[];
   breakfast: BreakfastItem[];
-  weeklyBudget: number;
+  /** Non défini tant que l'utilisatrice ne l'a pas saisi */
+  weeklyBudget?: number;
   saturdayDinner: 'restaurant' | 'free' | 'planned';
   maxFridgeDays: number;
   batchStart: HHMM;

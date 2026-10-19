@@ -1,16 +1,18 @@
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import type { ActivityKey, AuthStatus } from '../store/types';
 import { generateWeekIfEmpty, mutate, useData } from '../store/store';
-import { addDays, DAY_NAMES, todayISO, weekStart } from '../lib/dates';
+import { addDays, addMonths, DAY_NAMES, DAY_SHORT, formatLong, monthGrid, monthLabel, parseISO, todayISO, weekStart } from '../lib/dates';
+import { planningFrom } from '../lib/planning';
 import { formatQty, STATE_LABEL } from '../lib/units';
 import { capabilities, requestPermission } from '../lib/push';
 import { ACTIVITY_LABEL } from '../lib/reminders';
 import { go } from '../lib/router';
-import { Btn, Card, FruitArt, Icon, NumberField, Seg, Toggle, toast } from '../components/ui';
+import { Btn, Card, FruitArt, Icon, NumberField, Seg, SubmitBtn, Toggle, toast } from '../components/ui';
+import { randomId } from '../data/defaults';
 import { ACTIVITIES } from '../components/sport';
 import { DayScheduleEditor } from './Settings';
 
-const STEPS = ['Bienvenue', 'Toi', 'Repère', 'Petit-déjeuner', 'Horaires', 'Budget', 'Pesée', 'Notifications', 'Sport', 'Recettes', 'Planning'];
+const STEPS = ['Bienvenue', 'Début', 'Toi', 'Repère', 'Petit-déjeuner', 'Horaires', 'Budget', 'Pesée', 'Notifications', 'Sport', 'Recettes', 'Planning'];
 
 export function Onboarding() {
   const d = useData((x) => x);
@@ -22,7 +24,7 @@ export function Onboarding() {
     window.scrollTo(0, 0);
   };
   const finish = () => {
-    const monday = weekStart(todayISO());
+    const monday = weekStart(planningFrom(d, todayISO()));
     generateWeekIfEmpty(monday);
     generateWeekIfEmpty(addDays(monday, 7));
     mutate((x) => { x.onboardingDone = true; });
@@ -48,7 +50,14 @@ export function Onboarding() {
     </div>
   );
 
-  switch (step) {
+  if (step === 1) {
+    return wrap('Quand veux-tu commencer le programme ?', (
+      <StartPicker value={d.profile.startDate < todayISO() ? todayISO() : d.profile.startDate} onChange={(v) => mutate((x) => { x.profile.startDate = v; })} />
+    ), <Btn onClick={() => next('startDate')}>Commencer le {formatLong(d.profile.startDate < todayISO() ? todayISO() : d.profile.startDate).replace(/ \d{4}$/, '')}</Btn>);
+  }
+
+  // Étape 1 = date de début ; les étapes suivantes gardent leur numérotation d'origine.
+  switch (step === 0 ? 0 : step - 1) {
     case 0:
       return wrap(<span className="highlight-title" aria-label="Bienvenue dans Mange bien !"><span className="hl hl-1">Bienvenue</span> <span className="hl hl-2">dans</span> <span className="hl hl-3">Mange</span> <span className="hl hl-4">bien&nbsp;!</span></span>, (<>
         <FruitArt className="welcome-art" />
@@ -61,7 +70,7 @@ export function Onboarding() {
       return wrap('Taille et poids actuel', (
         <Card>
           <NumberField label="Taille" suffix="cm" value={d.profile.heightCm} min={120} max={220} onChange={(v) => v && mutate((x) => { x.profile.heightCm = v; })} />
-          <NumberField label="Poids actuel" suffix="kg" value={d.profile.startWeightKg} min={30} max={250} onChange={(v) => v && mutate((x) => { x.profile.startWeightKg = v; const s = x.weights.find((w) => w.id === 'start'); if (s) s.kg = v; })} />
+          <NumberField label="Poids actuel" suffix="kg" value={d.profile.startWeightKg} min={30} max={250} onChange={(v) => v && mutate((x) => { x.profile.startWeightKg = v; const s = x.weights.find((w) => w.id === 'start'); if (s) s.kg = v; else x.weights.push({ id: 'start', date: todayISO(), kg: v, note: 'Poids de départ' }); })} />
         </Card>
       ), nav('profile'));
     case 2:
@@ -75,14 +84,15 @@ export function Onboarding() {
     case 3:
       return wrap('Ton petit-déjeuner', (
         <Card>
-          <p className="small">Il est prévu chaque matin par défaut. Portions de départ :</p>
+          <p className="small">Il est prévu chaque matin. Ajoute ce que tu manges habituellement, avec les quantités :</p>
           {d.breakfast.map((b, k) => (
             <div key={b.id} className="row">
               <span className="grow">{b.name}<div className="tiny muted">{b.state ? STATE_LABEL[b.state] : ''}{b.hint ? ` — ${b.hint}` : ''}</div></span>
               <div style={{ width: 110 }}><NumberField value={b.qty} min={0} suffix={b.unit} onChange={(v) => mutate((x) => { x.breakfast[k].qty = v ?? 0; })} /></div>
             </div>
           ))}
-          <p className="tiny muted">Total : {d.breakfast.map((b) => formatQty(b.qty, b.unit)).join(' + ')}</p>
+          {d.breakfast.length > 0 && <p className="tiny muted">Total : {d.breakfast.map((b) => formatQty(b.qty, b.unit)).join(' + ')}</p>}
+          <BreakfastAdder />
         </Card>
       ), nav('breakfast'));
     case 4:
@@ -155,9 +165,71 @@ export function Onboarding() {
     default:
       return wrap('Ta première semaine', (
         <Card tint="sage">
-          <p>Je prépare ta semaine en cours et la suivante à partir de tes recettes : petit-déjeuner habituel, batch du dimanche pour les jours chargés, recettes rapides le jeudi soir et le week-end, samedi soir libre.</p>
+          {d.profile.startDate > todayISO() && <p><strong>Ton programme commence le {formatLong(d.profile.startDate)}.</strong> Rien n’est prévu avant : tes repas, ta pesée et tes rappels démarrent ce jour-là.</p>}
+          <p>Je prépare ta première semaine et la suivante à partir de tes recettes : petit-déjeuner habituel, batch du dimanche pour les jours chargés, recettes rapides le jeudi soir et le week-end, samedi soir libre.</p>
           <p className="small muted">Tu pourras remplacer, déplacer ou ajouter n’importe quel repas.</p>
         </Card>
       ), <Btn onClick={finish}>Générer mon planning</Btn>);
   }
+}
+
+/** Calendrier mensuel pour choisir le premier jour du programme (aujourd'hui ou plus tard). */
+function StartPicker({ value, onChange }: { value: string; onChange: (d: string) => void }) {
+  const today = todayISO();
+  const [anchor, setAnchor] = useState(value);
+  const grid = useMemo(() => monthGrid(anchor), [anchor]);
+  const month = parseISO(anchor).getUTCMonth();
+  const nextMonday = addDays(weekStart(today), 7);
+  const canGoBack = monthLabel(anchor) !== monthLabel(today);
+  return (
+    <Card>
+      <p className="small">Choisis le jour où tu veux démarrer. Je proposerai tes recettes et ton suivi à partir de cette date, pas avant. Tu pourras la changer dans Réglages.</p>
+      <div className="row wrap">
+        <button type="button" className="chip sky" aria-pressed={value === today} onClick={() => { onChange(today); setAnchor(today); }}>Aujourd’hui</button>
+        <button type="button" className="chip warn" aria-pressed={value === nextMonday} onClick={() => { onChange(nextMonday); setAnchor(nextMonday); }}>Lundi prochain</button>
+      </div>
+      <div className="row between">
+        <button type="button" className="icon-btn" aria-label="Mois précédent" disabled={!canGoBack} onClick={() => setAnchor(addMonths(anchor, -1))}><Icon name="left" /></button>
+        <strong className="cap">{monthLabel(anchor)}</strong>
+        <button type="button" className="icon-btn" aria-label="Mois suivant" onClick={() => setAnchor(addMonths(anchor, 1))}><Icon name="right" /></button>
+      </div>
+      <div className="month start-picker" role="grid" aria-label={`Date de début, ${monthLabel(anchor)}`}>
+        {DAY_SHORT.map((x) => <div key={x} className="mh">{x}</div>)}
+        {grid.map((x) => {
+          const past = x < today;
+          return (
+            <button
+              key={x}
+              type="button"
+              className={`${parseISO(x).getUTCMonth() !== month ? 'out' : ''} ${x === today ? 'today' : ''}`}
+              aria-pressed={x === value}
+              aria-disabled={past}
+              aria-label={formatLong(x)}
+              onClick={() => { if (!past) onChange(x); }}
+            >
+              {parseISO(x).getUTCDate()}
+            </button>
+          );
+        })}
+      </div>
+      <p className="strong cap">Premier jour : {formatLong(value)}</p>
+    </Card>
+  );
+}
+
+/** Ajout d'un aliment au petit-déjeuner habituel (aucun aliment n'est pré-rempli). */
+function BreakfastAdder() {
+  const [name, setName] = useState('');
+  const [qty, setQty] = useState<number | undefined>();
+  const [unit, setUnit] = useState<'g' | 'ml' | 'pièce'>('g');
+  return (
+    <div className="col">
+      <div className="row" style={{ alignItems: 'flex-end' }}>
+        <label className="field grow">Aliment<input className="input" placeholder="ex. yaourt nature" value={name} onChange={(e) => setName(e.target.value)} /></label>
+        <div style={{ width: 92 }}><NumberField label="Quantité" value={qty} min={0} onChange={setQty} /></div>
+        <label className="field" style={{ width: 84 }}>Unité<select className="input" value={unit} onChange={(e) => setUnit(e.target.value as typeof unit)}><option>g</option><option>ml</option><option>pièce</option></select></label>
+      </div>
+      <SubmitBtn variant="secondary" small icon="plus" missing={(!name.trim() || !qty) && 'Indique l’aliment et sa quantité.'} onClick={() => { mutate((x) => { x.breakfast.push({ id: randomId(), name: name.trim(), qty: qty!, unit, state: '', hint: '' }); }); setName(''); setQty(undefined); }}>Ajouter à mon petit-déjeuner</SubmitBtn>
+    </div>
+  );
 }

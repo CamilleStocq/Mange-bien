@@ -24,7 +24,7 @@ function dayEvents(data: AppData, date: string): Ev[] {
     out.push({ key: m.id, kind: 'food', time: mealTime(m, data), text: `${SLOT_LABEL[m.slot]} · ${mealTitle(m, data)}${isActive(m) ? '' : ` (${m.status})`}` });
   }
   const s = data.schedule[weekdayIndex(date)];
-  if (s.coaching) out.push({ key: 'coach', kind: 'coach', time: s.coaching.start, text: 'Coaching athlétisme (pro)' });
+  if (s.coaching) out.push({ key: 'coach', kind: 'coach', time: s.coaching.start, text: 'Coaching (pro)' });
   for (const x of data.sport.sessions.filter((y) => y.date === date)) {
     out.push({ key: x.id, kind: 'sport', time: x.time, text: `${ACTIVITY_LABEL[x.activity]} ${x.durationMin} min${x.status !== 'prévue' ? ` (${x.status})` : ''}` });
   }

@@ -1,7 +1,8 @@
 import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
-import { generateWeekIfEmpty, useApp, useData } from './store/store';
+import { generateWeekIfEmpty, getData, useApp, useData } from './store/store';
 import { useRoute, type Route } from './lib/router';
 import { addDays, todayISO, weekStart } from './lib/dates';
+import { planningFrom } from './lib/planning';
 import { ConfirmHost, Icon, ToastHost } from './components/ui';
 import { Today } from './pages/Today';
 import { CalendarPage, DayPage } from './pages/Calendar';
@@ -118,7 +119,7 @@ export function App() {
   // Le planning se prolonge tout seul : semaine en cours et suivante générées si elles sont vides.
   useEffect(() => {
     if (!hydrated || !onboardingDone) return;
-    const monday = weekStart(todayISO());
+    const monday = weekStart(planningFrom(getData(), todayISO()));
     generateWeekIfEmpty(monday);
     generateWeekIfEmpty(addDays(monday, 7));
   }, [hydrated, onboardingDone, route.path]);

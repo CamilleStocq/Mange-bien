@@ -116,7 +116,20 @@ export function generateWeek(data: AppData, monday: string): GenerateResult {
     meals.push({ ...base, id: mealId(), date: sat, slot: 'dinner', kind: data.saturdayDinner, source: 'fresh', note: 'Profite de ton repas. Le planning continue normalement demain, sans rien compenser.' });
   }
 
-  return { meals, rotation: rot + 1 };
+  const start = data.profile?.startDate;
+  return { meals: start ? meals.filter((m) => m.date >= start) : meals, rotation: rot + 1 };
+}
+
+/** Premier jour à planifier : aujourd'hui, ou la date de début du programme si elle est à venir. */
+export function planningFrom(data: AppData, today: string): string {
+  const start = data.profile?.startDate;
+  return start && start > today ? start : today;
+}
+
+/** Vrai tant que le programme n'a pas commencé. */
+export function beforeStart(data: AppData, date: string): boolean {
+  const start = data.profile?.startDate;
+  return !!start && date < start;
 }
 
 /** Recalcule frigo / congélateur d'un repas batch après un déplacement ou un changement de recette. */

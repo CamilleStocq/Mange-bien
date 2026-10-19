@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ensureWeek, mutate, useData } from '../store/store';
-import { addDays, formatLong, todayISO, weekStart, weekdayIndex } from '../lib/dates';
+import { addDays, diffDays, formatLong, todayISO, weekStart, weekdayIndex } from '../lib/dates';
+import { beforeStart } from '../lib/planning';
 import { ENCOURAGEMENTS, pickFor } from '../lib/messages';
 import { randomId } from '../data/defaults';
 import { Btn, Card, CardHead, FruitArt, Icon, NumberField, toast, SubmitBtn } from '../components/ui';
@@ -14,7 +15,7 @@ function WeighPrompt({ today }: { today: string }) {
   const meta = data.weeks[monday];
   const done = data.weights.some((w) => w.date >= monday && w.date <= addDays(monday, 6));
   const due = weekdayIndex(today) >= data.weighDay;
-  if (!data.weighReminders || done || !due || meta?.weighing === 'ignoré' || (meta?.weighPostponedTo && today < meta.weighPostponedTo)) return null;
+  if (beforeStart(data, today) || !data.weighReminders || done || !due || meta?.weighing === 'ignoré' || (meta?.weighPostponedTo && today < meta.weighPostponedTo)) return null;
   return (
     <Card tint="peach">
       <CardHead icon="scale" title="Point hebdomadaire" />
@@ -49,6 +50,9 @@ export function Today() {
   const phase = useData((d) => d.sport.phase);
   const pushOn = useData((d) => d.push.subscribed);
   const [showHours, setShowHours] = useState(false);
+  const start = useData((d) => d.profile.startDate);
+  const notStarted = useData((d) => beforeStart(d, today));
+  const inDays = diffDays(start, today);
   return (
     <div className="page">
       <div className="topbar">
@@ -66,6 +70,16 @@ export function Today() {
           <span className="chip rose">{phase === 'recuperation' ? 'Sport : phase de récupération' : 'Sport : reprise progressive'}</span>
         </div>
       </section>
+      {notStarted && (
+        <Card tint="warn">
+          <CardHead icon="calendar" title={inDays === 1 ? 'C’est demain !' : `J-${inDays}`} />
+          <p>Ton programme commence le <strong>{formatLong(start)}</strong>. D’ici là, rien à faire : tes repas, ta pesée et tes rappels démarreront ce jour-là.</p>
+          <div className="row wrap">
+            <a className="btn small" href={`#/jour/${start}`}>Voir mon premier jour</a>
+            <a className="btn secondary small" href="#/alimentation?tab=recettes">Découvrir mes recettes</a>
+          </div>
+        </Card>
+      )}
       <WeighPrompt today={today} />
       <DayTasksCard date={today} />
       <DayMeals date={today} />

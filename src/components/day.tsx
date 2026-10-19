@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useData } from '../store/store';
-import { mealsOfDay, SLOT_ORDER } from '../lib/planning';
+import { beforeStart, mealsOfDay, SLOT_ORDER } from '../lib/planning';
 import { dayTasks } from '../lib/tasks';
-import { formatHHMM, weekdayIndex } from '../lib/dates';
+import { formatHHMM, formatLong, weekdayIndex } from '../lib/dates';
 import { ACTIVITY_LABEL } from '../lib/reminders';
 import { Btn, Card, CardHead, Empty, Icon } from './ui';
 import { MealCard, MealEditor } from './meals';
@@ -17,7 +17,7 @@ export function ScheduleStrip({ date }: { date: string }) {
       {s.coaching && (
         <div className="ev coach">
           <span className="ev-time">{formatHHMM(s.coaching.start)}</span>
-          <span>Coaching d’athlétisme jusqu’à {formatHHMM(s.coaching.end)} <span className="tiny muted">— engagement professionnel, pas ta séance</span></span>
+          <span>Coaching jusqu’à {formatHHMM(s.coaching.end)} <span className="tiny muted">— engagement professionnel, pas ta séance</span></span>
         </div>
       )}
       <div className="ev prep"><span className="ev-time">{formatHHMM(s.bed)}</span>Coucher</div>
@@ -51,6 +51,8 @@ export function DayTasksCard({ date }: { date: string }) {
 
 export function DayMeals({ date, expanded }: { date: string; expanded?: boolean }) {
   const all = useData((d) => d.meals);
+  const notStarted = useData((d) => beforeStart(d, date));
+  const start = useData((d) => d.profile.startDate);
   const meals = useMemo(() => mealsOfDay(all, date), [all, date]);
   const [adding, setAdding] = useState(false);
   const sorted = [...meals].sort((a, b) => SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot));
@@ -60,10 +62,17 @@ export function DayMeals({ date, expanded }: { date: string; expanded?: boolean 
       {sorted.length ? (
         <div className="col">{sorted.map((m) => <MealCard key={m.id} m={m} expanded={expanded} />)}</div>
       ) : (
-        <Empty icon="food">
-          <p>Aucun repas prévu ce jour-là.</p>
-          <a className="btn secondary small" href="#/alimentation">Générer la semaine</a>
-        </Empty>
+        notStarted ? (
+          <Empty>
+            <p>Ton programme commence le {formatLong(start)}. Rien n’est prévu avant, c’est normal.</p>
+            <a className="btn secondary small" href={`#/jour/${start}`}>Voir mon premier jour</a>
+          </Empty>
+        ) : (
+          <Empty icon="food">
+            <p>Aucun repas prévu ce jour-là.</p>
+            <a className="btn secondary small" href="#/alimentation">Générer la semaine</a>
+          </Empty>
+        )
       )}
       {adding && <MealEditor date={date} slot="dinner" onClose={() => setAdding(false)} />}
     </Card>

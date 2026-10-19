@@ -434,6 +434,12 @@ table.simple td, table.simple th { border-bottom: 1px solid color-mix(in srgb, v
 .hl-3 { background: var(--lemon); }
 .hl-4 { background: #f7bfd3; }
 
+/* Choix de la date de début (accueil) */
+.start-picker button { aspect-ratio: 1; }
+.start-picker button[aria-disabled='true'] { opacity: 0.3; cursor: not-allowed; }
+.chip[aria-pressed] { min-height: 44px; padding: 0 16px; border: 0; cursor: pointer; font: inherit; font-weight: 600; font-size: 0.9rem; }
+.chip[aria-pressed='true'] { background: var(--ink); color: #fffaf2; }
+
 /* ================= Section Calendrier : affiche de Pâques (référence Baru) =================
    Fond moutarde plein, panneaux crème très arrondis, découpes en biais (bandes roses, rouge-orangé),
    store vert à longs pans, rayons de soleil, ombres décalées vert sapin, serif gras et rond centré. */

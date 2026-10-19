@@ -89,7 +89,7 @@ function SportPlanning() {
         return (
           <Card key={d}>
             <h2 className="cap">{formatLong(d).replace(/ \d{4}$/, '')}</h2>
-            {coach && <div className="ev coach"><span className="ev-time">{formatHHMM(coach.start)}</span>Coaching d’athlétisme — engagement professionnel (pas ta séance)</div>}
+            {coach && <div className="ev coach"><span className="ev-time">{formatHHMM(coach.start)}</span>Coaching — engagement professionnel (pas ta séance)</div>}
             {ds.map((s) => <SessionCard key={s.id} s={s} />)}
           </Card>
         );

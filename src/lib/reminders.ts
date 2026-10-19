@@ -17,6 +17,9 @@ export interface Reminder {
   url: string;
 }
 
+/** Rappels utiles avant le début du programme : préparer la première semaine. */
+const PREP_BEFORE_START = new Set<NotifCategory>(['defrost', 'prepEve', 'batch', 'batchRemaining', 'shopping']);
+
 export const CATEGORY_INFO: Record<NotifCategory, { label: string; group: 'Repas' | 'Préparation' | 'Sport et récupération' | 'Suivi'; help: string }> = {
   morning: { label: 'Programme du matin', group: 'Repas', help: 'Après le réveil (décalage en minutes).' },
   breakfast: { label: 'Petit-déjeuner', group: 'Repas', help: 'Après le réveil (décalage en minutes).' },
@@ -81,8 +84,10 @@ export function buildReminders(data: AppData, fromDate: string, days: number, no
     const lunch = meals.find((m) => m.slot === 'lunch');
     const dinner = meals.find((m) => m.slot === 'dinner');
     const snack = meals.find((m) => m.slot === 'snack');
+    const notStarted = !!data.profile?.startDate && d < data.profile.startDate;
     const add = (category: NotifCategory, time: string, title: string, body: string, url: string, suffix = '') => {
       if (!rules[category]?.enabled) return;
+      if (notStarted && !PREP_BEFORE_START.has(category)) return;
       out.push({ id: `${category}:${d}${suffix}`, at: zonedToUtc(d, time), date: d, time, category, title, body, url });
     };
     const offset = (c: NotifCategory, def: number) => rules[c]?.offsetMin ?? def;
@@ -159,7 +164,7 @@ export function buildReminders(data: AppData, fromDate: string, days: number, no
     if (data.sport.phase === 'recuperation' && wd === 6 && !sessions.length) {
       add('recovery', rules.recovery.time ?? '10:00', 'Récupération', 'Aujourd’hui, la récupération fait partie du programme.', '#/sport');
     }
-    add('pain', rules.pain.time ?? '21:30', 'Comment va ton dos ?', 'Si tu le souhaites, note tes sensations du jour en quelques secondes.', '#/sport?tab=douleurs');
+    add('pain', rules.pain.time ?? '21:30', 'Comment te sens-tu ?', 'Si tu le souhaites, note tes sensations du jour en quelques secondes.', '#/sport?tab=douleurs');
 
     // Suivi
     if (data.weighReminders && wd === data.weighDay) {

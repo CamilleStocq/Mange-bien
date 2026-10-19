@@ -32,7 +32,7 @@ function Weight() {
   const points = useMemo(() => weightTrend(data.weights), [data.weights]);
   const { targetWeightKg: target, targetDate, startWeightKg } = data.profile;
   const chart = points.map((p) => ({ date: formatShort(p.date), Pesée: p.kg, Tendance: p.trend }));
-  const values = points.flatMap((p) => [p.kg, p.trend]).concat(target);
+  const values = points.flatMap((p) => [p.kg, p.trend]).concat(target != null ? [target] : []);
   const lo = Math.floor(Math.min(...values) - 1);
   const hi = Math.ceil(Math.max(...values) + 1);
   const last = points[points.length - 1];
@@ -52,7 +52,7 @@ function Weight() {
         <CardHead icon="chart" title="Évolution du poids" />
         {points.length >= 2 ? (
           <>
-            <div className="chart-wrap" role="img" aria-label={`Graphique du poids : dernière pesée ${last ? formatNumber(last.kg) : ''} kg, tendance ${last ? formatNumber(last.trend) : ''} kg, objectif indicatif ${formatNumber(target)} kg.`}>
+            <div className="chart-wrap" role="img" aria-label={`Graphique du poids : dernière pesée ${last ? formatNumber(last.kg) : ''} kg, tendance ${last ? formatNumber(last.trend) : ''} kg${target != null ? `, objectif indicatif ${formatNumber(target)} kg` : ''}.`}>
               <ResponsiveContainer>
                 <LineChart data={chart} margin={{ top: 16, right: 12, left: -18, bottom: 0 }}>
                   <CartesianGrid stroke="var(--line)" vertical={false} />
@@ -60,7 +60,7 @@ function Weight() {
                   <YAxis domain={[lo, hi]} tick={axis} tickLine={false} axisLine={false} unit=" kg" width={64} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v) => `${formatNumber(Number(v))} kg`} />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <ReferenceLine y={target} stroke="var(--text-2)" strokeDasharray="5 4" label={{ value: `Repère indicatif ${formatNumber(target)} kg · ${formatDayMonth(targetDate)}`, position: 'insideBottomRight', fill: 'var(--text-2)', fontSize: 11 }} />
+                  {target != null && <ReferenceLine y={target} stroke="var(--text-2)" strokeDasharray="5 4" label={{ value: `Repère indicatif ${formatNumber(target)} kg ${targetDate ? ` · ${formatDayMonth(targetDate)}` : ''}`, position: 'insideBottomRight', fill: 'var(--text-2)', fontSize: 11 }} />}
                   <Line type="monotone" dataKey="Pesée" stroke="var(--c2)" strokeWidth={0} dot={{ r: 4, fill: 'var(--c2)', stroke: 'var(--surface)', strokeWidth: 2 }} activeDot={{ r: 6 }} isAnimationActive={false} />
                   <Line type="monotone" dataKey="Tendance" stroke="var(--c1)" strokeWidth={2} dot={false} isAnimationActive={false} />
                 </LineChart>
@@ -73,9 +73,9 @@ function Weight() {
         )}
         <p className="small">{trendMessage(points)}</p>
         <div className="grid3">
-          <div className="col" style={{ gap: 0 }}><span className="tiny muted">Départ</span><strong>{formatNumber(startWeightKg)} kg</strong></div>
+          <div className="col" style={{ gap: 0 }}><span className="tiny muted">Départ</span><strong>{startWeightKg != null ? `${formatNumber(startWeightKg)} kg` : '—'}</strong></div>
           <div className="col" style={{ gap: 0 }}><span className="tiny muted">Tendance</span><strong>{last ? `${formatNumber(last.trend)} kg` : '—'}</strong></div>
-          <div className="col" style={{ gap: 0 }}><span className="tiny muted">Repère</span><strong>{formatNumber(target)} kg</strong></div>
+          <div className="col" style={{ gap: 0 }}><span className="tiny muted">Repère</span><strong>{target != null ? `${formatNumber(target)} kg` : '—'}</strong></div>
         </div>
         <p className="tiny muted">Le poids varie d’un jour à l’autre (eau, sel, cycle, digestion, entraînement) : ces écarts ne correspondent pas forcément à de la masse grasse. Ton énergie, ton sommeil et ta récupération comptent tout autant.</p>
       </Card>

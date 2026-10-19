@@ -5,9 +5,28 @@ import { refreshStorage } from '../src/lib/planning';
 export const MONDAY = '2026-10-19'; // un lundi
 export const SUNDAY_BEFORE = '2026-10-18';
 
+/** Données de test fictives (les données de départ de l'app sont volontairement vides). */
 export function fresh(): AppData {
   const d = createDefaultData('2026-10-19');
   d.onboardingDone = true;
+  const work = { start: '08:30', end: '17:00' };
+  const coaching = { start: '18:00', end: '20:00' };
+  d.schedule = [
+    { day: 0, wake: '06:30', work, lunch: '12:30', dinner: '19:30', bed: '22:30', note: '' },
+    { day: 1, wake: '07:00', work, coaching, snack: '17:15', lunch: '12:30', dinner: '20:30', bed: '22:30', note: '' },
+    { day: 2, wake: '07:00', work, coaching, snack: '17:15', lunch: '12:30', dinner: '20:30', bed: '22:30', note: '' },
+    { day: 3, wake: '07:00', work, lunch: '12:30', dinner: '19:30', bed: '22:30', note: '' },
+    { day: 4, wake: '07:00', work, coaching, snack: '17:15', lunch: '12:30', dinner: '20:30', bed: '22:30', note: '' },
+    { day: 5, wake: '09:00', lunch: '12:30', dinner: '20:00', bed: '23:00', note: '' },
+    { day: 6, wake: '09:30', lunch: '12:30', dinner: '19:00', bed: '22:30', note: '' }
+  ];
+  d.breakfast = [
+    { id: 'yaourt', name: 'yaourt grec', qty: 200, unit: 'g', state: '', hint: '' },
+    { id: 'muesli', name: 'muesli ou granola', qty: 30, unit: 'g', state: 'sec', hint: '' }
+  ];
+  d.saturdayDinner = 'restaurant';
+  d.weeklyBudget = 100;
+  d.weights = [{ id: 'start', date: '2026-10-19', kg: 70 }];
   return d;
 }
 

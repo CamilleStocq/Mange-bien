@@ -49,6 +49,8 @@ export function SettingsPage() {
           <NumberField label="Repère indicatif" suffix="kg" value={d.profile.targetWeightKg} min={30} max={250} onChange={(v) => v && set((x) => { x.profile.targetWeightKg = v; })} />
           <label className="field">Date indicative<input className="input" type="date" value={d.profile.targetDate} onChange={(e) => e.target.value && set((x) => { x.profile.targetDate = e.target.value; })} /></label>
         </div>
+        <label className="field">Début du programme<input className="input" type="date" value={d.profile.startDate} onChange={(e) => e.target.value && set((x) => { x.profile.startDate = e.target.value; })} /></label>
+        <p className="tiny muted">Aucun repas ni suivi n’est proposé avant cette date. Les semaines déjà prévues ne changent pas : tu peux en régénérer une depuis Alimentation.</p>
         <label className="field">Fin de la période de planification<input className="input" type="date" value={d.profile.planEnd} onChange={(e) => e.target.value && set((x) => { x.profile.planEnd = e.target.value; })} /></label>
         <p className="tiny muted">Ton poids actuel s’enregistre dans « Ma progression » (pesées).</p>
       </Card>

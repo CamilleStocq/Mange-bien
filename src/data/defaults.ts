@@ -11,16 +11,9 @@ export function randomId(): string {
   return Array.from(a, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+/** Horaires neutres de départ : à compléter par l'utilisatrice pendant l'accueil. */
 export function defaultSchedule(): DaySchedule[] {
-  return [
-    { day: 0, wake: '05:45', work: { start: '08:10', end: '17:00' }, lunch: '12:30', dinner: '19:00', bed: '22:00', note: 'Retour à la maison vers 18 h.' },
-    { day: 1, wake: '08:00', work: { start: '08:30', end: '17:30' }, coaching: { start: '18:30', end: '20:30' }, lunch: '12:30', dinner: '21:00', bed: '22:15', snack: '17:45', note: 'Coaching d’athlétisme (engagement professionnel).' },
-    { day: 2, wake: '05:45', work: { start: '08:10', end: '17:00' }, coaching: { start: '18:30', end: '20:30' }, lunch: '12:30', dinner: '21:00', bed: '22:15', snack: '17:30', note: 'Départ direct vers le stade, retour vers 21 h.' },
-    { day: 3, wake: '08:00', work: { start: '08:30', end: '17:00' }, lunch: '12:30', dinner: '19:00', bed: '22:15', note: 'Soirée libre.' },
-    { day: 4, wake: '08:00', work: { start: '08:30', end: '17:30' }, coaching: { start: '18:30', end: '20:30' }, lunch: '12:30', dinner: '21:00', bed: '22:15', snack: '17:45', note: 'Coaching d’athlétisme (engagement professionnel).' },
-    { day: 5, wake: '08:30', lunch: '12:30', dinner: '20:00', bed: '23:00', note: 'Journée libre. Repas libre ou restaurant possible.' },
-    { day: 6, wake: '09:00', lunch: '12:30', dinner: '19:00', bed: '22:00', note: 'Créneau sport envisagé 10 h – 11 h 30, uniquement si la reprise est autorisée. Batch cooking l’après-midi.' }
-  ];
+  return [0, 1, 2, 3, 4, 5, 6].map((day) => ({ day, wake: day < 5 ? '07:00' : '08:30', lunch: '12:30', dinner: '19:00', bed: '22:30', note: '' }));
 }
 
 const rule = (r: Partial<NotifRule> & { enabled: boolean }): NotifRule => r;
@@ -59,22 +52,12 @@ export function createDefaultData(today = todayISO()): AppData {
     onboardingDone: false,
     confirmed: {},
     profile: {
-      heightCm: 170,
-      startWeightKg: 68.3,
       startDate: today,
-      targetWeightKg: 57,
-      targetDate: '2027-07-31',
-      planEnd: '2027-07-31',
       hideWeightOnHome: true
     },
     schedule: defaultSchedule(),
-    breakfast: [
-      { id: 'yaourt', name: 'yaourt grec', qty: 200, unit: 'g', state: '', hint: 'nature' },
-      { id: 'fruits', name: 'fruits (framboises, kiwi, ananas)', qty: 150, unit: 'g', state: 'comestible', hint: 'pesés épluchés / sans peau' },
-      { id: 'muesli', name: 'muesli ou granola', qty: 30, unit: 'g', state: 'sec', hint: 'pesé sec, avant d’ajouter le yaourt' }
-    ],
-    weeklyBudget: 120,
-    saturdayDinner: 'restaurant',
+    breakfast: [],
+    saturdayDinner: 'planned',
     maxFridgeDays: 3,
     batchStart: '14:30',
     weighDay: 6,
@@ -103,7 +86,7 @@ export function createDefaultData(today = todayISO()): AppData {
       ],
       currentStage: 0
     },
-    weights: [{ id: 'start', date: today, kg: 68.3, note: 'Poids de départ déclaré' }],
+    weights: [],
     measurements: [],
     rotation: 0,
     theme: 'auto',

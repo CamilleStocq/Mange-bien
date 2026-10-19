@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { AppData, RecipeCategory } from '../store/types';
 import { generateWeekIfEmpty, loadPhoto, mutate, regenerateWeek, useData } from '../store/store';
 import { addDays, formatDayMonth, formatLong, todayISO, weekDays, weekStart } from '../lib/dates';
-import { mealsOfDay, mealsOfWeek } from '../lib/planning';
+import { beforeStart, mealsOfDay, mealsOfWeek } from '../lib/planning';
 import { buildShoppingList } from '../lib/shopping';
 import { buildBatchPlan } from '../lib/batch';
 import { formatEuro, ingredientKey, recipeCost } from '../lib/units';
@@ -44,7 +44,7 @@ function Shortcuts() {
       <a className="card tile tint-rose" href={`#/courses?w=${nextMonday}`} style={{ textDecoration: 'none', color: 'inherit' }}>
         <Icon name="cart" />
         <strong>Mes courses</strong>
-        <span className="small muted">≈ {formatEuro(list.estimated)} / {formatEuro(list.budget)}</span>
+        <span className="small muted">≈ {formatEuro(list.estimated)}{list.budget ? ` / ${formatEuro(list.budget)}` : ''}</span>
       </a>
     </div>
   );
@@ -64,18 +64,25 @@ function Planning({ initial }: { initial?: string }) {
       </div>
       {meals.length === 0 ? (
         <Card tint="sage">
+          {beforeStart(data, addDays(monday, 6)) ? (
+          <Empty>
+            <p>Ton programme commence le {formatLong(data.profile.startDate)} : rien n’est prévu cette semaine.</p>
+            <Btn onClick={() => setMonday(weekStart(data.profile.startDate))}>Voir ma première semaine</Btn>
+          </Empty>
+          ) : (
           <Empty icon="calendar">
             <p>Aucun repas planifié cette semaine.</p>
             <Btn onClick={() => { generateWeekIfEmpty(monday); toast('Semaine générée à partir de tes recettes'); }}>Générer la semaine</Btn>
             <p className="tiny">La génération utilise uniquement ta bibliothèque de recettes, en rotation.</p>
           </Empty>
+          )}
         </Card>
       ) : (
         <>
           <Card>
             <div className="row between small">
               <span>Courses estimées</span>
-              <strong>{formatEuro(list.estimated)} / {formatEuro(list.budget)}</strong>
+              <strong>{formatEuro(list.estimated)}{list.budget ? ` / ${formatEuro(list.budget)}` : ''}</strong>
             </div>
             <div className="row wrap">
               <a className="btn secondary small" href={`#/courses?w=${monday}`}>Liste de courses</a>
