@@ -77,7 +77,7 @@ export function createDefaultData(today = todayISO()): AppData {
     saturdayDinner: 'restaurant',
     maxFridgeDays: 3,
     batchStart: '14:30',
-    weighDay: 0,
+    weighDay: 6,
     weighReminders: true,
     hydration: { goalMl: 1800, log: {}, keepHistory: true },
     notif: { rules: defaultNotifRules(), quietStart: '22:30', quietEnd: '05:30', discreet: false },

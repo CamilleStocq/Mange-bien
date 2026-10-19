@@ -96,7 +96,9 @@ describe('rappels', () => {
   it('pesée proposée le jour choisi, pas si déjà faite cette semaine', () => {
     const d = planned();
     d.weights = [];
-    expect(buildReminders(d, MONDAY, 7, 0).some((r) => r.category === 'weigh')).toBe(true);
+    const w = buildReminders(d, MONDAY, 7, 0).filter((r) => r.category === 'weigh');
+    expect(w.map((r) => r.date)).toEqual([addDays(MONDAY, 6)]); // dimanche
+    expect(w[0].time).toBe('09:15');
     d.weights.push({ id: 'w', date: MONDAY, kg: 68 });
     expect(buildReminders(d, MONDAY, 7, 0).some((r) => r.category === 'weigh')).toBe(false);
   });
