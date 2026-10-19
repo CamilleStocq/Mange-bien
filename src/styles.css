@@ -433,3 +433,112 @@ table.simple td, table.simple th { border-bottom: 1px solid color-mix(in srgb, v
 .hl-2 { background: var(--lilac); }
 .hl-3 { background: var(--lemon); }
 .hl-4 { background: #f7bfd3; }
+
+/* ================= Section Calendrier : affiche de Pâques (référence Baru) =================
+   Fond moutarde plein, panneaux crème très arrondis, découpes en biais (bandes roses, rouge-orangé),
+   store vert à longs pans, rayons de soleil, ombres décalées vert sapin, serif gras et rond centré. */
+.app[data-section='calendrier'] {
+  --cal-cream: #f6ecda;
+  --cal-yellow: #f7b32b;
+  --cal-pink: #e0569b;
+  --cal-red: #ef5a2f;
+  --cal-green: #1f5a34;
+  --font-serif: 'Fraunces Variable', Georgia, serif;
+  --page: var(--cal-red);
+  --on-page: var(--cal-cream);
+  --page-bg: var(--cal-yellow);
+  --page-art: none;
+  color: var(--cal-green);
+}
+body:has(.app[data-section='calendrier']) { background: #f7b32b; }
+.app[data-section='calendrier'] :is(h1, h2, .cal-serif) { font-family: var(--font-serif); font-variation-settings: 'SOFT' 100, 'WONK' 1; font-weight: 800; letter-spacing: -0.01em; text-align: center; }
+
+/* Bandeau : panneau crème, store vert à longs pans arrondis, rayons de soleil, titre vert centré */
+.app[data-section='calendrier'] .topbar:has(h1) {
+  position: relative; overflow: hidden; justify-content: center; text-align: center;
+  min-height: 210px; padding: 104px 18px 24px; border-radius: 34px;
+  background:
+    radial-gradient(circle at 21px 54px, var(--cal-green) 20.5px, transparent 21px) 0 0 / 50px 80px repeat-x,
+    linear-gradient(to right, var(--cal-green) 0 41px, transparent 41px 50px) 0 0 / 50px 54px repeat-x,
+    repeating-conic-gradient(from -90deg at 50% 118%, rgba(239, 90, 47, 0.9) 0 7deg, transparent 7deg 18deg),
+    var(--cal-cream);
+}
+.app[data-section='calendrier'] .topbar:has(h1)::after { content: ''; position: absolute; left: 50%; bottom: -70px; width: 150px; height: 150px; translate: -50% 0; border-radius: 50%; background: var(--cal-yellow); }
+.app[data-section='calendrier'] .topbar:has(h1) > * { position: relative; z-index: 1; }
+.app[data-section='calendrier'] .topbar:has(h1) > h1,
+.app[data-section='calendrier'] .topbar:has(h1) > .grow { flex: 1 1 100%; order: 2; padding: 0; text-align: center; }
+.app[data-section='calendrier'] .topbar:has(h1) h1 { font-size: 2.5rem; line-height: 1; color: var(--cal-green); /* contour beige plein autour des lettres, sans flou */ text-shadow: 2.0px 0.0px 0 var(--cal-cream), 1.8px 0.8px 0 var(--cal-cream), 1.4px 1.4px 0 var(--cal-cream), 0.8px 1.8px 0 var(--cal-cream), 0.0px 2.0px 0 var(--cal-cream), -0.8px 1.8px 0 var(--cal-cream), -1.4px 1.4px 0 var(--cal-cream), -1.8px 0.8px 0 var(--cal-cream), -2.0px 0.0px 0 var(--cal-cream), -1.8px -0.8px 0 var(--cal-cream), -1.4px -1.4px 0 var(--cal-cream), -0.8px -1.8px 0 var(--cal-cream), -0.0px -2.0px 0 var(--cal-cream), 0.8px -1.8px 0 var(--cal-cream), 1.4px -1.4px 0 var(--cal-cream), 1.8px -0.8px 0 var(--cal-cream), 4.0px 0.0px 0 var(--cal-cream), 3.7px 1.5px 0 var(--cal-cream), 2.8px 2.8px 0 var(--cal-cream), 1.5px 3.7px 0 var(--cal-cream), 0.0px 4.0px 0 var(--cal-cream), -1.5px 3.7px 0 var(--cal-cream), -2.8px 2.8px 0 var(--cal-cream), -3.7px 1.5px 0 var(--cal-cream), -4.0px 0.0px 0 var(--cal-cream), -3.7px -1.5px 0 var(--cal-cream), -2.8px -2.8px 0 var(--cal-cream), -1.5px -3.7px 0 var(--cal-cream), -0.0px -4.0px 0 var(--cal-cream), 1.5px -3.7px 0 var(--cal-cream), 2.8px -2.8px 0 var(--cal-cream), 3.7px -1.5px 0 var(--cal-cream), 5.0px 0.0px 0 var(--cal-cream), 4.6px 1.9px 0 var(--cal-cream), 3.5px 3.5px 0 var(--cal-cream), 1.9px 4.6px 0 var(--cal-cream), 0.0px 5.0px 0 var(--cal-cream), -1.9px 4.6px 0 var(--cal-cream), -3.5px 3.5px 0 var(--cal-cream), -4.6px 1.9px 0 var(--cal-cream), -5.0px 0.0px 0 var(--cal-cream), -4.6px -1.9px 0 var(--cal-cream), -3.5px -3.5px 0 var(--cal-cream), -1.9px -4.6px 0 var(--cal-cream), -0.0px -5.0px 0 var(--cal-cream), 1.9px -4.6px 0 var(--cal-cream), 3.5px -3.5px 0 var(--cal-cream), 4.6px -1.9px 0 var(--cal-cream); }
+.app[data-section='calendrier'] .topbar:has(h1) h1::after { content: ''; }
+.app[data-section='calendrier'] .topbar:has(h1) > .icon-btn,
+.app[data-section='calendrier'] .topbar:has(h1) > .btn { position: absolute; bottom: 16px; z-index: 2; }
+.app[data-section='calendrier'] .topbar:has(h1) > .icon-btn { left: 16px; }
+.app[data-section='calendrier'] .topbar:has(h1) > .btn { right: 16px; }
+.app[data-section='calendrier'] .topbar:has(h1) { padding-bottom: 76px; }
+
+/* Boutons : les ronds rouge-orangé des affiches */
+.app[data-section='calendrier'] .icon-btn { background: var(--cal-red); color: var(--cal-cream); box-shadow: none; }
+.app[data-section='calendrier'] .btn:not(.secondary):not(.ghost):not(.danger):not(.destructive) { background: var(--cal-green); color: var(--cal-cream); }
+.app[data-section='calendrier'] .btn.ghost,
+.app[data-section='calendrier'] .btn.secondary { background: var(--cal-cream); color: var(--cal-green); box-shadow: none; }
+.app[data-section='calendrier'] .topbar .btn.ghost { background: var(--cal-red); color: var(--cal-cream); }
+
+/* Onglets : bande crème, l'onglet actif en parallélogramme rose */
+.app[data-section='calendrier'] .seg { background: var(--cal-cream); border: 0; border-radius: 22px; padding: 6px; }
+.app[data-section='calendrier'] .seg button { color: var(--cal-green); border-radius: 0; font-family: var(--font-serif); font-variation-settings: 'SOFT' 100; font-weight: 800; font-size: 1rem; }
+.app[data-section='calendrier'] .seg button[aria-pressed='true'] { background: var(--cal-pink); color: var(--cal-cream); clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%); }
+
+/* Navigation de période : titre serif vert sur le fond moutarde */
+.app[data-section='calendrier'] .row.between > .strong { font-family: var(--font-serif); font-variation-settings: 'SOFT' 100; font-weight: 800; font-size: 1.15rem; color: var(--cal-green); text-align: center; white-space: nowrap; }
+.app[data-section='calendrier'] .dot.food { background: var(--cal-cream); box-shadow: 0 0 0 1.5px var(--cal-green); }
+.app[data-section='calendrier'] .dot.sport { background: var(--cal-pink); }
+.app[data-section='calendrier'] .dot.coach { background: var(--cal-red); }
+.app[data-section='calendrier'] .dot.prep { background: var(--cal-green); }
+
+/* Panneaux crème très arrondis, sans contour ; l'en-tête est une bande rose découpée en biais */
+.app[data-section='calendrier'] .card { background: var(--cal-cream); border: 0; border-radius: 34px; padding: 0 18px 20px; overflow: hidden; gap: 10px; }
+.app[data-section='calendrier'] .card > a.row.between,
+.app[data-section='calendrier'] .card > .card-head { margin: 0 -18px 6px; padding: 18px 22px 22px; background: var(--cal-pink); color: var(--cal-cream); clip-path: polygon(0 0, 100% 0, 100% 78%, 0 100%); justify-content: center; position: relative; }
+.app[data-section='calendrier'] .card > a.row.between h2,
+.app[data-section='calendrier'] .card > .card-head h2 { color: var(--cal-cream); font-size: 1.55rem; }
+.app[data-section='calendrier'] .card > a.row.between svg { position: absolute; right: 18px; }
+.app[data-section='calendrier'] .card.today-card { border: 0; }
+.app[data-section='calendrier'] .card.today-card > a.row.between { background: var(--cal-red); }
+.app[data-section='calendrier'] .card > :last-child:is(p, .btn) { margin-bottom: 0; }
+.app[data-section='calendrier'] .card .card-head .pastille { display: none; }
+.app[data-section='calendrier'] .card[class*='tint-'] { background: var(--cal-pink); color: var(--cal-cream); padding: 22px 18px; }
+
+/* Événements : bandes plates aux couleurs de l'affiche, coins en biais */
+.app[data-section='calendrier'] .ev { color: var(--cal-green); border-radius: 0; clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%); padding: 11px 14px; }
+.app[data-section='calendrier'] .ev .ev-time { font-family: var(--font-serif); font-variation-settings: 'SOFT' 100; font-weight: 800; }
+.app[data-section='calendrier'] .ev.food { background: var(--cal-yellow); }
+.app[data-section='calendrier'] .ev.sport { background: var(--cal-pink); color: var(--cal-cream); }
+.app[data-section='calendrier'] .ev.coach { background: var(--cal-red); color: var(--cal-cream); }
+.app[data-section='calendrier'] .ev.prep { background: var(--cal-green); color: var(--cal-cream); }
+
+/* Mois : bloc rose découpé en biais, chaque jour est un œuf au plat avec son ombre verte décalée */
+.app[data-section='calendrier'] .month { background: var(--cal-pink); border-radius: 34px; padding: 18px 10px 22px; gap: 8px 6px; clip-path: polygon(0 2%, 100% 0, 100% 98%, 0 100%); }
+.app[data-section='calendrier'] .month .mh { color: var(--cal-cream); font-family: var(--font-serif); font-variation-settings: 'SOFT' 100; font-weight: 800; }
+.app[data-section='calendrier'] .month button {
+  background: #fffaf0; color: var(--cal-green); box-shadow: 3px 3px 0 var(--cal-green);
+  border-radius: 58% 42% 55% 45% / 47% 58% 42% 53%;
+  font-family: var(--font-serif); font-variation-settings: 'SOFT' 100; font-weight: 800; font-size: 1.05rem;
+}
+.app[data-section='calendrier'] .month button:nth-child(3n) { border-radius: 44% 56% 48% 52% / 56% 44% 56% 44%; }
+.app[data-section='calendrier'] .month button:nth-child(4n) { border-radius: 52% 48% 40% 60% / 50% 52% 48% 50%; }
+.app[data-section='calendrier'] .month button.out { opacity: 0.55; }
+.app[data-section='calendrier'] .month button.today { background: radial-gradient(circle at 50% 38%, var(--cal-yellow) 0 34%, #fffaf0 35%); box-shadow: 3px 3px 0 var(--cal-green); color: var(--cal-green); }
+.app[data-section='calendrier'] .month button[aria-pressed='true'] { background: var(--cal-red); color: var(--cal-cream); box-shadow: 3px 3px 0 var(--cal-green); }
+.app[data-section='calendrier'] .month button[aria-pressed='true'] .dot { box-shadow: 0 0 0 1.5px var(--cal-cream); }
+
+/* Journée : repas en bandes de couleur, nom en serif */
+.app[data-section='calendrier'][data-page] .meal { border-radius: 0; clip-path: polygon(0 0, 100% 2%, 99% 100%, 0 98%); }
+.app[data-section='calendrier'][data-page] .meal.slot-breakfast { background: var(--cal-yellow); }
+.app[data-section='calendrier'][data-page] .meal.slot-lunch { background: #f39cc4; }
+.app[data-section='calendrier'][data-page] .meal.slot-dinner { background: #f69a74; }
+.app[data-section='calendrier'][data-page] .meal.slot-snack { background: #bcd9c2; }
+.app[data-section='calendrier'] .meal-time { background: var(--cal-green); color: var(--cal-cream); }
+.app[data-section='calendrier'] .meal .meal-name { font-family: var(--font-serif); font-variation-settings: 'SOFT' 100; color: var(--cal-green); }
+.app[data-section='calendrier'] .meal .muted { color: var(--cal-green); }
+.app[data-section='calendrier'] .meal-actions .btn.ghost,
+.app[data-section='calendrier'] .meal-actions .btn.secondary { background: var(--cal-cream); }
+.app[data-section='calendrier'] .muted { color: color-mix(in srgb, var(--cal-green) 78%, transparent); }

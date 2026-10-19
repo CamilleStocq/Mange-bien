@@ -5,6 +5,7 @@ import { App } from './App';
 import { loadData } from './store/store';
 import { startAutoSync } from './lib/push';
 import '@fontsource-variable/outfit/wght.css';
+import '@fontsource-variable/fraunces/soft.css';
 import './styles.css';
 
 const root = createRoot(document.getElementById('root')!);
