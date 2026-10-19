@@ -12,7 +12,7 @@ export default defineConfig({
       filename: 'sw.ts',
       registerType: 'autoUpdate',
       injectRegister: false,
-      injectManifest: { globPatterns: ['**/*.{js,css,html,png,svg,ico,webmanifest}'] },
+      injectManifest: { globPatterns: ['**/*.{js,css,html,png,svg,ico,webmanifest,woff2}'] },
       devOptions: { enabled: false },
       manifest: {
         name: 'Mange bien ! — repas, sport & progression',
@@ -23,8 +23,8 @@ export default defineConfig({
         scope: './',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#FAF7F2',
-        theme_color: '#FAF7F2',
+        background_color: '#FBF8F4',
+        theme_color: '#FBF8F4',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },

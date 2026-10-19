@@ -183,7 +183,7 @@ mange-bien/
 ├─ src/
 │  ├─ main.tsx, App.tsx       démarrage, navigation, gestion d’erreurs
 │  ├─ sw.ts                   service worker (hors ligne + push)
-│  ├─ styles.css              thème pastel clair / sombre
+│  ├─ styles.css              thème pastel clair / sombre, titres en Outfit (auto-hébergée)
 │  ├─ store/                  types de données + stockage IndexedDB
 │  ├─ data/                   recettes de départ, catalogue d’ingrédients, réglages par défaut
 │  ├─ lib/                    logique testable : dates/fuseau, planning, courses, batch, rappels, stats, push

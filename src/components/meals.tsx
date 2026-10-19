@@ -95,9 +95,11 @@ export function MealCard({ m, expanded: initial = false }: { m: MealEntry; expan
   const done = m.status === 'mangé';
   return (
     <div className={`meal status-${m.status}`}>
-      <div className="meal-time">{formatHHMM(mealTime(m, data))}</div>
       <div className="meal-body">
-        <div className="tiny muted strong">{SLOT_LABEL[m.slot]}{m.portions !== 1 ? ` · ${String(m.portions).replace('.', ',')} portions` : ''}</div>
+        <div className="meal-head">
+          <span className="meal-time">{formatHHMM(mealTime(m, data))}</span>
+          <span className="tiny muted strong">{SLOT_LABEL[m.slot]}{m.portions !== 1 ? ` · ${String(m.portions).replace('.', ',')} portions` : ''}</span>
+        </div>
         <div className="meal-name">
           {m.kind === 'recipe' && m.recipeId ? <a href={`#/recette/${m.recipeId}`}>{title}</a> : title}
         </div>
@@ -108,7 +110,7 @@ export function MealCard({ m, expanded: initial = false }: { m: MealEntry; expan
         </div>
         {open && <MealQuantities m={m} data={data} />}
         {m.note && m.kind === 'recipe' && <div className="small muted">{m.note}</div>}
-        <div className="row wrap" style={{ marginTop: 4 }}>
+        <div className="row wrap meal-actions">
           {(m.kind === 'recipe' || m.kind === 'breakfast') && (
             <Btn variant="ghost" small onClick={() => setOpen(!open)} aria-expanded={open}>
               {open ? 'Masquer' : 'Quantités'}

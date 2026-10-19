@@ -9,7 +9,7 @@ const PATHS: Record<string, ReactNode> = {
   food: <><path d="M7 3.5v7a2 2 0 0 0 2 2v8M5 3.5v5M9 3.5v5" /><path d="M16.5 20.5v-17c-2 1-3 3.5-3 7 0 1.5.8 2.5 3 2.5" /></>,
   sport: <><circle cx="14" cy="5" r="1.8" /><path d="m7 21 3.5-5.5 3 2.5 1-5.5 3 2" /><path d="M9 10.5 12 8.5l3.5 1.5" /></>,
   chart: <><path d="M4 19.5h16" /><path d="m5 15 4.5-4.5 3.5 3L19.5 7" /><path d="M15.5 7h4v4" /></>,
-  gear: <><circle cx="12" cy="12" r="3" /><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8" /></>,
+  gear: <><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" /><circle cx="15" cy="7" r="2" /><circle cx="9" cy="12" r="2" /><circle cx="17" cy="17" r="2" /></>,
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
   plus: <path d="M12 5v14M5 12h14" />,
   minus: <path d="M5 12h14" />,
@@ -83,7 +83,7 @@ export function CardHead({ icon, title, right }: { icon?: string; title: ReactNo
   return (
     <div className="card-head">
       <div className="title">
-        {icon && <Icon name={icon} />}
+        {icon && <span className="pastille"><Icon name={icon} size={20} /></span>}
         <h2>{title}</h2>
       </div>
       {right}
@@ -246,7 +246,7 @@ export function Provisional({ show = true }: { show?: boolean }) {
 export function Empty({ icon = 'leaf', children }: { icon?: string; children: ReactNode }) {
   return (
     <div className="empty">
-      <Icon name={icon} size={30} />
+      <span className="pastille lg"><Icon name={icon} size={26} /></span>
       {children}
     </div>
   );
