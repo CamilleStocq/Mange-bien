@@ -39,7 +39,7 @@ export function meal(d: AppData, p: Partial<MealEntry> & { date: string }): Meal
 /** Recette de test simple : 120 g de viande crue et 80 g de pâtes sèches par portion. */
 export function testRecipe(over: Partial<Recipe> = {}): Recipe {
   return {
-    id: 'test-recette', name: 'Recette test', categories: ['plat'], servings: 4, prepMin: 10, cookMin: 30,
+    id: 'test-recette', name: 'Recette test', categories: ['mijote'], servings: 4, prepMin: 10, cookMin: 30,
     ingredients: [
       { name: 'haché de bœuf', qty: 480, unit: 'g', state: 'cru' },
       { name: 'pâtes', qty: 320, unit: 'g', state: 'sec', accomp: true },

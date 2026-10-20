@@ -121,7 +121,7 @@ describe('liste de courses', () => {
   it('budget dépassé : suggestions sans jamais réduire les portions', () => {
     d = fresh();
     d.weeklyBudget = 5;
-    d.meals.push(meal(d, { date: MONDAY, recipeId: 'saumon-epinards', source: 'fresh', portions: 2 }));
+    d.meals.push(meal(d, { date: MONDAY, recipeId: 'pates-saumon-epinards', source: 'fresh', portions: 2 }));
     const before = JSON.stringify(d.meals);
     const s = budgetSuggestions(d, buildShoppingList(d, MONDAY));
     expect(s.length).toBeGreaterThan(0);

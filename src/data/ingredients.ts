@@ -87,7 +87,49 @@ const ROWS: Row[] = [
   ['tomates', 'fruits-legumes', 1.29, 20, 0.9],
   ['olives noires', 'conserves', 5.56, 150, 1],
   ['oignon rouge', 'fruits-legumes', 1.79, 40, 1],
-  ['laitue romaine', 'fruits-legumes', 5.97, 15, 1.2]
+  ['laitue romaine', 'fruits-legumes', 5.97, 15, 1.2],
+  // Ajoutés avec les 47 recettes (20/10/2026) : prix Colruyt ESTIMÉS (formats courants), à vérifier en magasin.
+  ['coriandre', 'fruits-legumes', 43, 23, 2],
+  ['basilic frais', 'fruits-legumes', 59.7, 23, 3],
+  ['romarin frais', 'fruits-legumes', 59.6, 130, 3],
+  ['gingembre frais', 'fruits-legumes', 7.49, 80, 2],
+  ['piment rouge frais', 'fruits-legumes', 0.3, 5, 0.2],
+  ['brocoli', 'fruits-legumes', 3.98, 34, 3],
+  ['chou kale (cavolo nero)', 'fruits-legumes', 9.16, 50, 4],
+  ['épi de maïs', 'fruits-legumes', 1.0, 90, 3],
+  ['avocat', 'fruits-legumes', 0.89, 240, 3],
+  ['poulet entier', 'proteines', 5.5, 170, 19],
+  ['moules', 'proteines', 5.99, 85, 12],
+  ['chorizo', 'proteines', 12.4, 450, 24],
+  ['cuisse de canard confite', 'proteines', 12.13, 250, 18],
+  ['échine de porc', 'proteines', 8.99, 200, 18],
+  ['poitrine fumée', 'proteines', 9.5, 300, 15],
+  ['palette fumée', 'proteines', 11, 200, 18],
+  ['saucisses de Strasbourg', 'proteines', 8.54, 270, 12],
+  ['yaourt nature', 'laitiers', 1.98, 60, 4],
+  ['haricots blancs secs', 'feculents', 4.38, 330, 22],
+  ['riz pour risotto (arborio)', 'feculents', 3.29, 350, 7],
+  ['quinoa', 'feculents', 6.98, 360, 14],
+  ['concentré de tomate', 'conserves', 7.07, 100, 4],
+  ['câpres', 'conserves', 19.9, 25, 2],
+  ['anchois', 'conserves', 49.8, 210, 25],
+  ['thon au naturel', 'conserves', 12.07, 110, 25],
+  ['maïs doux', 'conserves', 3.47, 80, 3],
+  ['pâte de curry', 'epicerie', 21.15, 200, 3],
+  ['papadums', 'epicerie', 0.25, 45, 2],
+  ['moutarde', 'epicerie', 4.05, 150, 7],
+  ['sauce HP', 'epicerie', 13.7, 120, 1],
+  ['sauce pimentée', 'epicerie', 12, 60, 1],
+  ['bouillon de bœuf', 'epicerie', 0.16, 5, 0.5],
+  ['bouillon de volaille', 'epicerie', 0.16, 5, 0.5],
+  ['vinaigre de vin rouge', 'epicerie', 2.78, 20, 0],
+  ['noix de cajou', 'epicerie', 19.95, 580, 18],
+  ['amandes', 'epicerie', 16.45, 600, 21],
+  ['chutney de mangue', 'epicerie', 9.68, 230, 0.5],
+  ['huile de sésame', 'epicerie', 17.16, 820, 0],
+  ['miel', 'epicerie', 13.16, 320, 0.3],
+  ['graisse de canard', 'epicerie', 10.9, 900, 0],
+  ['bière blonde', 'autres', 2.2, 43, 0.5]
 ];
 
 /** Estimations de départ (version 1 des données), pour reconnaître les prix jamais modifiés à la main. */
@@ -260,7 +302,44 @@ const PACKS: [name: string, qty: number, unit: Unit][] = [
   ['tomates', 120, 'g'],
   ['olives noires', 400, 'g'],
   ['oignon rouge', 1000, 'g'],
-  ['laitue romaine', 300, 'g']
+  ['laitue romaine', 300, 'g'],
+  ['coriandre', 30, 'g'],
+  ['basilic frais', 30, 'g'],
+  ['romarin frais', 25, 'g'],
+  ['gingembre frais', 100, 'g'],
+  ['brocoli', 500, 'g'],
+  ['chou kale (cavolo nero)', 250, 'g'],
+  ['épi de maïs', 2, 'pièce'],
+  ['poulet entier', 1500, 'g'],
+  ['moules', 1000, 'g'],
+  ['chorizo', 225, 'g'],
+  ['cuisse de canard confite', 700, 'g'],
+  ['échine de porc', 500, 'g'],
+  ['poitrine fumée', 500, 'g'],
+  ['palette fumée', 800, 'g'],
+  ['saucisses de Strasbourg', 350, 'g'],
+  ['yaourt nature', 500, 'g'],
+  ['haricots blancs secs', 500, 'g'],
+  ['riz pour risotto (arborio)', 1000, 'g'],
+  ['quinoa', 500, 'g'],
+  ['concentré de tomate', 140, 'g'],
+  ['câpres', 100, 'g'],
+  ['anchois', 50, 'g'],
+  ['thon au naturel', 140, 'g'],
+  ['maïs doux', 285, 'g'],
+  ['pâte de curry', 165, 'g'],
+  ['papadums', 10, 'pièce'],
+  ['moutarde', 370, 'g'],
+  ['sauce HP', 255, 'ml'],
+  ['sauce pimentée', 150, 'ml'],
+  ['vinaigre de vin rouge', 500, 'ml'],
+  ['noix de cajou', 200, 'g'],
+  ['amandes', 200, 'g'],
+  ['chutney de mangue', 340, 'g'],
+  ['huile de sésame', 250, 'ml'],
+  ['miel', 250, 'g'],
+  ['graisse de canard', 320, 'g'],
+  ['bière blonde', 250, 'ml']
 ];
 
 /** Ajoute les formats manquants au catalogue (un format modifié à la main est conservé). */
@@ -269,6 +348,11 @@ export function addDefaultPacks(catalog: Record<string, IngredientInfo>): void {
     const info = catalog[ingredientKey(name)];
     if (info && !info.pack) info.pack = { qty, unit };
   }
+}
+
+/** Ajoute au catalogue les ingrédients par défaut qui y manquent (rien n'est modifié). */
+export function addMissingIngredients(catalog: Record<string, IngredientInfo>): void {
+  for (const [k, info] of Object.entries(defaultCatalog())) if (!catalog[k]) catalog[k] = info;
 }
 
 export function defaultCatalog(): Record<string, IngredientInfo> {

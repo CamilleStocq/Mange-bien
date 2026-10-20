@@ -6,12 +6,18 @@ import { fresh, MONDAY } from './helpers';
 import { addDays } from '../src/lib/dates';
 
 describe('bibliothèque de recettes', () => {
-  it('contient les 30 recettes de la liste, sans doublon', () => {
+  it('contient les 47 recettes de la liste, sans doublon', () => {
     const r = defaultRecipes();
-    expect(r.length).toBe(30);
-    expect(new Set(r.map((x) => ingredientKey(x.name))).size).toBe(30);
-    expect(r.filter((x) => x.name === 'Salade grecque')[0].categories).toEqual(['vegetarien', 'salade']);
-    expect(r.every((x) => x.provisional)).toBe(true);
+    expect(r.length).toBe(47);
+    expect(new Set(r.map((x) => x.id)).size).toBe(47);
+    expect(new Set(r.map((x) => ingredientKey(x.name))).size).toBe(47);
+    expect(r.filter((x) => x.name === 'Salade grecque')[0].categories).toEqual(['salade']);
+    expect(r.find((x) => x.id === 'paella')!.categories).toEqual(['mijote']);
+    // quantités des livres : confirmées ; les autres restent provisoires
+    expect(r.find((x) => x.id === 'moussaka')!.provisional).toBe(false);
+    expect(r.find((x) => x.id === 'moussaka')!.ingredients.find((i) => i.name === 'haché de bœuf')!.qty).toBe(400);
+    expect(r.find((x) => x.id === 'ratatouille')!.provisional).toBe(true);
+    for (const x of r) expect(x.steps.length, x.name).toBeGreaterThan(0);
   });
 
   it('chaque ingrédient a un prix et un rayon dans le catalogue', () => {
@@ -60,9 +66,9 @@ describe('génération de la semaine', () => {
   });
 
   it('riz : jamais plus de 24 h au frigo', () => {
-    const paella = d.recipes.find((r) => r.id === 'paella')!;
-    expect(storageFor(paella, MONDAY, addDays(MONDAY, 0), 3).storage).toBe('fridge');
-    expect(storageFor(paella, MONDAY, addDays(MONDAY, 1), 3).storage).toBe('freezer');
+    const riz = d.recipes.find((r) => r.id === 'riz-cantonais')!;
+    expect(storageFor(riz, MONDAY, addDays(MONDAY, 0), 3).storage).toBe('fridge');
+    expect(storageFor(riz, MONDAY, addDays(MONDAY, 1), 3).storage).toBe('freezer');
   });
 
   it('plat non congelable au-delà du frigo → cuisiné frais', () => {

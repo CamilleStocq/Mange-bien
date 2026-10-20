@@ -1,9 +1,9 @@
 import type { ActivityKey, AppData, Authorization, DaySchedule, NotifCategory, NotifRule } from '../store/types';
-import { addDefaultPacks, defaultCatalog, refreshDefaultPrices } from './ingredients';
-import { defaultRecipes } from './recipes';
+import { addDefaultPacks, addMissingIngredients, defaultCatalog, refreshDefaultPrices } from './ingredients';
+import { defaultRecipes, normalizeCategories, upgradeRecipes } from './recipes';
 import { todayISO } from '../lib/dates';
 
-export const DATA_VERSION = 3;
+export const DATA_VERSION = 4;
 
 export function randomId(): string {
   const a = new Uint8Array(8);
@@ -117,6 +117,10 @@ export function migrate(raw: unknown): AppData {
     },
     version: DATA_VERSION
   };
+  // Catégories : pâtes, soupes, salades, riz, plats mijotés, autres (les anciennes sont converties).
+  if (Array.isArray(merged.recipes) && merged.recipes.some((r) => r.categories.some((c) => !['pates', 'soupe', 'salade', 'riz', 'mijote', 'autre'].includes(c)))) {
+    merged.recipes = merged.recipes.map((r) => ({ ...r, categories: normalizeCategories(r) }));
+  }
   if (!Array.isArray(merged.schedule) || merged.schedule.length !== 7) merged.schedule = base.schedule;
   // Version 2 : prix Colruyt relevés (octobre 2026), sans toucher aux prix saisis à la main.
   if ((d.version ?? 1) < 2 && merged.ingredients) {
@@ -130,6 +134,13 @@ export function migrate(raw: unknown): AppData {
     // Carottes achetées en vrac (format choisi) : prix du vrac plutôt que du sac de 2 kg, sauf prix saisi à la main.
     const carrot = merged.ingredients['carotte'];
     if (carrot?.price === 0.72) carrot.price = 1.09;
+  }
+  // Version 4 : la bibliothèque devient la liste des 47 recettes (recettes modifiées à la main conservées).
+  if ((d.version ?? 1) < 4 && Array.isArray(merged.recipes)) {
+    const others = JSON.stringify({ ...merged, recipes: [] });
+    merged.recipes = upgradeRecipes(merged.recipes, (id) => others.includes(`"${id}"`));
+    merged.ingredients = structuredClone(merged.ingredients ?? {});
+    addMissingIngredients(merged.ingredients);
   }
   return merged;
 }

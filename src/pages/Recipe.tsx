@@ -12,10 +12,12 @@ import type { MealSlot } from '../store/types';
 const UNITS: Unit[] = ['g', 'ml', 'pièce'];
 const STATES: WeighState[] = ['', 'cru', 'sec', 'cuit', 'égoutté', 'comestible'];
 const CATS: { value: RecipeCategory; label: string }[] = [
-  { value: 'plat', label: 'Plat principal' },
-  { value: 'vegetarien', label: 'Végétarien / légumineuses' },
+  { value: 'pates', label: 'Pâtes' },
+  { value: 'soupe', label: 'Soupe' },
   { value: 'salade', label: 'Salade' },
-  { value: 'autre', label: 'Autres repas' }
+  { value: 'riz', label: 'Riz' },
+  { value: 'mijote', label: 'Plat mijoté' },
+  { value: 'autre', label: 'Autre' }
 ];
 
 export function RecipePage({ id }: { id: string }) {
@@ -42,7 +44,7 @@ export function RecipePage({ id }: { id: string }) {
       {photo && <img className="recipe-photo" src={photo} alt={`Photo : ${r.name}`} />}
       <h1>{r.name}</h1>
       <div className="row wrap">
-        {r.categories.map((c) => <span key={c} className="chip sage">{CATS.find((x) => x.value === c)?.label}</span>)}
+        {r.categories.map((c) => <span key={c} className={`chip cat-chip cat-${c}`}>{CATS.find((x) => x.value === c)?.label}</span>)}
         <span className="chip">{r.batchMode === 'full' ? 'Batch : cuire le dimanche' : 'Préparer seulement / cuire le jour même'}</span>
         <Provisional show={r.provisional} />
       </div>
@@ -164,7 +166,7 @@ async function resizeImage(file: File, max = 900): Promise<string> {
 
 function emptyRecipe(): Recipe {
   return {
-    id: randomId(), name: '', categories: ['plat'], servings: 4, prepMin: 15, cookMin: 30, ingredients: [{ name: '', qty: 0, unit: 'g', state: '' }],
+    id: randomId(), name: '', categories: ['autre'], servings: 4, prepMin: 15, cookMin: 30, ingredients: [{ name: '', qty: 0, unit: 'g', state: '' }],
     steps: [], substitutions: '', fridgeDays: 3, freezable: true, freezerMonths: 3, storageNotes: '', batchMode: 'full', quick: false, provisional: false
   };
 }

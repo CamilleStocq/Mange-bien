@@ -487,3 +487,20 @@ table.simple td, table.simple th { border-bottom: 1px solid color-mix(in srgb, v
 .hl-2 { background: #fdd5d2; }
 .hl-3 { background: #e9d1a9; }
 .hl-4 { background: #f1dccd; }
+
+/* ================= Catégories de recettes : une couleur par type =================
+   Carte de la liste en teinte claire, étiquette et filtre actif en couleur pleine. */
+.recipe-card.cat-pates { background: #f2e1bf; }
+.recipe-card.cat-soupe { background: #cddeeb; }
+.recipe-card.cat-salade { background: #dce3e7; }
+.recipe-card.cat-riz { background: #f1d6c2; }
+.recipe-card.cat-mijote { background: #fcc4bf; }
+.recipe-card.cat-autre { background: #fffaf3; }
+.recipe-card[class*='cat-'] { border: var(--rule); }
+.chip.cat-chip { border: 1.5px solid var(--ink); }
+.cat-chip.cat-pates, .seg button[data-value='pates'][aria-pressed='true'] { background: #e9d1a9; color: var(--ink); }
+.cat-chip.cat-soupe, .seg button[data-value='soupe'][aria-pressed='true'] { background: #427ca2; color: #fffaf3; }
+.cat-chip.cat-salade, .seg button[data-value='salade'][aria-pressed='true'] { background: #9aacb5; color: var(--ink); }
+.cat-chip.cat-riz, .seg button[data-value='riz'][aria-pressed='true'] { background: #e5b699; color: var(--ink); }
+.cat-chip.cat-mijote, .seg button[data-value='mijote'][aria-pressed='true'] { background: #fd9089; color: var(--ink); }
+.cat-chip.cat-autre, .seg button[data-value='autre'][aria-pressed='true'] { background: #fffaf3; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }

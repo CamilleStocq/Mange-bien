@@ -30,7 +30,7 @@ export interface IngredientLine {
   note?: string;
 }
 
-export type RecipeCategory = 'plat' | 'vegetarien' | 'salade' | 'autre';
+export type RecipeCategory = 'pates' | 'soupe' | 'salade' | 'riz' | 'mijote' | 'autre';
 
 /** full = cuire intégralement le dimanche ; prep = laver/couper/préportionner seulement, cuisson le jour même */
 export type BatchMode = 'full' | 'prep';

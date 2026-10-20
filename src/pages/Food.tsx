@@ -85,7 +85,7 @@ function Planning({ initial }: { initial?: string }) {
   );
 }
 
-const CAT_LABEL: Record<RecipeCategory, string> = { plat: 'Plats principaux', vegetarien: 'Végétarien / légumineuses', salade: 'Salades', autre: 'Autres repas' };
+const CAT_LABEL: Record<RecipeCategory, string> = { pates: 'Pâtes', soupe: 'Soupes', salade: 'Salades', riz: 'Riz', mijote: 'Plats mijotés', autre: 'Autres' };
 
 export function RecipeThumb({ id, has }: { id: string; has?: boolean }) {
   const [src, setSrc] = useState<string>();
@@ -113,19 +113,20 @@ function RecipeList() {
       <a className="btn" href="#/recette-nouvelle"><Icon name="plus" />Nouvelle recette</a>
       {provisional > 0 && <p className="small muted">{provisional} recette(s) ont encore des quantités provisoires : ouvre-les pour saisir tes proportions habituelles.</p>}
       <input className="input" type="search" aria-label="Rechercher une recette ou un ingrédient" placeholder="ex. poulet, chili…" value={q} onChange={(e) => setQ(e.target.value)} />
-      <Seg label="Catégorie" value={cat} options={[{ value: 'all', label: 'Toutes' }, { value: 'plat', label: 'Plats' }, { value: 'vegetarien', label: 'Végé' }, { value: 'salade', label: 'Salades' }, { value: 'autre', label: 'Autres' }]} onChange={setCat} />
+      <Seg label="Catégorie" value={cat} options={[{ value: 'all', label: 'Toutes' }, { value: 'pates', label: 'Pâtes' }, { value: 'soupe', label: 'Soupes' }, { value: 'salade', label: 'Salades' }, { value: 'riz', label: 'Riz' }, { value: 'mijote', label: 'Mijotés' }, { value: 'autre', label: 'Autres' }]} onChange={setCat} />
       <Card>
         {cat !== 'all' && <h2>{CAT_LABEL[cat]}</h2>}
         <div className="list">
-          {recipes.map((r, idx) => {
+          {recipes.map((r) => {
             const c = recipeCost(r, data.ingredients);
             return (
-              <a key={r.id} className={`recipe-card tone-${idx % 4}`} href={`#/recette/${r.id}`}>
+              <a key={r.id} className={`recipe-card cat-${r.categories[0] ?? 'autre'}`} href={`#/recette/${r.id}`}>
                 <RecipeThumb id={r.id} has={!!r.photo} />
                 <div className="grow col" style={{ gap: 6 }}>
                   <div className="recipe-card-title">{r.name}</div>
                   <div className="tiny muted">{r.servings} portions{r.provisional ? ' · quantités provisoires' : ''}</div>
                   <div className="row wrap" style={{ gap: 6 }}>
+                    {r.categories[0] && <span className={`chip cat-chip cat-${r.categories[0]}`}>{CAT_LABEL[r.categories[0]]}</span>}
                     <span className="chip lilac"><Icon name="clock" size={14} />{r.prepMin + r.cookMin} min</span>
                     <span className="chip warn"><Icon name="euro" size={14} />≈ {formatEuro(c.perPortion)}</span>
                     <span className={`chip ${r.batchMode === 'full' ? 'peach' : 'sage'}`}>{r.batchMode === 'full' ? 'batch' : 'jour même'}</span>
