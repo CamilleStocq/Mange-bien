@@ -6,7 +6,7 @@ import { ingredientKey, recipeNutrition } from './units';
  * Récupération après le sport : le repas qui suit une séance est choisi pour aider le corps à récupérer.
  * - cardio (course, vélo, natation) : glucides pour refaire le plein d'énergie + protéines ;
  * - renforcement : protéines d'abord, avec un peu de glucides ;
- * - coaching (horaire habituel) : les deux, sans savoir le contenu exact de la séance.
+ * Le coaching (horaire habituel) est ton travail : tu encadres, il ne compte pas comme une séance.
  * Marche et mobilité ne changent rien. Repères généraux, pas une prescription.
  */
 export type Effort = NonNullable<MealEntry['recovery']>;
@@ -36,8 +36,6 @@ export function recoveryNeeds(data: AppData, days: ISODate[]): RecoveryNeed[] {
     if (!prev || rank[effort] > rank[prev.effort]) out.set(k, { date, slot, effort });
   };
   for (const date of days) {
-    const sched = data.schedule[weekdayIndex(date)];
-    if (sched?.coaching) add(date, toMin(sched.coaching.end), 'coaching');
     for (const s of data.sport?.sessions ?? []) {
       if (s.date !== date || (s.status !== 'prévue' && s.status !== 'faite')) continue;
       const effort: Effort | undefined = CARDIO.has(s.activity) ? 'cardio' : s.activity === 'renforcement' ? 'force' : undefined;

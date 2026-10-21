@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
+import { addToFreezer } from '../lib/freezer';
 import { ensureWeek, mutate, useData } from '../store/store';
 import { addDays, formatHHMM, formatLong, formatShort, todayISO, weekStart } from '../lib/dates';
 import { buildBatchPlan, SAFETY_RULES, slotWhen } from '../lib/batch';
 import { SLOT_LABEL } from '../lib/planning';
 import { formatQty, STATE_LABEL } from '../lib/units';
 import type { Route } from '../lib/router';
-import { randomId } from '../data/defaults';
 import { Btn, Card, CardHead, Check, Empty, Icon, Progress, Stepper, toast } from '../components/ui';
 
 function durationLabel(min: number) {
@@ -36,7 +36,8 @@ export function BatchPage({ route }: { route: Route }) {
       const w = ensureWeek(d, monday);
       if (w.batchDone) return;
       w.batchDone = true;
-      for (const c of plan.cookFull) if (c.extra > 0) d.freezer.push({ id: randomId(), recipeId: c.recipe.id, name: c.recipe.name, portions: c.extra, frozenOn: plan.batchDay });
+      // portions prévues au congélateur + portions en plus : l'inventaire du congélateur se remplit tout seul
+      for (const c of plan.cookFull) addToFreezer(d, c.recipe.id, c.recipe.name, c.freezer.reduce((s, m) => s + m.portions, 0) + c.extra, plan.batchDay);
     });
     toast('Bravo pour ta préparation 🌿');
   };
@@ -161,7 +162,7 @@ export function BatchPage({ route }: { route: Route }) {
                 </div>
               ))}
             </div>
-            {done === plan.steps.length && !meta?.batchDone && <Btn onClick={finish}>Terminer le batch{plan.cookFull.some((c) => c.extra) ? ' et ajouter les portions au congélateur' : ''}</Btn>}
+            {(done === plan.steps.length || todayISO() >= plan.batchDay) && !meta?.batchDone && <Btn onClick={finish}>Terminer le batch{plan.cookFull.some((c) => c.extra || c.freezer.length) ? ' et ranger les portions au congélateur' : ''}</Btn>}
             {meta?.batchDone && <p className="small strong" style={{ color: 'var(--leaf)' }}>Batch terminé 🌿</p>}
           </Card>
 

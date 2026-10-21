@@ -4,6 +4,7 @@ import { registerSW } from 'virtual:pwa-register';
 import { App } from './App';
 import { loadData } from './store/store';
 import { startAutoSync } from './lib/push';
+import { startAutoBackup } from './lib/backup';
 import '@fontsource-variable/outfit/wght.css';
 import './styles.css';
 
@@ -16,6 +17,7 @@ loadData().then(() => {
     </StrictMode>
   );
   startAutoSync();
+  startAutoBackup();
 });
 
 // Service worker : fonctionnement hors ligne et réception des notifications push.

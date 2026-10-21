@@ -1,6 +1,7 @@
 import type { AppData, MealEntry, MealSlot, Recipe, Storage } from '../store/types';
 import { addDays, DAY_NAMES, diffDays, todayISO, weekDays, weekdayIndex } from './dates';
 import { EFFORT_NOTE, GOOD_RECOVERY, recoveryNeeds, recoveryScore } from './recovery';
+import { freezerFree } from './freezer';
 
 let counter = 0;
 export function mealId(): string {
@@ -377,8 +378,7 @@ export function rebalanceWeek(d: AppData, monday: string, today = todayISO()): v
     }
     const alt = batchCooked ? undefined : anyReady(m.date);
     if (alt) { toBatch(m, alt); note(); return; }
-    const reserved = (id: string) => d.meals.filter((x) => x !== m && x.source === 'stock' && x.recipeId === id && isActive(x) && x.status === 'prévu').length;
-    const frozen = d.freezer.find((f) => !!f.recipeId && f.portions > reserved(f.recipeId));
+    const frozen = d.freezer.find((f) => !!f.recipeId && freezerFree(d, f.recipeId, today, m) > 0);
     if (frozen) {
       m.recipeId = frozen.recipeId;
       m.source = 'stock';
@@ -516,9 +516,7 @@ export function cookingIssues(d: AppData, monday: string): CookingIssue[] {
       if (s.source !== 'batch') issue(m, 'portion du batch qui ne se conserve pas jusque-là');
       else if (m.storage !== s.storage) issue(m, 'frigo / congélateur incohérent');
     } else if (m.source === 'stock') {
-      const have = d.freezer.filter((f) => f.recipeId === m.recipeId).reduce((s, f) => s + f.portions, 0);
-      const used = d.meals.filter((x) => x.source === 'stock' && x.recipeId === m.recipeId && isActive(x) && x.status === 'prévu').length;
-      if (used > have) issue(m, 'pas de portion au congélateur');
+      if (m.status === 'prévu' && freezerFree(d, m.recipeId!, m.date) < 0) issue(m, 'pas de portion au congélateur');
     }
   }
   return out;

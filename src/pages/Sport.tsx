@@ -7,7 +7,7 @@ import { ACTIVITY_LABEL } from '../lib/reminders';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
 import { Btn, Card, CardHead, Empty, Icon, NumberField, Seg, TextField, confirmAsk, toast, SubmitBtn } from '../components/ui';
-import { ACTIVITIES, isAllowed, RED_FLAGS, SessionCard, SessionEditor, UrgentAlert } from '../components/sport';
+import { ACTIVITIES, AuthQuickSetup, DoneSessionSheet, isAllowed, RED_FLAGS, SessionCard, SessionEditor, UrgentAlert } from '../components/sport';
 
 type Tab = 'planning' | 'autorisations' | 'douleurs' | 'notes' | 'reprise';
 
@@ -46,6 +46,7 @@ function SportPlanning() {
   const data = useData((d) => d);
   const [monday, setMonday] = useState(weekStart(todayISO()));
   const [adding, setAdding] = useState<string | null>(null);
+  const [logging, setLogging] = useState(false);
   const sessions = data.sport.sessions.filter((s) => s.date >= monday && s.date <= addDays(monday, 6));
   const planned = sessions.filter((s) => s.status === 'prévue').reduce((a, s) => a + s.durationMin, 0);
   const done = sessions.filter((s) => s.status === 'faite').reduce((a, s) => a + s.durationMin, 0);
@@ -77,11 +78,12 @@ function SportPlanning() {
         </div>
         {stage && <p className="tiny muted">Repère de l’étape : {stage.sessionsPerWeek} séances de {stage.maxMinutes} min max, intensité {stage.intensity}.</p>}
         <div className="row wrap">
+          <Btn small variant="secondary" icon="check" onClick={() => setLogging(true)}>J’ai fait du sport aujourd’hui</Btn>
           <Btn small icon="plus" onClick={() => setAdding(todayISO() >= monday && todayISO() <= addDays(monday, 6) ? todayISO() : monday)}>Planifier une séance</Btn>
           {stage && allowed.length > 0 && sessions.length === 0 && <Btn small variant="secondary" onClick={propose}>Proposer une semaine douce</Btn>}
         </div>
-        {!allowed.length && <p className="small muted">Aucune activité n’est indiquée comme autorisée : renseigne-les dans l’onglet « Autorisations » après avis de ton médecin ou kiné.</p>}
       </Card>
+      {!allowed.length && ACTIVITIES.some((a) => data.sport.authorizations[a].status === 'inconnu') && <AuthQuickSetup />}
       {weekDays(monday).map((d) => {
         const ds = sessions.filter((s) => s.date === d);
         const coach = data.schedule[weekdayIndex(d)].coaching;
@@ -95,6 +97,7 @@ function SportPlanning() {
         );
       })}
       {adding && <SessionEditor date={adding} onClose={() => setAdding(null)} />}
+      {logging && <DoneSessionSheet onClose={() => setLogging(false)} />}
     </>
   );
 }

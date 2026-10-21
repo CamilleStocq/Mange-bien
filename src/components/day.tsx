@@ -2,11 +2,11 @@ import { useMemo, useState } from 'react';
 import { useData } from '../store/store';
 import { beforeStart, mealsOfDay, SLOT_ORDER } from '../lib/planning';
 import { dayTasks } from '../lib/tasks';
-import { formatHHMM, formatLong, weekdayIndex } from '../lib/dates';
+import { formatHHMM, formatLong, todayISO, weekdayIndex } from '../lib/dates';
 import { ACTIVITY_LABEL } from '../lib/reminders';
 import { Btn, Card, CardHead, Empty, Icon } from './ui';
 import { MealCard, MealEditor } from './meals';
-import { SessionCard } from './sport';
+import { DoneSessionSheet, SessionCard } from './sport';
 
 export function ScheduleStrip({ date }: { date: string }) {
   const s = useData((d) => d.schedule[weekdayIndex(date)]);
@@ -83,6 +83,7 @@ export function DaySport({ date }: { date: string }) {
   const sport = useData((d) => d.sport);
   const sessions = sport.sessions.filter((s) => s.date === date);
   const allowed = Object.entries(sport.authorizations).filter(([, a]) => a.status === 'autorisé' || a.status === 'restreint');
+  const [logging, setLogging] = useState(false);
   return (
     <Card tint="rose">
       <CardHead icon="sport" title="Activité" right={<a className="small" href="#/sport">Mon sport</a>} />
@@ -96,8 +97,10 @@ export function DaySport({ date }: { date: string }) {
       ) : allowed.length ? (
         <p className="small muted">Activités actuellement autorisées : {allowed.map(([k]) => ACTIVITY_LABEL[k]).join(', ')}. Rien n’est prévu aujourd’hui, et c’est très bien ainsi.</p>
       ) : (
-        <p className="small muted">Aucune activité n’est encore renseignée comme autorisée par ton médecin ou ton kiné.</p>
+        <p className="small muted">Aucune activité n’est encore renseignée comme autorisée par ton médecin ou ton kiné. <a href="#/sport">Les renseigner</a></p>
       )}
+      {date === todayISO() && <Btn small variant="secondary" icon="check" onClick={() => setLogging(true)}>J’ai fait du sport aujourd’hui</Btn>}
+      {logging && <DoneSessionSheet onClose={() => setLogging(false)} />}
     </Card>
   );
 }

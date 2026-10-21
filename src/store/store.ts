@@ -4,6 +4,7 @@ import type { AppData, MealEntry, MealStatus, WeekMeta } from './types';
 import { createDefaultData, migrate } from '../data/defaults';
 import { changedWeeks, generateWeek, mealsOfWeek, planSignature, rebalanceWeek, refreshStorage } from '../lib/planning';
 import { todayISO } from '../lib/dates';
+import { syncFreezerOnStatus } from '../lib/freezer';
 
 const KEY = 'mangebien:data';
 
@@ -128,10 +129,13 @@ export function updateMeal(id: string, patch: Partial<MealEntry>) {
   mutate((d) => {
     const i = d.meals.findIndex((m) => m.id === id);
     if (i < 0) return;
-    let m = { ...d.meals[i], ...patch };
+    const before = d.meals[i];
+    let m = { ...before, ...patch };
     if ('date' in patch || 'recipeId' in patch || 'source' in patch) {
       m = refreshStorage(m, d.recipes.find((r) => r.id === m.recipeId), d.maxFridgeDays);
     }
+    // « Mangé » sur une portion du congélateur : l'inventaire suit
+    if ('status' in patch) syncFreezerOnStatus(d, before, m);
     d.meals[i] = m;
   });
 }

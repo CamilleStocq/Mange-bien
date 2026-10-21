@@ -102,6 +102,8 @@ export interface MealEntry {
   recovery?: 'cardio' | 'force' | 'coaching';
   /** Restes : identifiant du dîner cuisiné dont c'est la 2e portion */
   leftoverOf?: string;
+  /** « Mangé » a retiré une portion de l'inventaire du congélateur */
+  tookFromFreezer?: boolean;
   /** Midi préparé la veille au soir (jamais cuisiné le midi même) */
   cookEve?: boolean;
   /** Choisi à la main : les recalculs automatiques n'y touchent pas */

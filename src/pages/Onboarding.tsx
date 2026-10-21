@@ -1,4 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
+import { RestoreCard } from '../components/backup';
 import type { ActivityKey, AuthStatus } from '../store/types';
 import { generateWeekIfEmpty, mutate, useData } from '../store/store';
 import { addDays, addMonths, DAY_NAMES, DAY_SHORT, formatLong, monthGrid, monthLabel, parseISO, todayISO, weekStart } from '../lib/dates';
@@ -65,6 +66,10 @@ export function Onboarding() {
           <p>Ton application pour savoir chaque jour quoi manger, quoi préparer le dimanche, quoi acheter et où tu en es — à ton rythme, sans pression.</p>
           <p className="small">Quelques questions rapides pour vérifier tes informations. Tout reste modifiable ensuite, et tu peux passer n’importe quelle étape : les informations non confirmées seront simplement marquées « provisoires ».</p>
         </Card>
+        <details className="card">
+          <summary className="strong">J’ai déjà une sauvegarde (nouveau téléphone)</summary>
+          <RestoreCard onDone={() => mutate((x) => { x.onboardingDone = true; })} />
+        </details>
       </>), <Btn onClick={() => next()}>Commencer</Btn>);
     case 1:
       return wrap('Taille et poids actuel', (

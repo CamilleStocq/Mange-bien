@@ -7,6 +7,7 @@ import { migrate, randomId } from '../data/defaults';
 import { go } from '../lib/router';
 import { Btn, Card, CardHead, Icon, NumberField, Seg, TextField, Toggle, ToggleRow, confirmAsk, toast, SubmitBtn } from '../components/ui';
 import { HydrationWidget } from '../components/hydration';
+import { BackupCard, RestoreCard } from '../components/backup';
 
 function LinkRow({ href, icon, label, hint }: { href: string; icon: string; label: string; hint?: string }) {
   return (
@@ -246,9 +247,11 @@ export function DataPage() {
       </div>
       <Card>
         <CardHead icon="info" title="Confidentialité" />
-        <p className="small">Tes recettes, repas, pesées, douleurs et réglages sont stockés <strong>uniquement sur cet appareil</strong> (IndexedDB). Ils ne sont envoyés nulle part.</p>
+        <p className="small">Tes recettes, repas, pesées, douleurs et réglages sont stockés <strong>sur cet appareil</strong> (IndexedDB). Si tu actives la sauvegarde automatique, une copie <strong>chiffrée sur ce téléphone</strong> est envoyée à ton serveur : sans ton code de sauvegarde, elle est illisible.</p>
         <p className="small">Si tu actives les rappels app fermée, seuls l’adresse technique de notification de l’appareil et le texte + l’heure des rappels des 21 prochains jours sont envoyés à ton serveur (mode discret possible). Aucun poids ni donnée de santé.</p>
       </Card>
+      <BackupCard />
+      <RestoreCard />
       <Card>
         <CardHead icon="download" title="Exporter" />
         <p className="small">Un fichier JSON avec toutes tes données (hors photos), à garder en sauvegarde (Fichiers, iCloud Drive…).</p>

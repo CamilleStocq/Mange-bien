@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ActivityKey, SportSession } from '../store/types';
 import { mutate, useData } from '../store/store';
-import { formatHHMM, formatShort, todayISO } from '../lib/dates';
+import { formatHHMM, formatShort, nowHHMM, todayISO } from '../lib/dates';
 import { ACTIVITY_LABEL } from '../lib/reminders';
 import { randomId } from '../data/defaults';
 import { Btn, Card, Icon, NumberField, Seg, Sheet, TextField, toast, confirmAsk, SubmitBtn } from './ui';
@@ -146,5 +146,77 @@ export function SessionEditor({ session, date, onClose }: { session?: SportSessi
         </>
       )}
     </Sheet>
+  );
+}
+
+/**
+ * « J'ai fait du sport aujourd'hui » : noter une séance déjà faite, même imprévue.
+ * Le repas suivant est alors choisi pour aider à récupérer (si ce n'est pas un repas choisi à la main).
+ */
+export function DoneSessionSheet({ onClose }: { onClose: () => void }) {
+  const auth = useData((d) => d.sport.authorizations);
+  const [activity, setActivity] = useState<ActivityKey>(ACTIVITIES.find((a) => isAllowed(auth[a].status)) ?? 'marche');
+  const [time, setTime] = useState(nowHHMM());
+  const [duration, setDuration] = useState<number | undefined>(45);
+  const [intensity, setIntensity] = useState<SportSession['intensity']>('douce');
+  const save = () => {
+    const minutes = duration ?? 30;
+    const [h, m] = time.split(':').map(Number);
+    const start = Math.max(0, h * 60 + m - minutes);
+    const startHHMM = `${String(Math.floor(start / 60)).padStart(2, '0')}:${String(start % 60).padStart(2, '0')}`;
+    mutate((d) => {
+      d.sport.sessions.push({ id: randomId(), date: todayISO(), time: startHHMM, activity, durationMin: minutes, intensity, status: 'faite', notes: 'Notée après coup' });
+    });
+    const cardio = activity === 'course' || activity === 'velo' || activity === 'natation';
+    toast(cardio || activity === 'renforcement' ? 'Séance notée : ton prochain repas t’aide à récupérer' : 'Séance notée');
+    onClose();
+  };
+  return (
+    <Sheet title="J’ai fait du sport aujourd’hui" onClose={onClose}>
+      <label className="field">
+        Activité
+        <select className="input" value={activity} onChange={(e) => setActivity(e.target.value as ActivityKey)}>
+          {ACTIVITIES.map((a) => <option key={a} value={a}>{ACTIVITY_LABEL[a]}{isAllowed(auth[a].status) ? '' : ' (non confirmée comme autorisée)'}</option>)}
+        </select>
+      </label>
+      {!isAllowed(auth[activity].status) && <p className="small muted">Cette activité n’est pas indiquée comme autorisée par ton médecin ou ton kiné : elle est notée, et tu pourras en parler lors de ta prochaine évaluation.</p>}
+      <div className="grid2">
+        <label className="field">
+          Terminée à
+          <input className="input" type="time" value={time} onChange={(e) => e.target.value && setTime(e.target.value)} />
+        </label>
+        <NumberField label="Durée" suffix="min" value={duration} min={5} max={300} onChange={setDuration} />
+      </div>
+      <Seg label="Intensité" value={intensity} options={[{ value: 'très douce', label: 'Très douce' }, { value: 'douce', label: 'Douce' }, { value: 'modérée', label: 'Modérée' }]} onChange={setIntensity} />
+      <Btn onClick={save} block>Noter la séance</Btn>
+    </Sheet>
+  );
+}
+
+/** Premier pas : dire, activité par activité, ce que ton médecin ou ton kiné a validé. */
+export function AuthQuickSetup() {
+  const auth = useData((d) => d.sport.authorizations);
+  const set = async (a: ActivityKey, status: 'autorisé' | 'non autorisé') => {
+    if (status === 'autorisé' && !(await confirmAsk({ title: `« ${ACTIVITY_LABEL[a]} » a été autorisé par ton médecin ou ton kiné ?`, confirm: 'Oui, c’est autorisé' }))) return;
+    mutate((d) => { d.sport.authorizations[a] = { ...d.sport.authorizations[a], status, updatedOn: todayISO() }; });
+  };
+  return (
+    <Card tint="warn">
+      <h2>Commence ici : ce qui t’est autorisé</h2>
+      <p className="small">Pour planifier tes séances (et avoir un repas de récupération après le cardio), indique ce que ton médecin ou ton kiné a validé. Pour des restrictions précises, utilise l’onglet « Autorisations ».</p>
+      <div className="list">
+        {ACTIVITIES.map((a) => (
+          <div key={a} className="list-item" style={{ flexWrap: 'wrap' }}>
+            <span className="grow strong">{ACTIVITY_LABEL[a]}</span>
+            {isAllowed(auth[a].status) ? <span className="chip sage">autorisé</span> : auth[a].status === 'non autorisé' ? <span className="chip rose">pas pour l’instant</span> : (
+              <>
+                <Btn small variant="secondary" onClick={() => set(a, 'autorisé')}>Autorisé</Btn>
+                <Btn small variant="ghost" onClick={() => set(a, 'non autorisé')}>Pas encore</Btn>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </Card>
   );
 }

@@ -5,6 +5,7 @@ import { addDays, formatDayMonth, formatLong, todayISO, weekDays, weekStart } fr
 import { beforeStart, mealsOfDay, mealsOfWeek } from '../lib/planning';
 import { buildShoppingList, homeStock } from '../lib/shopping';
 import { markLow } from '../lib/stock';
+import { freezerFree } from '../lib/freezer';
 import { formatEuro, formatQty, ingredientKey, recipeCost } from '../lib/units';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
@@ -174,14 +175,14 @@ function Stock() {
     <>
       <Card tint="sky">
         <CardHead icon="snow" title="Mon congélateur" />
-        <p className="small muted">Portions déjà prêtes. Pour en utiliser une, modifie un repas et choisis « Déjà au congélateur » : il ne sera pas compté dans les courses.</p>
+        <p className="small muted">Tenu à jour tout seul : les portions du batch y entrent quand tu termines le batch, et en sortent quand tu marques le repas « mangé ». Tu peux aussi corriger à la main.</p>
         {data.freezer.length ? (
           <div className="list">
             {data.freezer.map((f) => (
               <div key={f.id} className="list-item">
                 <div className="grow">
                   <div className="strong">{f.name}</div>
-                  <div className="tiny muted">congelé le {formatDayMonth(f.frozenOn)}</div>
+                  <div className="tiny muted">congelé le {formatDayMonth(f.frozenOn)}{f.recipeId && freezerFree(data, f.recipeId, todayISO()) < data.freezer.filter((x) => x.recipeId === f.recipeId).reduce((t, x) => t + x.portions, 0) ? ` · ${data.freezer.filter((x) => x.recipeId === f.recipeId).reduce((t, x) => t + x.portions, 0) - Math.max(0, freezerFree(data, f.recipeId, todayISO()))} déjà prévue(s) au planning` : ''}</div>
                 </div>
                 <Stepper label={`Portions de ${f.name}`} value={f.portions} min={0} onChange={(v) => mutate((d) => { const x = d.freezer.find((y) => y.id === f.id); if (x) x.portions = v; d.freezer = d.freezer.filter((y) => y.portions > 0); })} />
               </div>

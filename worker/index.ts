@@ -6,6 +6,8 @@
 // Données stockées (Workers KV) par appareil : l'abonnement push (adresse technique fournie par
 // Apple / le navigateur), une empreinte SHA-256 du jeton de l'appareil et la liste des rappels
 // (heure + titre + texte) des 21 prochains jours. Aucune donnée de poids, de santé ou de recette complète.
+// Sauvegarde (facultative) : un bloc CHIFFRÉ sur le téléphone (AES-GCM, clé tirée du code de sauvegarde que
+// le serveur ne connaît pas), rangé sous un identifiant dérivé de ce code. Le serveur ne peut pas le lire.
 import { sendPush, type PushSubscriptionJSON, type VapidKeys } from './webpush';
 
 export interface Env {
@@ -90,7 +92,38 @@ async function authDevice(req: Request, env: Env): Promise<{ id: string; device:
   return { id, device, tokenHash };
 }
 
+const MAX_BACKUP = 6_000_000;
+
+/** Sauvegarde chiffrée : écrire (/api/backup) ou relire (/api/restore). Code d'accès obligatoire. */
+async function handleBackup(req: Request, env: Env, path: string): Promise<Response> {
+  if (req.method !== 'POST') return err('Méthode non autorisée', 405);
+  if (Number(req.headers.get('Content-Length') ?? 0) > MAX_BACKUP + 2_000) return err('Sauvegarde trop volumineuse', 413);
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return err('JSON invalide', 400);
+  }
+  if (!env.ACCESS_CODE) return err('Serveur non configuré (ACCESS_CODE manquant).', 500);
+  if (typeof body.accessCode !== 'string' || !safeEqual(body.accessCode, env.ACCESS_CODE)) return err('Code d’accès du serveur incorrect.', 403);
+  const id = typeof body.id === 'string' ? body.id : '';
+  if (!/^[a-f0-9]{64}$/.test(id)) return err('Identifiant de sauvegarde invalide.', 400);
+  const key = `bak:${id}`;
+  if (path === '/api/backup') {
+    const blob = body.blob;
+    if (typeof blob !== 'string' || !blob.length || blob.length > MAX_BACKUP || !/^[A-Za-z0-9+/]+=*$/.test(blob)) return err('Sauvegarde invalide.', 400);
+    const prev = await env.KV.get(key);
+    if (prev) await env.KV.put(`${key}:prev`, prev); // la version précédente reste disponible en secours
+    await env.KV.put(key, JSON.stringify({ blob, savedAt: Date.now() }));
+    return json({ ok: true });
+  }
+  const saved = await env.KV.get<{ blob: string; savedAt: number }>(key, 'json');
+  if (!saved) return err('Aucune sauvegarde trouvée pour ce code de sauvegarde.', 404);
+  return json(saved);
+}
+
 async function handleApi(req: Request, env: Env, path: string): Promise<Response> {
+  if (path === '/api/backup' || path === '/api/restore') return handleBackup(req, env, path);
   if (path === '/api/health') return json({ ok: true, configured: !!(env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY && env.ACCESS_CODE && env.VAPID_SUBJECT) });
   if (path === '/api/vapid-public-key') {
     if (!env.VAPID_PUBLIC_KEY) return err('Serveur non configuré (clé VAPID manquante).', 500);
