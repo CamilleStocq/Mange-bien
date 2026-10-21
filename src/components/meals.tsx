@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { AppData, MealEntry, MealSlot, MealSource, MealStatus } from '../store/types';
 import { addMeal, deleteMeal, getData, updateMeal, useData } from '../store/store';
 import { SLOT_LABEL, equivalentRecipes, mealId } from '../lib/planning';
+import { EFFORT_LABEL } from '../lib/recovery';
 import { formatQty, ingredientKey, recipeCost, STATE_LABEL, formatEuro } from '../lib/units';
 import { addDays, formatHHMM, formatShort, shiftHHMM, weekdayIndex } from '../lib/dates';
 import { Btn, Icon, Provisional, Seg, Sheet, Stepper, TextField, toast, confirmAsk } from './ui';
@@ -105,6 +106,7 @@ export function MealCard({ m, expanded: initial = false }: { m: MealEntry; expan
         </div>
         <div className="row wrap">
           <SourceChip m={m} />
+          {m.recovery && m.kind === 'recipe' && <span className="chip recovery-chip">{EFFORT_LABEL[m.recovery]}</span>}
           {m.status !== 'prévu' && <span className={`chip ${STATUS_TONE[m.status]}`}>{m.status}</span>}
           {m.unplanned && <span className="chip">ajouté</span>}
         </div>

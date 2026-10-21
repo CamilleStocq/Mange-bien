@@ -98,6 +98,8 @@ export interface MealEntry {
   note?: string;
   /** repas ajouté hors planning */
   unplanned?: boolean;
+  /** Repas choisi pour récupérer après une séance (cardio, renforcement ou coaching) */
+  recovery?: 'cardio' | 'force' | 'coaching';
 }
 
 export interface DaySchedule {
