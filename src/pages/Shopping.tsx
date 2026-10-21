@@ -3,6 +3,7 @@ import type { Aisle } from '../store/types';
 import { ensureWeek, mutate, useData } from '../store/store';
 import { addDays, formatDayMonth, formatShort, todayISO, weekStart } from '../lib/dates';
 import { budgetSuggestions, buildShoppingList } from '../lib/shopping';
+import { recordPurchase } from '../lib/stock';
 import { AISLE_LABEL, AISLE_ORDER, formatEuro, formatQty, STATE_LABEL, ingredientKey } from '../lib/units';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
@@ -30,7 +31,12 @@ export function ShoppingPage({ route }: { route: Route }) {
   const inStock = list.items.filter((i) => i.needed <= 0);
   const checkedCount = toBuy.filter((i) => i.checked).length + list.manual.filter((m) => data.weeks[monday]?.shoppingChecks[m.id]).length;
 
-  const setCheck = (key: string, v: boolean) => mutate((d) => { ensureWeek(d, monday).shoppingChecks[key] = v; });
+  const setCheck = (key: string, v: boolean) => mutate((d) => {
+    ensureWeek(d, monday).shoppingChecks[key] = v;
+    // surplus du format acheté → stock des semaines suivantes ; basique du placard → « j'en ai »
+    const item = list.items.find((i) => i.key === key);
+    if (item) recordPurchase(d, monday, ingredientKey(item.name), v, item.buy - item.needed);
+  });
 
   const applySwap = (from: string, to: string) => {
     mutate((d) => {
@@ -146,7 +152,7 @@ export function ShoppingPage({ route }: { route: Route }) {
                         <div className="tiny muted">
                           {i.packs != null && Math.abs(i.buy - i.needed) > 0.01 && `besoin : ${formatQty(i.needed, i.unit, data.liquidDisplay)} · `}
                           {i.states.length > 0 && `${i.states.map((st) => STATE_LABEL[st]).join(' / ')} · `}
-                          {typeof i.owned === 'number' && i.owned > 0 && `déjà ${formatQty(i.owned, i.unit)} en stock · `}
+                          {typeof i.owned === 'number' && i.owned > 0 && `déjà ${formatQty(i.owned, i.unit)} à la maison · `}
                           {i.usedIn.join(', ')}
                         </div>
                       </div>

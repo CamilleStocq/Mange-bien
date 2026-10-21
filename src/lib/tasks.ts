@@ -2,7 +2,7 @@ import type { AppData } from '../store/types';
 import { addDays, weekStart, weekdayIndex } from './dates';
 import { buildBatchPlan } from './batch';
 import { isActive, mealsOfDay } from './planning';
-import { mealName } from './reminders';
+import { countLabels, mealName } from './reminders';
 
 export interface DayTask {
   id: string;
@@ -19,17 +19,23 @@ export function dayTasks(data: AppData, date: string): DayTask[] {
   const tomorrow = addDays(date, 1);
   const rules = data.notif.rules;
 
+  // Un seul rappel par plat, même s'il est prévu deux fois (midi et soir).
   const defrost = buildBatchPlan(data, weekStart(tomorrow)).defrost.filter((t) => t.on === date);
-  for (const t of defrost) {
-    out.push({ id: t.id, icon: 'snow', time: rules.defrost.time ?? '20:30', text: `Ce soir : sortir du congélateur et mettre au frigo — ${t.label} (pour demain).`, href: `#/jour/${tomorrow}` });
+  for (const label of countLabels(defrost.map((t) => t.label))) {
+    out.push({ id: `defrost:${date}:${label}`, icon: 'snow', time: rules.defrost.time ?? '20:30', text: `Ce soir : sortir du congélateur et mettre au frigo — ${label} (pour demain).`, href: `#/jour/${tomorrow}` });
   }
-  const freshTomorrow = mealsOfDay(data.meals, tomorrow).filter((m) => isActive(m) && m.kind === 'recipe' && m.source === 'fresh');
+  const once = <T extends { recipeId?: string }>(list: T[]) => list.filter((m, i) => list.findIndex((x) => x.recipeId === m.recipeId) === i);
+  const freshTomorrow = once(mealsOfDay(data.meals, tomorrow).filter((m) => isActive(m) && m.kind === 'recipe' && m.source === 'fresh'));
   for (const m of freshTomorrow) {
     out.push({ id: `eve:${m.id}`, icon: 'list', time: rules.prepEve.time ?? '20:00', text: `Vérifier les ingrédients pour demain : ${mealName(m, data)}.`, href: m.recipeId ? `#/recette/${m.recipeId}` : undefined });
   }
-  const freshToday = mealsOfDay(data.meals, date).filter((m) => isActive(m) && m.kind === 'recipe' && m.source === 'fresh' && m.slot !== 'breakfast');
+  for (const m of mealsOfDay(data.meals, tomorrow).filter((x) => isActive(x) && x.kind === 'recipe' && x.cookEve)) {
+    out.push({ id: `eve-cook:${m.id}`, icon: 'pot', time: rules.prepEve.time ?? '20:00', text: `Ce soir : prépare ${mealName(m, data)} pour demain midi, en boîte au frigo.`, href: m.recipeId ? `#/recette/${m.recipeId}` : undefined });
+  }
+  const freshToday = once(mealsOfDay(data.meals, date).filter((m) => isActive(m) && m.kind === 'recipe' && m.source === 'fresh' && m.slot !== 'breakfast' && !m.cookEve));
   for (const m of freshToday) {
-    out.push({ id: `cook:${m.id}`, icon: 'pot', text: `À cuisiner aujourd’hui : ${mealName(m, data)}.`, href: m.recipeId ? `#/recette/${m.recipeId}` : undefined });
+    const two = m.portions > 1 ? ` (${String(m.portions).replace('.', ',')} portions : une pour toi, le reste en boîte au frigo)` : '';
+    out.push({ id: `cook:${m.id}`, icon: 'pot', text: `À cuisiner aujourd’hui : ${mealName(m, data)}${two}.`, href: m.recipeId ? `#/recette/${m.recipeId}` : undefined });
   }
   if (wd === 6) {
     const plan = buildBatchPlan(data, tomorrow);

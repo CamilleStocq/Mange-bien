@@ -88,7 +88,7 @@ export function MealQuantities({ m, data, max = 20 }: { m: MealEntry; data: AppD
   );
 }
 
-export function MealCard({ m, expanded: initial = false }: { m: MealEntry; expanded?: boolean }) {
+export function MealCard({ m, expanded: initial = false, showDate = false }: { m: MealEntry; expanded?: boolean; showDate?: boolean }) {
   const data = useData((d) => d);
   const [open, setOpen] = useState(initial);
   const [edit, setEdit] = useState(false);
@@ -99,7 +99,7 @@ export function MealCard({ m, expanded: initial = false }: { m: MealEntry; expan
       <div className="meal-body">
         <div className="meal-head">
           <span className="meal-time">{formatHHMM(mealTime(m, data))}</span>
-          <span className="tiny muted strong">{SLOT_LABEL[m.slot]}{m.portions !== 1 ? ` · ${String(m.portions).replace('.', ',')} portions` : ''}</span>
+          <span className="tiny muted strong">{showDate && `${formatShort(m.date)} · `}{SLOT_LABEL[m.slot]}{m.portions !== 1 ? ` · ${String(m.portions).replace('.', ',')} portions` : ''}</span>
         </div>
         <div className="meal-name">
           {m.kind === 'recipe' && m.recipeId ? <a href={`#/recette/${m.recipeId}`}>{title}</a> : title}
@@ -180,7 +180,8 @@ export function MealEditor({ meal, date, slot, onClose }: { meal?: MealEntry; da
       addMeal(draft);
       toast('Repas ajouté');
     } else {
-      updateMeal(draft.id, draft);
+      const changed = draft.recipeId !== meal!.recipeId || draft.kind !== meal!.kind || draft.source !== meal!.source;
+      updateMeal(draft.id, changed ? { ...draft, pinned: true } : draft);
       toast('Repas mis à jour');
     }
     onClose();
@@ -203,7 +204,7 @@ export function MealEditor({ meal, date, slot, onClose }: { meal?: MealEntry; da
                   const next: MealEntry = { ...draft, kind: 'recipe', recipeId: r.id, note: isNew ? draft.note : `Remplace : ${prev}`, source: draft.source === 'stock' || draft.source === 'leftover' ? 'fresh' : draft.source };
                   if (isNew) setDraft(next);
                   else {
-                    updateMeal(draft.id, { kind: 'recipe', recipeId: r.id, note: next.note, source: next.source });
+                    updateMeal(draft.id, { kind: 'recipe', recipeId: r.id, note: next.note, source: next.source, pinned: true, leftoverOf: next.source === 'leftover' ? draft.leftoverOf : undefined });
                     toast(`Remplacé par ${r.name}`);
                     onClose();
                     return;

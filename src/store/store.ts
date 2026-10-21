@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { del, get, set } from 'idb-keyval';
 import type { AppData, MealEntry, MealStatus, WeekMeta } from './types';
 import { createDefaultData, migrate } from '../data/defaults';
-import { generateWeek, mealsOfWeek, refreshStorage } from '../lib/planning';
+import { changedWeeks, generateWeek, mealsOfWeek, planSignature, rebalanceWeek, refreshStorage } from '../lib/planning';
 import { todayISO } from '../lib/dates';
 
 const KEY = 'mangebien:data';
@@ -21,7 +21,10 @@ export const useApp = create<AppState>((setState, getState) => ({
   hydrated: false,
   mutate: (fn) => {
     const d = structuredClone(getState().data);
+    const before = planSignature(d);
     fn(d);
+    // Restes et récupération recalculés pour les semaines touchées par le changement.
+    for (const w of changedWeeks(before, d)) rebalanceWeek(d, w);
     setState({ data: d });
   },
   replaceAll: (d) => setState({ data: d })

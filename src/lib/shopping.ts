@@ -1,6 +1,7 @@
 import type { Aisle, AppData, IngredientLine, MealEntry, Recipe, Unit, WeekMeta, WeighState } from '../store/types';
 import { AISLE_ORDER, ingredientKey, lineCost, lineKey, purchaseQty, recipeCost } from './units';
 import { isActive, mealsOfWeek } from './planning';
+import { hasEnough, stockAt } from './stock';
 
 export interface AggLine {
   key: string;
@@ -85,8 +86,8 @@ export function weekMeta(data: AppData, monday: string): WeekMeta {
   return data.weeks[monday] ?? { batchChecks: {}, shoppingChecks: {}, manualItems: [], realPrices: {}, extraPortions: {} };
 }
 
-/** Liste de courses d'une semaine : repas prévus (y compris batch) + petits-déjeuners, moins le stock. */
-export function buildShoppingList(data: AppData, monday: string): ShoppingList {
+/** Ingrédients nécessaires pour les repas d'une semaine (avant déduction du stock). */
+export function weekLines(data: AppData, monday: string): Map<string, AggLine> {
   const meals = mealsOfWeek(data.meals, monday).filter(isActive);
   const meta = weekMeta(data, monday);
   const portions = portionsByRecipe(meals);
@@ -94,13 +95,36 @@ export function buildShoppingList(data: AppData, monday: string): ShoppingList {
   const map = aggregateRecipes(portions, data.recipes, data);
   const breakfasts = meals.filter((m) => m.kind === 'breakfast').reduce((s, m) => s + m.portions, 0);
   if (breakfasts) for (const b of data.breakfast) addLine(map, b, breakfasts, data, 'Petit-déjeuner');
+  return map;
+}
+
+/** Besoins d'une semaine par ingrédient (toutes unités confondues), pour suivre le stock. */
+export function weekNeeds(data: AppData, monday: string): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const l of weekLines(data, monday).values()) {
+    const k = ingredientKey(l.name);
+    out.set(k, (out.get(k) ?? 0) + l.qty);
+  }
+  return out;
+}
+
+/** Stock à la maison au début d'une semaine (saisi à la main + surplus des courses précédentes). */
+export function homeStock(data: AppData, monday: string): Map<string, number> {
+  return stockAt(data, monday, (v) => weekNeeds(data, v));
+}
+
+/** Liste de courses d'une semaine : repas prévus (y compris batch) + petits-déjeuners, moins le stock. */
+export function buildShoppingList(data: AppData, monday: string): ShoppingList {
+  const meta = weekMeta(data, monday);
+  const map = weekLines(data, monday);
+  const stock = homeStock(data, monday);
 
   const items: ShoppingItem[] = [];
   let estimated = 0;
   let missingPrices = 0;
   for (const line of map.values()) {
-    const pantry = data.pantry[ingredientKey(line.name)];
-    const owned: number | 'all' = pantry?.all ? 'all' : pantry?.qty ?? 0;
+    const k = ingredientKey(line.name);
+    const owned: number | 'all' = hasEnough(data, k, monday) ? 'all' : stock.get(k) ?? 0;
     const needed = owned === 'all' ? 0 : Math.max(0, line.qty - owned);
     const info = data.ingredients[ingredientKey(line.name)];
     const pack = info?.pack && info.pack.unit === line.unit && info.pack.qty > 0 ? info.pack.qty : undefined;

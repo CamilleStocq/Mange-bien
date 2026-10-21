@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { AppData, RecipeCategory } from '../store/types';
+import type { AppData, RecipeCategory, Unit } from '../store/types';
 import { generateWeekIfEmpty, loadPhoto, mutate, regenerateWeek, useData } from '../store/store';
 import { addDays, formatDayMonth, formatLong, todayISO, weekDays, weekStart } from '../lib/dates';
 import { beforeStart, mealsOfDay, mealsOfWeek } from '../lib/planning';
-import { buildShoppingList } from '../lib/shopping';
-import { formatEuro, ingredientKey, recipeCost } from '../lib/units';
+import { buildShoppingList, homeStock } from '../lib/shopping';
+import { markLow } from '../lib/stock';
+import { formatEuro, formatQty, ingredientKey, recipeCost } from '../lib/units';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
 import { Btn, Card, CardHead, Empty, Icon, NumberField, Seg, Stepper, confirmAsk, toast, SubmitBtn } from '../components/ui';
@@ -160,7 +161,15 @@ function Stock() {
   }, [data, nextMonday]);
   const allKeys = Object.keys(data.ingredients).sort((a, b) => a.localeCompare(b, 'fr'));
   const shown = (q ? allKeys.filter((k) => k.includes(ingredientKey(q))) : usedKeys.length ? usedKeys : allKeys).slice(0, 60);
-  const leftovers = data.meals.filter((m) => m.source === 'leftover' && m.date >= todayISO());
+  // Reste des courses : ce qui sera encore à la maison au début des deux prochaines semaines
+  const home = useMemo(() => {
+    const w = weekStart(todayISO());
+    const merged = new Map<string, number>();
+    for (const v of [addDays(w, 7), addDays(w, 14)]) for (const [k, q] of homeStock(data, v)) if (!data.pantry[k]?.qty) merged.set(k, Math.max(merged.get(k) ?? 0, q));
+    return [...merged].sort((a, b) => a[0].localeCompare(b[0], 'fr'));
+  }, [data]);
+  const placard = Object.entries(data.pantry).filter(([, p]) => p.staple && p.all).map(([k]) => k).sort((a, b) => a.localeCompare(b, 'fr'));
+  const leftovers = data.meals.filter((m) => m.source === 'leftover' && m.date >= todayISO() && m.status === 'prévu').sort((a, b) => a.date.localeCompare(b.date) || (a.slot === 'lunch' ? -1 : 1));
   return (
     <>
       <Card tint="sky">
@@ -194,11 +203,39 @@ function Stock() {
       </Card>
       <Card>
         <CardHead icon="fridge" title="Restes à consommer" />
-        {leftovers.length ? leftovers.map((m) => <MealCard key={m.id} m={m} />) : <p className="small muted">Aucun reste planifié. Pour en ajouter : « Ajouter » un repas et choisir l’origine « Restes ».</p>}
+        {leftovers.length ? leftovers.map((m) => <MealCard key={m.id} m={m} showDate />) : <p className="small muted">Aucun reste planifié. Pour en ajouter : « Ajouter » un repas et choisir l’origine « Restes ».</p>}
+      </Card>
+      <Card>
+        <CardHead icon="cart" title="Reste des courses" />
+        <p className="small muted">Le surplus des formats achetés (le reste du filet d’oignons, de la courge…) est gardé ici et déduit des prochaines listes de courses. Le frais ne compte qu’une semaine.</p>
+        {home.length ? (
+          <div className="list">
+            {home.map(([k, qty]) => (
+              <div key={k} className="list-item">
+                <span className="grow">{data.ingredients[k]?.name ?? k}</span>
+                <span className="small strong nowrap">{formatQty(qty, unitOf(data, k), data.liquidDisplay)}</span>
+              </div>
+            ))}
+          </div>
+        ) : <p className="small">Rien pour l’instant : coche tes articles dans la liste de courses et le surplus apparaîtra ici.</p>}
+      </Card>
+      <Card>
+        <CardHead icon="list" title="Mon placard" />
+        <p className="small muted">Les basiques (huile, épices, sauces, bouillon…) achetés une fois ne reviennent plus sur la liste. Quand l’un d’eux est presque fini, dis-le : il sera sur la prochaine liste.</p>
+        {placard.length ? (
+          <div className="list">
+            {placard.map((k) => (
+              <div key={k} className="list-item">
+                <span className="grow">{data.ingredients[k]?.name ?? k}</span>
+                <Btn small variant="secondary" onClick={() => { mutate((d) => markLow(d, k)); toast(`${data.ingredients[k]?.name ?? k} : sur la prochaine liste`); }}>Presque fini</Btn>
+              </div>
+            ))}
+          </div>
+        ) : <p className="small">Ton placard se remplira au fil des courses.</p>}
       </Card>
       <Card>
         <CardHead icon="list" title="Ce que j’ai déjà" />
-        <p className="small muted">Les quantités en stock sont déduites de la liste de courses. Par défaut : ingrédients des deux semaines à venir.</p>
+        <p className="small muted">Ce que tu as déjà à la maison : déduit de tes prochaines listes, puis utilisé au fil des repas. « Assez » : ne plus jamais l’acheter.</p>
         <input className="input" type="search" aria-label="Chercher un ingrédient" placeholder="ex. carotte" value={q} onChange={(e) => setQ(e.target.value)} />
         <div className="list">
           {shown.map((k) => {
@@ -213,7 +250,7 @@ function Stock() {
                 </label>
                 {!p?.all && (
                   <div style={{ width: 130 }}>
-                    <NumberField value={p?.qty} onChange={(v) => mutate((d) => { d.pantry[k] = { qty: v }; })} ariaLabel={`Quantité en stock : ${info?.name ?? k}`} placeholder="0" min={0} suffix={unitHint(data, k)} />
+                    <NumberField value={p?.qty} onChange={(v) => mutate((d) => { d.pantry[k] = { qty: v, since: todayISO() }; })} ariaLabel={`Quantité en stock : ${info?.name ?? k}`} placeholder="0" min={0} suffix={unitHint(data, k)} />
                   </div>
                 )}
               </div>
@@ -228,6 +265,11 @@ function Stock() {
       </Card>
     </>
   );
+}
+
+function unitOf(data: AppData, key: string): Unit {
+  for (const r of data.recipes) for (const i of r.ingredients) if (ingredientKey(i.name) === key) return i.unit;
+  return 'g';
 }
 
 function unitHint(data: AppData, key: string): string {

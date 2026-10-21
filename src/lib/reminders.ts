@@ -6,6 +6,13 @@ import { buildShoppingList } from './shopping';
 import { formatEuro, formatQty } from './units';
 import { ENCOURAGEMENTS, MORNING_TITLES, pickFor } from './messages';
 
+/** Regroupe des libellés identiques : « Pâtes saumon (2 portions) » plutôt que deux lignes. */
+export function countLabels(labels: string[], unit = 'portions'): string[] {
+  const counts = new Map<string, number>();
+  for (const l of labels) counts.set(l, (counts.get(l) ?? 0) + 1);
+  return [...counts].map(([l, n]) => (n > 1 ? `${l} (${n} ${unit})` : l));
+}
+
 export interface Reminder {
   id: string;
   at: number; // instant UTC (ms)
@@ -124,12 +131,12 @@ export function buildReminders(data: AppData, fromDate: string, days: number, no
     // Décongélation pour demain
     const defrost = planFor(weekStart(tomorrow)).defrost.filter((t) => t.on === d);
     if (defrost.length) {
-      const what = discreet ? `${defrost.length} portion(s)` : defrost.map((t) => t.label).join(', ');
+      const what = discreet ? `${defrost.length} portion(s)` : countLabels(defrost.map((t) => t.label)).join(', ');
       add('defrost', rules.defrost.time ?? '20:30', 'Pour demain', `Pense à sortir du congélateur et mettre au frigo : ${what}.`, `#/jour/${tomorrow}`);
     }
     const freshTomorrow = mealsTomorrow.filter((m) => m.kind === 'recipe' && m.source === 'fresh');
     if (freshTomorrow.length) {
-      add('prepEve', rules.prepEve.time ?? '20:00', 'Demain', `Pense à vérifier ce qu’il te faut pour demain : ${freshTomorrow.map(name).join(', ')}.`, `#/jour/${tomorrow}`);
+      add('prepEve', rules.prepEve.time ?? '20:00', 'Demain', `Pense à vérifier ce qu’il te faut pour demain : ${[...new Set(freshTomorrow.map(name))].join(', ')}.`, `#/jour/${tomorrow}`);
     }
 
     // Préparation

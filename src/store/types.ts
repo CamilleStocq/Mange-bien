@@ -100,6 +100,12 @@ export interface MealEntry {
   unplanned?: boolean;
   /** Repas choisi pour récupérer après une séance (cardio, renforcement ou coaching) */
   recovery?: 'cardio' | 'force' | 'coaching';
+  /** Restes : identifiant du dîner cuisiné dont c'est la 2e portion */
+  leftoverOf?: string;
+  /** Midi préparé la veille au soir (jamais cuisiné le midi même) */
+  cookEve?: boolean;
+  /** Choisi à la main : les recalculs automatiques n'y touchent pas */
+  pinned?: boolean;
 }
 
 export interface DaySchedule {
@@ -267,6 +273,8 @@ export interface WeekMeta {
   extraPortions?: Record<string, number>;
   /** Batch terminé : portions supplémentaires ajoutées au congélateur */
   batchDone?: boolean;
+  /** Surplus acheté cette semaine (format entier moins besoin), par ingrédient : reporté aux semaines suivantes */
+  surplus?: Record<string, number>;
   /** Total réellement payé (ticket de caisse), prioritaire sur la somme des prix réels */
   realTotal?: number;
   weighing?: 'ignoré';
@@ -314,7 +322,8 @@ export interface AppData {
   recipes: Recipe[];
   ingredients: Record<string, IngredientInfo>;
   /** Ingrédients déjà en stock : quantité possédée (même unité que les recettes) ou « tout » */
-  pantry: Record<string, { qty?: number; all?: boolean }>;
+  /** Stock : quantité saisie (depuis `since`), « assez » (all), basique du placard (staple) */
+  pantry: Record<string, { qty?: number; all?: boolean; since?: ISODate; staple?: boolean }>;
   meals: MealEntry[];
   weeks: Record<ISODate, WeekMeta>;
   freezer: FreezerItem[];

@@ -1,9 +1,10 @@
 import type { ActivityKey, AppData, Authorization, DaySchedule, NotifCategory, NotifRule } from '../store/types';
 import { addDefaultPacks, addMissingIngredients, defaultCatalog, refreshDefaultPrices } from './ingredients';
 import { defaultRecipes, normalizeCategories, upgradeRecipes } from './recipes';
-import { todayISO } from '../lib/dates';
+import { addDays, todayISO, weekStart } from '../lib/dates';
+import { rebalanceWeek } from '../lib/planning';
 
-export const DATA_VERSION = 4;
+export const DATA_VERSION = 5;
 
 export function randomId(): string {
   const a = new Uint8Array(8);
@@ -141,6 +142,14 @@ export function migrate(raw: unknown): AppData {
     merged.recipes = upgradeRecipes(merged.recipes, (id) => others.includes(`"${id}"`));
     merged.ingredients = structuredClone(merged.ingredients ?? {});
     addMissingIngredients(merged.ingredients);
+  }
+  // Version 5 : les semaines déjà planifiées suivent les nouvelles règles (midis de semaine toujours prêts,
+  // restes du soir, récup après le sport) ; les repas passés, mangés ou choisis à la main ne bougent pas.
+  if ((d.version ?? 1) < 5 && Array.isArray(merged.meals) && merged.meals.length) {
+    merged.meals = structuredClone(merged.meals);
+    const today = todayISO();
+    const last = merged.meals.reduce((m, x) => (x.date > m ? x.date : m), today);
+    for (let w = weekStart(today); w <= last; w = addDays(w, 7)) rebalanceWeek(merged, w, today);
   }
   return merged;
 }
