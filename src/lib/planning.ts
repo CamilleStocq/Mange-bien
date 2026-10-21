@@ -47,14 +47,22 @@ export function storageFor(recipe: Recipe, monday: string, date: string, maxFrid
   return { source: 'fresh' };
 }
 
-/** Recettes cuisinées (batch ou le jour même) la semaine précédente et la semaine suivante. */
-export function recentlyCooked(data: AppData, monday: string): Set<string> {
-  const from = addDays(monday, -7);
-  const to = addDays(monday, 13);
-  const out = new Set<string>();
+/** Une même recette n'est pas cuisinée deux fois sur 3 semaines : on regarde les 2 semaines d'avant et d'après. */
+export const NO_REPEAT_WEEKS = 3;
+
+/** Recettes cuisinées (batch ou le jour même) dans les 2 semaines précédentes et les 2 suivantes, avec la date la plus proche. */
+export function recentlyCooked(data: AppData, monday: string): Map<string, number> {
+  const span = 7 * (NO_REPEAT_WEEKS - 1);
+  const from = addDays(monday, -span);
+  const to = addDays(monday, 6 + span);
+  const out = new Map<string, number>();
   for (const m of data.meals) {
     if (m.kind !== 'recipe' || !m.recipeId || (m.source !== 'fresh' && m.source !== 'batch')) continue;
-    if ((m.date >= from && m.date < monday) || (m.date > addDays(monday, 6) && m.date <= to)) out.add(m.recipeId);
+    if ((m.date >= from && m.date < monday) || (m.date > addDays(monday, 6) && m.date <= to)) {
+      // écart en jours avec la semaine planifiée : plus il est grand, plus la recette peut revenir en dernier recours
+      const gap = m.date < monday ? diffDays(monday, m.date) : diffDays(m.date, addDays(monday, 6));
+      out.set(m.recipeId, Math.min(out.get(m.recipeId) ?? Infinity, gap));
+    }
   }
   return out;
 }
@@ -89,15 +97,18 @@ export interface GenerateResult {
  * passe alors à 2 portions.
  */
 export function generateWeek(data: AppData, monday: string): GenerateResult {
-  // Jamais le même plat cuisiné deux fois en deux semaines : on écarte ceux de la semaine d'avant (et d'après, si déjà planifiée).
+  // Jamais le même plat cuisiné deux fois sur 3 semaines : on écarte ceux des 2 semaines d'avant (et d'après, si déjà planifiées).
+  // S'il n'y a pas assez de recettes, on reprend d'abord celles cuisinées il y a le plus longtemps.
   const recent = recentlyCooked(data, monday);
   const fresh = (pool: Recipe[], n: number) => {
     const ok = pool.filter((r) => !recent.has(r.id));
-    return ok.length >= n ? ok : pool;
+    if (ok.length >= n) return ok;
+    const oldest = pool.filter((r) => recent.has(r.id)).sort((a, b) => recent.get(b.id)! - recent.get(a.id)!);
+    return [...ok, ...oldest.slice(0, n - ok.length)];
   };
   const recipes = data.recipes.filter((r) => !r.excludeFromRotation);
   const batchPool = fresh(recipes.filter((r) => r.batchMode === 'full' && !r.quick), 3);
-  const quickPool = fresh(recipes.filter((r) => r.quick), 7);
+  const quickPool = fresh(recipes.filter((r) => r.quick), 9);
   const rot = data.rotation;
   const days = weekDays(monday);
   const meals: MealEntry[] = [];

@@ -61,8 +61,8 @@ describe('midis prêts, cuisine les soirs sans coaching', () => {
   });
 });
 
-describe('jamais le même plat cuisiné deux fois en deux semaines', () => {
-  it('sur 6 semaines, aucun plat cuisiné ne revient la semaine suivante ni dans la même semaine', () => {
+describe('jamais le même plat cuisiné deux fois sur 3 semaines', () => {
+  it('sur 6 semaines, aucun plat cuisiné ne revient dans les 2 semaines suivantes ni dans la même semaine', () => {
     const d = fresh();
     d.sport.sessions = [{ id: 's', date: addDays(MONDAY, 3), time: '18:00', activity: 'course', durationMin: 60, intensity: 'modérée', status: 'prévue', notes: '' }];
     const weeks: Set<string>[] = [];
@@ -76,7 +76,7 @@ describe('jamais le même plat cuisiné deux fois en deux semaines', () => {
       weeks.push(new Set(cookedList.map((x) => x.split(':')[1])));
     }
     for (let w = 1; w < weeks.length; w++) {
-      const repeated = [...weeks[w]].filter((id) => weeks[w - 1].has(id));
+      const repeated = [...weeks[w]].filter((id) => weeks[w - 1].has(id) || (w >= 2 && weeks[w - 2].has(id)));
       expect(repeated, `semaine ${w}`).toEqual([]);
     }
   });
