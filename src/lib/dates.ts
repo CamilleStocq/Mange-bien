@@ -46,9 +46,10 @@ export function nowHHMM(now: Date = new Date()): string {
   return new Intl.DateTimeFormat('fr-BE', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false }).format(now);
 }
 
-export function hhmmToMin(t: string): number {
-  const [h, m] = t.split(':').map(Number);
-  return h * 60 + (m || 0);
+/** « 18:30 » → minutes depuis minuit ; une heure manquante ou illisible compte comme midi. */
+export function hhmmToMin(t?: string): number {
+  const [h, m] = String(t ?? '').split(':').map(Number);
+  return Number.isFinite(h) ? h * 60 + (Number.isFinite(m) ? m : 0) : 12 * 60;
 }
 
 export function minToHHMM(min: number): string {
@@ -84,7 +85,8 @@ export function monthLabel(d: string): string {
   return `${MONTHS[dt.getUTCMonth()]} ${dt.getUTCFullYear()}`;
 }
 
-export function formatHHMM(t: string): string {
+export function formatHHMM(t?: string): string {
+  if (!t || !t.includes(':')) return '—';
   const [h, m] = t.split(':');
   return m === '00' ? `${Number(h)} h` : `${Number(h)} h ${m}`;
 }
@@ -133,8 +135,8 @@ export function tzOffsetMin(instant: number, timeZone = TZ): number {
  */
 export function zonedToUtc(date: string, time: string, timeZone = TZ): number {
   const [y, m, d] = date.split('-').map(Number);
-  const [hh, mm] = time.split(':').map(Number);
-  const wall = Date.UTC(y, m - 1, d, hh, mm);
+  const [hh, mm] = String(time ?? '12:00').split(':').map(Number);
+  const wall = Date.UTC(y, m - 1, d, Number.isFinite(hh) ? hh : 12, Number.isFinite(mm) ? mm : 0);
   const half = 43_200_000;
   const before = tzOffsetMin(wall - half, timeZone);
   const after = tzOffsetMin(wall + half, timeZone);

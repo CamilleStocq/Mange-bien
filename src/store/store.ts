@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { del, get, set } from 'idb-keyval';
 import type { AppData, MealEntry, MealStatus, WeekMeta } from './types';
-import { createDefaultData, migrate } from '../data/defaults';
+import { createDefaultData, DATA_VERSION, migrate } from '../data/defaults';
 import { changedWeeks, generateWeek, mealsOfWeek, planSignature, rebalanceWeek, refreshStorage } from '../lib/planning';
 import { todayISO } from '../lib/dates';
 import { syncFreezerOnStatus } from '../lib/freezer';
@@ -25,7 +25,11 @@ export const useApp = create<AppState>((setState, getState) => ({
     const before = planSignature(d);
     fn(d);
     // Restes et récupération recalculés pour les semaines touchées par le changement.
-    for (const w of changedWeeks(before, d)) rebalanceWeek(d, w);
+    try {
+      for (const w of changedWeeks(before, d)) rebalanceWeek(d, w);
+    } catch (e) {
+      console.error('recalcul du planning impossible', e); // l'action est quand même enregistrée
+    }
     setState({ data: d });
   },
   replaceAll: (d) => setState({ data: d })
@@ -52,13 +56,42 @@ export function flushSave() {
 }
 
 export async function loadData(): Promise<void> {
+  let raw: unknown;
   try {
-    const raw = await get(KEY);
-    useApp.setState({ data: raw ? migrate(raw) : createDefaultData(), hydrated: true });
+    raw = await get(KEY);
   } catch (e) {
     console.error(e);
     useApp.setState({ hydrated: true, storageError: 'Le stockage local est indisponible : tes modifications ne seront pas conservées. (Navigation privée ?)' });
+    return listenForSaves();
   }
+  if (!raw || typeof raw !== 'object') {
+    useApp.setState({ data: createDefaultData(), hydrated: true });
+    return listenForSaves();
+  }
+  // Copie de secours avant chaque mise à jour de format des données (gardée sur l'appareil).
+  const version = (raw as { version?: number }).version ?? 1;
+  if (version < DATA_VERSION) {
+    try {
+      await set(`${KEY}:avant-v${DATA_VERSION}`, raw);
+    } catch {
+      /* facultatif */
+    }
+  }
+  try {
+    useApp.setState({ data: migrate(raw), hydrated: true });
+  } catch (e) {
+    // Jamais de retour au questionnaire : on garde tes données telles quelles, sans la mise à jour.
+    console.error('mise à jour des données impossible', e);
+    useApp.setState({
+      data: { ...createDefaultData(), ...(raw as Partial<AppData>) } as AppData,
+      hydrated: true,
+      storageError: 'Une mise à jour de tes données n’a pas pu se faire : rien n’est perdu, l’app utilise tes données telles quelles.'
+    });
+  }
+  return listenForSaves();
+}
+
+async function listenForSaves(): Promise<void> {
   useApp.subscribe((s, prev) => {
     if (s.data !== prev.data && s.hydrated) {
       // Enregistrement immédiat (regroupé par tâche) : rien n'est perdu si l'app est fermée juste après un geste.

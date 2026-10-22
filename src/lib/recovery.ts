@@ -19,9 +19,10 @@ export interface RecoveryNeed {
 
 const CARDIO = new Set(['course', 'velo', 'natation']);
 
-const toMin = (hhmm: string) => {
-  const [h, m] = hhmm.split(':').map(Number);
-  return h * 60 + (m || 0);
+/** « 18:30 » → minutes ; une heure manquante ou illisible compte comme 18 h (soirée). */
+const toMin = (hhmm?: string) => {
+  const [h, m] = String(hhmm ?? '').split(':').map(Number);
+  return Number.isFinite(h) ? h * 60 + (Number.isFinite(m) ? m : 0) : 18 * 60;
 };
 
 /** Repas à adapter dans la semaine : celui qui suit chaque séance prévue ou faite. */
@@ -30,7 +31,7 @@ export function recoveryNeeds(data: AppData, days: ISODate[]): RecoveryNeed[] {
   const rank: Record<Effort, number> = { coaching: 1, force: 2, cardio: 3 };
   const add = (date: ISODate, endMin: number, effort: Effort) => {
     const sched = data.schedule[weekdayIndex(date)];
-    const slot: MealSlot = sched && endMin <= toMin(sched.lunch) ? 'lunch' : 'dinner';
+    const slot: MealSlot = sched?.lunch && endMin <= toMin(sched.lunch) ? 'lunch' : 'dinner';
     const k = `${date}|${slot}`;
     const prev = out.get(k);
     if (!prev || rank[effort] > rank[prev.effort]) out.set(k, { date, slot, effort });

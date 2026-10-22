@@ -133,6 +133,7 @@ export function App() {
   if (onOnboarding && !onboardingDone) {
     return (
       <div className="app" style={{ paddingBottom: 24 }}>
+        {storageError && <div className="page" style={{ paddingBottom: 0 }}><div className="alert-banner" role="alert">{storageError}</div></div>}
         <Onboarding />
         <ToastHost />
         <ConfirmHost />

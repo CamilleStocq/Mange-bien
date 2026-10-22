@@ -125,7 +125,7 @@ export function startAutoBackup(): void {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const run = async (force = false) => {
     const c = await getBackupConf();
-    if (!c || !dirty || !navigator.onLine) return;
+    if (!c || !dirty || !navigator.onLine || !getData().onboardingDone) return;
     if (!force && c.lastAt && Date.now() - c.lastAt < MIN_GAP_MS) return;
     dirty = false;
     try {

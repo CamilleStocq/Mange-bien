@@ -149,7 +149,13 @@ export function migrate(raw: unknown): AppData {
     merged.meals = structuredClone(merged.meals);
     const today = todayISO();
     const last = merged.meals.reduce((m, x) => (x.date > m ? x.date : m), today);
-    for (let w = weekStart(today); w <= last; w = addDays(w, 7)) rebalanceWeek(merged, w, today);
+    for (let w = weekStart(today); w <= last; w = addDays(w, 7)) {
+      try {
+        rebalanceWeek(merged, w, today);
+      } catch (e) {
+        console.error('réparation de la semaine impossible', w, e); // la semaine reste telle quelle
+      }
+    }
   }
   return merged;
 }
