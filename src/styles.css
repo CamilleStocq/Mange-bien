@@ -296,7 +296,7 @@ table.simple th { color: var(--text-2); font-weight: 600; font-size: 0.8rem; }
 /* Couleur et illustration de chaque section (bandeau de titre, onglet actif) */
 .app { --page: #427ca2; --on-page: #fffaf3; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Ccircle cx='86' cy='58' r='40' fill='%23f7b32b'/%3E%3Ccircle cx='86' cy='58' r='33' fill='%23fbe39a'/%3E%3Cpath d='M86 58v-31M86 58v31M86 58h-31M86 58h31M86 58l22-22M86 58l-22 22M86 58l22 22M86 58l-22-22' stroke='%23f7b32b' stroke-width='3.5' stroke-linecap='round'/%3E%3Ccircle cx='46' cy='104' r='28' fill='%23ef5a2f'/%3E%3Cpath d='M46 80l4 7 8-2-4 7 7 5-8 1-1 7-6-6-6 5 1-8-7-3 7-2-2-8z' fill='%231f5a34'/%3E%3C/svg%3E"); }
 .app[data-section='calendrier'] { --page: #e9d1a9; --on-page: #1e3a4c; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M92 112c20-26 40-30 42-30-2 18-13 40-42 30z' fill='%231f5a34'/%3E%3Ccircle cx='70' cy='66' r='46' fill='%23f39a52'/%3E%3Ccircle cx='70' cy='66' r='38' fill='%23fcc58f'/%3E%3Cpath d='M70 66v-35M70 66v35M70 66h-35M70 66h35M70 66l25-25M70 66l-25 25M70 66l25 25M70 66l-25-25' stroke='%23f39a52' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"); }
-.app[data-section='alimentation'] { --page: #fd9089; --on-page: #1e3a4c; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M104 30c-3-8 0-14 6-18' stroke='%235b3a1e' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M106 30c-13 0-16 16-17 26-1 10-14 18-14 36 0 18 14 30 31 30s31-12 31-30c0-18-13-26-14-36-1-10-4-26-17-26z' fill='%237cbf5a'/%3E%3Ccircle cx='54' cy='86' r='36' fill='%23ef5a2f'/%3E%3Cpath d='M54 56l5 8 10-3-5 8 8 6-10 1-1 9-7-7-7 6 1-9-9-4 9-3-2-10z' fill='%231f5a34'/%3E%3C/svg%3E"); }
+.app[data-section='alimentation'] { --page: #fd9089; --on-page: #1e3a4c; --page-art: url('/art/ustensiles.webp'); }
 .app[data-section='sport'] { --page: #fd9089; --on-page: #1e3a4c; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M12 58a58 58 0 0 0 116 0z' fill='%231f5a34'/%3E%3Cpath d='M22 58a48 48 0 0 0 96 0z' fill='%23fffaf2'/%3E%3Cpath d='M28 58a42 42 0 0 0 84 0z' fill='%23ef5a2f'/%3E%3Cellipse cx='52' cy='72' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='70' cy='82' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='88' cy='72' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='62' cy='66' rx='3' ry='5' fill='%231c1f33'/%3E%3Cellipse cx='80' cy='66' rx='3' ry='5' fill='%231c1f33'/%3E%3C/svg%3E"); }
 .app[data-section='progression'] { --page: #427ca2; --on-page: #fffaf3; --page-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M70 20c-6 14-26 22-26 40M70 20c6 14 26 22 26 40' stroke='%231d5a36' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M70 20c10-12 26-12 34-6-10 10-24 12-34 6z' fill='%23a6dc8a'/%3E%3Ccircle cx='44' cy='82' r='24' fill='%23e0569b'/%3E%3Ccircle cx='96' cy='82' r='24' fill='%23ef5a2f'/%3E%3Ccircle cx='70' cy='118' r='18' fill='%23f7b32b'/%3E%3C/svg%3E"); }
 
@@ -507,3 +507,9 @@ table.simple td, table.simple th { border-bottom: 1px solid color-mix(in srgb, v
 
 /* Repas choisi pour récupérer après une séance de sport */
 .chip.recovery-chip { background: var(--ink); color: #fffaf3; }
+
+/* Illustrations dessinées par Camille (images détourées) */
+.app[data-section='alimentation'] .topbar:has(h1) { background-size: auto 124px; background-position: right 18px bottom 10px; }
+.hero-art { width: 199px; right: -4px; top: 12px; } /* fruits agrandis de 40 % */
+.welcome-art { max-width: 280px; }
+.empty-art { width: auto; height: 104px; }
