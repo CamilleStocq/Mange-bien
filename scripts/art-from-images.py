@@ -2,6 +2,9 @@
 
 - assets/ustensiles.jpg (fond blanc)      → public/art/ustensiles.webp (en-tête de la page Repas)
 - assets/fruits.jpg     (fond vert foncé) → public/art/fruits.webp     (accueil, bienvenue, écrans vides)
+- assets/calendrier.jpg (fond blanc)      → public/art/calendrier.webp (en-tête de l'Agenda)
+- assets/saladier.jpg   (fond blanc)      → public/art/saladier.webp   (en-tête du Batch)
+- assets/filet-courses.jpg (fond noir)    → public/art/courses.webp    (en-tête des Courses)
 Usage : python scripts/art-from-images.py
 """
 from PIL import Image, ImageFilter
@@ -28,3 +31,6 @@ def cutout(src: str, out: str, low: int, high: int, size: int) -> None:
 
 cutout('assets/ustensiles.jpg', 'public/art/ustensiles.webp', 10, 40, 520)
 cutout('assets/fruits.jpg', 'public/art/fruits.webp', 14, 34, 720)
+cutout('assets/calendrier.jpg', 'public/art/calendrier.webp', 10, 40, 520)
+cutout('assets/saladier.jpg', 'public/art/saladier.webp', 10, 40, 520)
+cutout('assets/filet-courses.jpg', 'public/art/courses.webp', 14, 40, 520)
