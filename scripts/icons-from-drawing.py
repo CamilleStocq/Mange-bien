@@ -35,6 +35,6 @@ def square(size: int, fill: float) -> Image.Image:
 square(192, 1.0).save('public/icons/icon-192.png', optimize=True)
 square(512, 1.0).save('public/icons/icon-512.png', optimize=True)
 square(512, 0.78).save('public/icons/icon-maskable-512.png', optimize=True)  # zone sûre Android
-square(180, 1.0).save('public/icons/apple-touch-icon.png', optimize=True)
+square(180, 0.78).save('public/icons/apple-touch-icon.png', optimize=True)  # iPhone : même contour vert qu'Android
 square(64, 1.0).save('public/favicon.png', optimize=True)
 print('Icônes générées depuis', SRC, '— fond', '#%02x%02x%02x' % bg)

@@ -12,7 +12,7 @@ export default defineConfig({
       filename: 'sw.ts',
       registerType: 'autoUpdate',
       injectRegister: false,
-      injectManifest: { globPatterns: ['**/*.{js,css,html,png,svg,ico,webmanifest,woff2}'] },
+      injectManifest: { globPatterns: ['**/*.{js,css,html,png,svg,ico,webmanifest,woff2,webp}'] },
       devOptions: { enabled: false },
       manifest: {
         name: 'Mange bien ! — repas, sport & progression',
