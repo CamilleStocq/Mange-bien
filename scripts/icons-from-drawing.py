@@ -1,17 +1,16 @@
-"""Génère les icônes de l'app à partir du dessin de Camille (assets/icone-dessin.jpg).
+"""Génère les icônes de l'app à partir de l'image de Camille (assets/icone-mange-bien.jpg).
 
 Le dessin est centré sur un carré dont le fond reprend le bleu du dessin.
 Usage : python scripts/icons-from-drawing.py
 """
 from PIL import Image, ImageStat
 
-SRC = 'assets/icone-dessin.jpg'
+SRC = 'assets/icone-mange-bien.jpg'
 src = Image.open(SRC).convert('RGB')
 w, h = src.size
 
-# Couleur de fond : moyenne des bords du dessin (le bleu du papier)
-edges = [src.crop((0, 0, w, 24)), src.crop((0, h - 24, w, h)), src.crop((0, 0, 24, h)), src.crop((w - 24, 0, w, h))]
-bg = tuple(round(sum(ImageStat.Stat(e).mean[i] for e in edges) / len(edges)) for i in range(3))
+# Couleur de fond : le haut de l'image (le vert foncé du fond)
+bg = tuple(round(v) for v in ImageStat.Stat(src.crop((0, 0, w, 24))).mean)
 
 
 def square(size: int, fill: float) -> Image.Image:
