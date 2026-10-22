@@ -5,6 +5,7 @@
 - assets/calendrier.jpg (fond blanc)      → public/art/calendrier.webp (en-tête de l'Agenda)
 - assets/saladier.jpg   (fond blanc)      → public/art/saladier.webp   (en-tête du Batch)
 - assets/filet-courses.jpg (fond noir)    → public/art/courses.webp    (en-tête des Courses)
+- assets/cycliste.jpg   (fond vert)       → public/art/cycliste.webp   (en-tête du Sport)
 Usage : python scripts/art-from-images.py
 """
 from PIL import Image, ImageFilter
@@ -34,3 +35,4 @@ cutout('assets/fruits.jpg', 'public/art/fruits.webp', 14, 34, 720)
 cutout('assets/calendrier.jpg', 'public/art/calendrier.webp', 10, 40, 520)
 cutout('assets/saladier.jpg', 'public/art/saladier.webp', 10, 40, 520)
 cutout('assets/filet-courses.jpg', 'public/art/courses.webp', 14, 40, 520)
+cutout('assets/cycliste.jpg', 'public/art/cycliste.webp', 14, 40, 560)
