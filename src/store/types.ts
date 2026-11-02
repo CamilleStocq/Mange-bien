@@ -298,6 +298,10 @@ export interface Profile {
   /** Début du programme : aucun repas ni suivi n'est proposé avant cette date */
   startDate: ISODate;
   targetWeightKg?: number;
+  /** Pour estimer la dépense du jour (coach) */
+  age?: number;
+  /** « Ma raison » : pourquoi je prends soin de moi, affichée par le coach */
+  why?: string;
   targetDate?: ISODate;
   planEnd?: ISODate;
   hideWeightOnHome: boolean;

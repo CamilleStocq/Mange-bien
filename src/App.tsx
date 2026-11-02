@@ -16,10 +16,11 @@ const ProgressPage = lazy(() => import('./pages/Progress').then((m) => ({ defaul
 import { DataPage, HydrationPage, IngredientsPage, SchedulePage, SettingsPage } from './pages/Settings';
 import { IphoneHelpPage, NotificationsPage } from './pages/Notifications';
 import { Onboarding } from './pages/Onboarding';
+import { CoachPage } from './pages/Coach';
 
 // Sept onglets : libellés courts pour tenir sur un iPhone ; le nom complet reste en titre de page.
 const TABS = [
-  { href: '#/aujourdhui', match: ['aujourdhui', 'hydratation', 'reglages'], icon: 'home', label: 'Accueil', name: 'Aujourd’hui' },
+  { href: '#/aujourdhui', match: ['aujourdhui', 'hydratation', 'reglages', 'coach'], icon: 'home', label: 'Accueil', name: 'Aujourd’hui' },
   { href: '#/calendrier', match: ['calendrier', 'jour'], icon: 'calendar', label: 'Agenda', name: 'Calendrier' },
   { href: '#/alimentation', match: ['alimentation', 'recette', 'recette-nouvelle'], icon: 'food', label: 'Repas', name: 'Alimentation' },
   { href: '#/batch', match: ['batch'], icon: 'pot', label: 'Batch', name: 'Batch cooking' },
@@ -42,6 +43,7 @@ function page(route: Route): ReactNode {
     case 'sport': return <SportPage key={route.query.toString()} route={route} />;
     case 'progression': return <ProgressPage />;
     case 'hydratation': return <HydrationPage />;
+    case 'coach': return <CoachPage />;
     case 'reglages':
       if (b === 'notifications') return <NotificationsPage />;
       if (b === 'iphone') return <IphoneHelpPage />;

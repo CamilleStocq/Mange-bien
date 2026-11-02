@@ -47,7 +47,7 @@ export function recoveryNeeds(data: AppData, days: ISODate[]): RecoveryNeed[] {
 }
 
 /** Glucides « féculents » par portion (g de pâtes, riz, pommes de terre, pain, légumineuses… poids sec ou cru). */
-function starchPerPortion(r: Recipe, data: AppData): number {
+export function starchPerPortion(r: Recipe, data: AppData): number {
   let g = 0;
   for (const i of r.ingredients) {
     if (i.unit !== 'g') continue;

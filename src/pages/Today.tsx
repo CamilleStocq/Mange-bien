@@ -7,6 +7,7 @@ import { randomId } from '../data/defaults';
 import { Btn, Card, CardHead, FruitArt, Icon, NumberField, toast, SubmitBtn } from '../components/ui';
 import { DayMeals, DaySport, DayTasksCard, ScheduleStrip } from '../components/day';
 import { HydrationWidget } from '../components/hydration';
+import { CoachCard } from './Coach';
 
 function WeighPrompt({ today }: { today: string }) {
   const data = useData((d) => d);
@@ -81,6 +82,7 @@ export function Today() {
         </Card>
       )}
       <WeighPrompt today={today} />
+      {!notStarted && <CoachCard date={today} />}
       <DayTasksCard date={today} />
       <DayMeals date={today} />
       <HydrationWidget compact />

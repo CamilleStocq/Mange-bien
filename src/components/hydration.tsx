@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { addWater, undoWater, useData } from '../store/store';
 import { todayISO } from '../lib/dates';
 import { formatQty } from '../lib/units';
+import { waterGoal } from '../lib/coach';
 import { Btn, Card, CardHead, NumberField, Ring, SubmitBtn } from './ui';
 
 export function useWaterToday(date = todayISO()) {
@@ -9,7 +10,7 @@ export function useWaterToday(date = todayISO()) {
 }
 
 export function HydrationWidget({ compact }: { compact?: boolean }) {
-  const goal = useData((d) => d.hydration.goalMl);
+  const goal = useData((d) => waterGoal(d, todayISO()));
   const total = useWaterToday();
   const [custom, setCustom] = useState<number | undefined>();
   const reached = total >= goal;

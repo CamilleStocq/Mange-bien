@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import type { ActivityKey, AuthStatus, PainEntry, ResumeStage, SportSession } from '../store/types';
+import type { ActivityKey, AuthStatus, PainEntry, ResumeStage } from '../store/types';
 import { mutate, useData } from '../store/store';
 import { addDays, formatDayMonth, formatHHMM, formatLong, formatShort, todayISO, weekDays, weekStart, weekdayIndex } from '../lib/dates';
 import { ACTIVITY_LABEL } from '../lib/reminders';
 import type { Route } from '../lib/router';
 import { randomId } from '../data/defaults';
+import { proposeSportWeek } from '../lib/coach';
 import { Btn, Card, CardHead, Empty, Icon, NumberField, Seg, TextField, confirmAsk, toast, SubmitBtn } from '../components/ui';
 import { ACTIVITIES, AuthQuickSetup, DoneSessionSheet, isAllowed, RED_FLAGS, SessionCard, SessionEditor, UrgentAlert } from '../components/sport';
 
@@ -54,14 +55,11 @@ function SportPlanning() {
   const allowed = ACTIVITIES.filter((a) => isAllowed(data.sport.authorizations[a].status));
 
   const propose = () => {
-    if (!stage || !allowed.length) return;
-    // Créneaux doux répartis, avec au moins un jour de repos entre deux séances quand c'est possible.
-    const slots: [number, string][] = [[6, '10:00'], [3, '18:00'], [5, '10:00'], [0, '18:30']];
-    const created: SportSession[] = slots.slice(0, stage.sessionsPerWeek).map(([day, time], k) => ({
-      id: randomId(), date: addDays(monday, day), time, activity: allowed[k % allowed.length], durationMin: stage.maxMinutes, intensity: stage.intensity, status: 'prévue', notes: 'Proposition à valider avec ton kiné. Arrête si douleur.'
-    }));
+    // Hors travail et hors coaching, un jour calme entre deux séances, marche les autres jours si autorisée.
+    const created = proposeSportWeek(data, monday, randomId);
+    if (!created.length) return;
     mutate((d) => { d.sport.sessions.push(...created); });
-    toast(`${created.length} séance(s) proposée(s) — modifiables`);
+    toast(`${created.length} activité(s) proposée(s) — modifiables`);
   };
 
   return (
@@ -80,7 +78,7 @@ function SportPlanning() {
         <div className="row wrap">
           <Btn small variant="secondary" icon="check" onClick={() => setLogging(true)}>J’ai fait du sport aujourd’hui</Btn>
           <Btn small icon="plus" onClick={() => setAdding(todayISO() >= monday && todayISO() <= addDays(monday, 6) ? todayISO() : monday)}>Planifier une séance</Btn>
-          {stage && allowed.length > 0 && sessions.length === 0 && <Btn small variant="secondary" onClick={propose}>Proposer une semaine douce</Btn>}
+          {stage && allowed.length > 0 && sessions.length === 0 && <Btn small variant="secondary" onClick={propose}>Proposer ma semaine</Btn>}
         </div>
       </Card>
       {!allowed.length && ACTIVITIES.some((a) => data.sport.authorizations[a].status === 'inconnu') && <AuthQuickSetup />}

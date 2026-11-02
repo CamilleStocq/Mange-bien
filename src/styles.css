@@ -518,3 +518,7 @@ table.simple td, table.simple th { border-bottom: 1px solid color-mix(in srgb, v
 .hero-art { width: 199px; right: -4px; top: 12px; } /* fruits agrandis de 40 % */
 .welcome-art { max-width: 280px; }
 .empty-art { width: auto; height: 104px; }
+
+/* Mon coach */
+.coach-list { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 6px; }
+.coach-list li { line-height: 1.45; }
